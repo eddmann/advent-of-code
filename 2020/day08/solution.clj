@@ -3,9 +3,10 @@
 (load-file "/src/helpers.clj")
 
 (defn parse-code [filename]
-  (->> (read-lines filename)
-       (map (fn [line] (let [[op val] (split line #" ")] [(keyword op) (Integer/parseInt val)])))
-       vec))
+  (mapv (fn [line]
+          (let [[op val] (split line #" ")]
+            [(keyword op) (Integer/parseInt val)]))
+        (read-lines filename)))
 
 (defn exec [ops]
   (loop [acc 0 pos 0 seen #{}]
