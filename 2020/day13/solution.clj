@@ -29,10 +29,10 @@
   (let [[first-bus & buses] (parse-part2 filename)]
     (->> (reduce
             (fn [{:keys [multiplier timestamp]} {:keys [bus-id delay]}]
-              (loop [mlt multiplier ts timestamp]
+              (loop [ts timestamp]
                 (if (zero? (mod (+ ts delay) bus-id))
-                  {:multiplier (* mlt bus-id) :timestamp ts}
-                  (recur mlt (+ ts mlt)))))
+                  {:multiplier (* multiplier bus-id) :timestamp ts}
+                  (recur (+ ts multiplier)))))
             {:multiplier (:bus-id first-bus) :timestamp 0}
             buses)
           :timestamp)))
