@@ -14,7 +14,7 @@
 
 (defn apply-mask [mask val]
   (let [rmask (reverse mask)
-        rval (take 36 (concat (reverse (Integer/toString val 2)) (repeat 36 0)))]
+        rval (take 36 (concat (reverse (Integer/toString val 2)) (repeat 36 \0)))]
     (->>
       (reduce
         (fn [result [m v]] (conj result (if (= m \X) v m)))
@@ -34,10 +34,10 @@
 
 (defn decode-memory-addresses [mask idx]
   (let [rmask (reverse mask)
-        ridx (take 36 (concat (reverse (Integer/toString idx 2)) (repeat 36 0)))]
+        ridx (take 36 (concat (reverse (Integer/toString idx 2)) (repeat 36 \0)))]
     (->>
       (reduce
-        (fn [result [m v]] (conj result (if (= m \X) \X (if (or (= \1 m) (= \1 v)) \1 \0))))
+        (fn [result [m v]] (conj result (case m \X \X \1 \1 v)))
         []
         (map vector rmask ridx))
       reverse
