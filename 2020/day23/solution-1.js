@@ -69,7 +69,7 @@ const buildCupCircle = (initialCups, totalCups = 1_000_000) => {
     }
 
     if (i === initialCups.length - 1) {
-      lookup.set(initialCups[i], Math.max(...initialCups) + 1);
+      lookup.set(initialCups[i], i + 2);
       continue;
     }
 
