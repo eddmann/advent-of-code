@@ -110,10 +110,10 @@ Tile 3079:
 ..#.###...
 `.trim();
 
-test('p1', () => {
-  expect(part1(IMAGE_TILES)).toBe(0);
+test('product of photos four corner tiles', () => {
+  expect(part1(IMAGE_TILES)).toBe(20899048083289);
 });
 
-test('p2', () => {
-  expect(part2(IMAGE_TILES)).toBe(0);
+test('calculate habitats water roughness', () => {
+  expect(part2(IMAGE_TILES)).toBe(273);
 });
