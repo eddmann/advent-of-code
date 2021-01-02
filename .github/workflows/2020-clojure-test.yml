@@ -1,0 +1,15 @@
+name: 2020 Clojure Test
+
+on:
+  push:
+    paths:
+      - .github/**
+      - 2020/clojure/**
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make test
+        working-directory: 2020/clojure
