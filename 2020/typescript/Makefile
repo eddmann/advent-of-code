@@ -12,7 +12,7 @@ solve: ## Solve specific day (with optional solution) `make solve day=1 sol=1`
 	@$(DOCKER) -it $(IMAGE) yarn solve $(day) $(sol)
 
 .PHONY: test
-test: # Run test suite
+test: ## Run test suite
   ifdef CI
 	$(DOCKER) -e CI=1 $(IMAGE) yarn test
   else
