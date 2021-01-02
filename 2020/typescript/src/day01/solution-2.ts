@@ -2,11 +2,11 @@ import { toInt } from '../helpers';
 
 const parseReport = (input: string): number[] => input.split('\n').map(toInt);
 
-export const part1 = (input: string): number => {
-  const expenseReport = parseReport(input);
+export const part1 = (input: string): number | null => {
+  const report = parseReport(input);
   const seen = new Set<number>();
 
-  for (const number of expenseReport) {
+  for (const number of report) {
     const complement = 2020 - number;
 
     if (seen.has(complement)) {
@@ -16,25 +16,25 @@ export const part1 = (input: string): number => {
     seen.add(number);
   }
 
-  return -1;
+  return null;
 };
 
-export const part2 = (input: string): number => {
-  const expenseReport = parseReport(input);
+export const part2 = (input: string): number | null => {
+  const report = parseReport(input);
 
-  for (const [idx, number1] of expenseReport.entries()) {
+  for (let i = 0; i < report.length - 2; i++) {
     const seen = new Set<number>();
 
-    for (const number2 of expenseReport.slice(idx + 1)) {
-      const complement = 2020 - number1 - number2;
+    for (let j = i + 1; j < report.length; j++) {
+      const complement = 2020 - report[i] - report[j];
 
       if (seen.has(complement)) {
-        return number1 * number2 * complement;
+        return report[i] * report[j] * complement;
       }
 
-      seen.add(number2);
+      seen.add(report[j]);
     }
   }
 
-  return -1;
+  return null;
 };

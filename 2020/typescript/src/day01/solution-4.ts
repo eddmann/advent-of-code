@@ -2,19 +2,19 @@ import { toInt } from '../helpers';
 
 const parseReport = (input: string): number[] => input.split('\n').map(toInt);
 
-export const part1 = (input: string): number => {
-  const expenseReport = parseReport(input);
+export const part1 = (input: string): number | null => {
+  const report = parseReport(input);
 
-  expenseReport.sort((a, b) => a - b);
+  report.sort((a, b) => a - b);
 
   let lhs = 0;
-  let rhs = expenseReport.length - 1;
+  let rhs = report.length - 1;
 
   while (lhs < rhs) {
-    const sum = expenseReport[lhs] + expenseReport[rhs];
+    const sum = report[lhs] + report[rhs];
 
     if (sum === 2020) {
-      return expenseReport[lhs] * expenseReport[rhs];
+      return report[lhs] * report[rhs];
     }
 
     if (sum < 2020) {
@@ -24,23 +24,23 @@ export const part1 = (input: string): number => {
     }
   }
 
-  return -1;
+  return null;
 };
 
-export const part2 = (input: string): number => {
-  const expenseReport = parseReport(input);
+export const part2 = (input: string): number | null => {
+  const report = parseReport(input);
 
-  expenseReport.sort((a, b) => a - b);
+  report.sort((a, b) => a - b);
 
-  for (let i = 0; i < expenseReport.length - 2; i++) {
+  for (let i = 0; i < report.length - 2; i++) {
     let lhs = i + 1;
-    let rhs = expenseReport.length - 1;
+    let rhs = report.length - 1;
 
     while (lhs < rhs) {
-      const sum = expenseReport[lhs] + expenseReport[i] + expenseReport[rhs];
+      const sum = report[lhs] + report[i] + report[rhs];
 
       if (sum === 2020) {
-        return expenseReport[lhs] * expenseReport[i] + expenseReport[rhs];
+        return report[lhs] * report[i] + report[rhs];
       }
 
       if (sum < 2020) {
@@ -51,5 +51,5 @@ export const part2 = (input: string): number => {
     }
   }
 
-  return -1;
+  return null;
 };
