@@ -1,9 +1,12 @@
-(ns aoc-2020.day-12)
+(ns aoc-2020.day-12
+  (:require [clojure.string :as str]))
 
 (defn- parse-navigation-instructions [input]
-  (->> (clojure.string/split input #"\n")
-       (map (fn [line] [(char (first line))
-                        (Integer/parseInt (subs line 1) 10)]))))
+  (map #(vector (first %) (read-string (subs % 1)))
+       (str/split-lines input)))
+
+(defn- manhattan-distance [x y]
+  (+ (Math/abs x) (Math/abs y)))
 
 (defn part-1
   "Day 12 Part 1"
@@ -22,7 +25,8 @@
                \L [x y (mod (- direction value) 360)]
                \R [x y (mod (+ direction value) 360)])))
          [0 0 0])
-       ((fn [[x y]] (+ (Math/abs x) (Math/abs y))))))
+       (take 2)
+       (apply manhattan-distance)))
 
 (defn part-2
   "Day 12 Part 2"
@@ -43,5 +47,5 @@
                \L (concat [x y] (rotate-wp wp-x wp-y value))
                \R (concat [x y] (rotate-wp wp-x wp-y (- value)))))
            [0 0 10 1])
-         ((fn [[x y]]
-           (+ (Math/abs x) (Math/abs y)))))))
+         (take 2)
+         (apply manhattan-distance))))

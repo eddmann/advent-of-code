@@ -1,7 +1,8 @@
-(ns aoc-2020.day-01)
+(ns aoc-2020.day-01
+  (:require [clojure.string :as str]))
 
 (defn- parse-report [input]
-  (map clojure.edn/read-string (clojure.string/split input #"\n")))
+  (map read-string (str/split-lines input)))
 
 (defn part-1
   "Day 01 Part 1"

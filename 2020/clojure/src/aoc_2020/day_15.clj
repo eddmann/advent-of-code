@@ -1,7 +1,10 @@
-(ns aoc-2020.day-15)
+(ns aoc-2020.day-15
+  (:require [clojure.string :as str]))
 
 (defn- parse-numbers [input]
-  (->> input (#(clojure.string/split % #",")) (map read-string)))
+  (map read-string (str/split input #",")))
+
+; https://rosettacode.org/wiki/Van_Eck_sequence
 
 (defn- say-next [numbers]
   (let [starting-numbers (butlast numbers)
@@ -17,9 +20,11 @@
 (defn part-1
   "Day 15 Part 1"
   [input]
-  (nth (say-next (parse-numbers input)) (dec 2020)))
+  (nth (say-next (parse-numbers input))
+       (dec 2020)))
 
 (defn part-2
   "Day 15 Part 2"
   [input]
-  (nth (say-next (parse-numbers input)) (dec 30000000)))
+  (nth (say-next (parse-numbers input))
+       (dec 30000000)))

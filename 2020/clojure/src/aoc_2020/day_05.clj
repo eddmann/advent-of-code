@@ -1,11 +1,12 @@
-(ns aoc-2020.day-05)
+(ns aoc-2020.day-05
+  (:require [clojure.string :as str]))
 
 (defn- parse-boarding-passes [input]
-  (clojure.string/split input #"\n"))
+  (str/split-lines input))
 
 (defn- to-decimal [location]
   (->> (replace {\F 0 \B 1 \L 0 \R 1} location)
-       clojure.string/join
+       str/join
        (#(Integer/parseInt %1 2))))
 
 (defn- location->seat-id [location]

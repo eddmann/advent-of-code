@@ -1,40 +1,33 @@
-(ns aoc-2020.day-13)
+(ns aoc-2020.day-13
+  (:require [clojure.string :as str]))
 
-(defn- parse-part1 [input]
-  (let [[timestamp bus-ids] (clojure.string/split input #"\n")]
-    {:timestamp (Integer/parseInt timestamp 10)
-     :bus-ids (->> (clojure.string/split bus-ids #",")
-                   (filter #(not= % "x"))
-                   (map #(Integer/parseInt % 10)))}))
-
-(defn- parse-part2 [input]
-  (let [[_ bus-ids] (clojure.string/split input #"\n")]
-    (->> (clojure.string/split bus-ids #",")
-         (map-indexed #(if (= %2 "x") nil {:bus-id (Integer/parseInt %2 10) :delay %1}))
-         (remove nil?))))
+(defn parse-bus-notes [input]
+  (let [[departure bus-ids] (str/split-lines input)]
+    {:departure (read-string departure)
+     :bus-ids (->> (str/split bus-ids #",")
+                   (map-indexed #(when-not (= %2 "x") [(read-string %2) %1]))
+                   (remove nil?))}))
 
 (defn part-1
   "Day 13 Part 1"
   [input]
-  (let [{:keys [timestamp bus-ids]} (parse-part1 input)]
+  (let [{:keys [departure bus-ids]} (parse-bus-notes input)]
     (->> bus-ids
-         (map (fn [bus-id]
-           {:bus-id bus-id
-            :diff (- (* (int (Math/ceil (/ timestamp bus-id))) bus-id) timestamp)}))
-         (sort-by :diff)
+         (map (fn [[id]] [id (- id (mod departure id))]))
+         (sort-by second)
          first
-         (#(* (:bus-id %) (:diff %))))))
+         (apply *))))
 
 (defn part-2
   "Day 13 Part 2"
   [input]
-  (let [[first-bus & buses] (parse-part2 input)]
+  (let [{:keys [bus-ids]} (parse-bus-notes input)]
     (->> (reduce
-            (fn [{:keys [multiplier timestamp]} {:keys [bus-id delay]}]
-              (loop [ts timestamp]
-                (if (zero? (mod (+ ts delay) bus-id))
-                  {:multiplier (* multiplier bus-id) :timestamp ts}
-                  (recur (+ ts multiplier)))))
-            {:multiplier (:bus-id first-bus) :timestamp 0}
-            buses)
-          :timestamp)))
+           (fn [{:keys [multiplier timestamp]} [id offset]]
+             (loop [ts timestamp]
+               (if (zero? (mod (+ ts offset) id))
+                 {:multiplier (* multiplier id) :timestamp ts}
+                 (recur (+ ts multiplier)))))
+             {:multiplier 1 :timestamp 0}
+             bus-ids)
+         :timestamp)))

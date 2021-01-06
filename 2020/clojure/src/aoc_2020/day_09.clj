@@ -1,23 +1,22 @@
-(ns aoc-2020.day-09)
+(ns aoc-2020.day-09
+  (:require [clojure.string :as str]
+            [clojure.math.combinatorics :refer (combinations)]))
 
 (defn- parse-xmas-data [input]
-  (let [[seq-size seq] (clojure.string/split input #"\n\n")]
-    [(read-string seq-size) (mapv read-string (clojure.string/split seq #"\n"))]))
+  (let [[seq-size seq] (str/split input #"\n\n")]
+    [(read-string seq-size) (mapv read-string (str/split-lines seq))]))
 
-(defn- combinations [col]
-  (for [x col y col] [x y]))
-
-(defn- first-incorrect-sum [_ col]
+(defn- incorrect-sum [col]
   (let [sum (last col)
         seq (butlast col)]
-    (when (not (some #(= sum (apply + %)) (combinations seq)))
-      (reduced sum))))
+    (when (not (some #(= sum (apply + %)) (combinations seq 2)))
+      sum)))
 
 (defn part-1
   "Day 09 Part 1"
   [input]
   (let [[seq-size seq] (parse-xmas-data input)]
-    (->> seq (partition (inc seq-size) 1) (reduce first-incorrect-sum nil))))
+    (some incorrect-sum (partition (inc seq-size) 1 seq))))
 
 (defn part-2
   "Day 09 Part 2"
@@ -31,5 +30,5 @@
         (= end (count seq)) nil
         (> acc sum) (recur (inc start) end (- acc (nth seq start)))
         (< acc sum) (recur start (inc end) (+ acc (nth seq (inc end) 0)))
-        :else (let [subseq (subvec seq start end)]
-          (+ (apply min subseq) (apply max subseq)))))))
+        :else (let [sub-seq (subvec seq start end)]
+          (+ (apply min sub-seq) (apply max sub-seq)))))))

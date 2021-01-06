@@ -1,71 +1,68 @@
-(ns aoc-2020.day-14)
+(ns aoc-2020.day-14
+  (:require [clojure.string :as str]))
 
-(defn- parse-instructions [input]
-  (->> (clojure.string/split input #"\n")
-       (map
-         (fn [line]
-           (let [mask (second (re-matches #"mask = (.+)" line))
-                 memory (rest (re-matches #"mem\[(\d+)\] = (\d+)" line))]
-             (if mask
-               {:op :mask :val (char-array mask)}
-               {:op :memory
-                :idx (Integer/parseInt (first memory) 10)
-                :val (Integer/parseInt (second memory) 10)}))))))
+(defn- parse-program [input]
+  (map
+    (fn [line]
+      (let [[_ mask] (re-matches #"mask = (.+)" line)
+            [_ address value] (re-matches #"mem\[(\d+)\] = (\d+)" line)]
+        (if mask
+          {:op :mask :value (char-array mask)}
+          {:op :memory :address (read-string address) :value (read-string value)})))
+    (str/split-lines input)))
 
-(defn- apply-mask [mask val]
-  (let [rmask (reverse mask)
-        rval (take 36 (concat (reverse (Integer/toString val 2)) (repeat 36 \0)))]
-    (->>
-      (reduce
-        (fn [result [m v]] (conj result (if (= m \X) v m)))
-        []
-        (map vector rmask rval))
-      reverse
-      (clojure.string/join "")
-      (#(BigInteger. % 2)))))
+(defn- pad-zero [s n]
+  (apply str (take-last n (concat (repeat n \0) s))))
 
-(defn- get-floating-variants [[head & tail]]
-  (if (nil? head)
+(defn- bin->bigint [b]
+  (BigInteger. b 2))
+
+(defn- apply-mask [decimal mask]
+  (let [binary (pad-zero (Integer/toBinaryString decimal) 36)
+        masked (apply str (map-indexed #(if (= %2 \X) (nth binary %1) %2) mask))]
+    (bin->bigint masked)))
+
+(defn- get-floating-variants [[bit & bits]]
+  (if (nil? bit)
     [""]
-    (let [variant (get-floating-variants tail)]
-      (if (= \X head)
-        (concat (map #(cons \1 %) variant) (map #(cons \0 %) variant))
-        (map #(cons head %) variant)))))
+    (let [variant (get-floating-variants bits)]
+      (if (= \X bit)
+        (concat (map #(apply str \1 %) variant) (map #(apply str \0 %) variant))
+        (map #(apply str bit %) variant)))))
 
-(defn- decode-memory-addresses [mask idx]
-  (let [rmask (reverse mask)
-        ridx (take 36 (concat (reverse (Integer/toString idx 2)) (repeat 36 \0)))]
-    (->>
-      (reduce
-        (fn [result [m v]] (conj result (case m \X \X \1 \1 v)))
-        []
-        (map vector rmask ridx))
-      reverse
-      (get-floating-variants)
-      (map #(BigInteger. (clojure.string/join "" %) 2)))))
+(defn- decode-memory-addresses [address mask]
+  (let [binary (pad-zero (Integer/toBinaryString address) 36)
+        masked (apply str (map-indexed #(if (= %2 \0) (nth binary %1) %2) mask))]
+    (map bin->bigint (get-floating-variants masked))))
+
+(defn exec [mem-update-fn program]
+  (reduce
+    (fn [state instruction]
+      (case (:op instruction)
+        :mask (assoc state :mask (:value instruction))
+        :memory (assoc state :memory (mem-update-fn state (:address instruction) (:value instruction)))
+        state))
+    {:mask "000000000000000000000000000000000000" :memory {}}
+    program))
 
 (defn part-1
   "Day 14 Part 1"
   [input]
-  (->> (parse-instructions input)
-       (reduce
-         (fn [machine {:keys [op val idx]}]
-           (case op
-             :mask (assoc machine :mask val)
-             :memory (assoc-in machine [:memory idx] (apply-mask (:mask machine) val))))
-         {:mask nil :memory {}})
+  (->> (parse-program input)
+       (exec
+         (fn [{:keys [mask memory]} address value]
+           (assoc memory address (apply-mask value mask))))
        :memory
-       (#(apply + (vals %)))))
+       vals
+       (apply +)))
 
 (defn part-2
   "Day 14 Part 2"
   [input]
-  (->> (parse-instructions input)
-       (reduce
-         (fn [machine {:keys [op val idx]}]
-           (case op
-             :mask (assoc machine :mask val)
-             :memory (assoc machine :memory (reduce #(assoc %1 %2 val) (:memory machine) (decode-memory-addresses (:mask machine) idx)))))
-         {:mask nil :memory {}})
+  (->> (parse-program input)
+       (exec
+         (fn [{:keys [mask memory]} address value]
+           (reduce #(assoc %1 %2 value) memory (decode-memory-addresses address mask))))
        :memory
-       (#(apply + (vals %)))))
+       vals
+       (apply +)))

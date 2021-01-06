@@ -1,19 +1,19 @@
-(ns aoc-2020.day-07)
+(ns aoc-2020.day-07
+  (:require [clojure.string :as str]))
 
 (defn- parse-bag [line]
   (let [[_ colour raw-contents] (re-matches #"([a-z\s]+) bags contain (.+)" line)
         contents (->> (re-seq #"([0-9]+) ([a-z\s]+) bag" raw-contents)
-                      (map (fn [[_ count colour]] [colour (Integer/parseInt count)]))
+                      (map (fn [[_ count colour]] [colour (read-string count)]))
                       (into {}))]
     [colour contents]))
 
 (defn- parse-bag-rules [input]
-  (into {} (map parse-bag (clojure.string/split input #"\n"))))
+  (into {} (map parse-bag (str/split-lines input))))
 
-(defn- in-bag? [bags colour curr-colour]
-  (let [curr-bag (keys (bags curr-colour))]
-    (or (some #(= %1 colour) curr-bag)
-        (some true? (map #(in-bag? bags colour %1) curr-bag)))))
+(defn- in-bag? [bags target current]
+    (apply (some-fn #{target} #(in-bag? bags target %1))
+           (keys (bags current))))
 
 (defn- count-required-bags [bags colour]
   (let [root (bags colour)]
