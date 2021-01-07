@@ -26,11 +26,11 @@ const combat = (player1: Deck, player2: Deck): Deck => {
 };
 
 const recursiveCombat = (player1: Deck, player2: Deck): Deck => {
-  const history = new Set<string>();
+  const doCombat = (p1: Deck, p2: Deck): [Player, Deck] => {
+    const history = new Set<string>();
 
-  const doCombat = (p1: Deck, p2: Deck, game: number): [Player, Deck] => {
     while (p1.length > 0 && p2.length > 0) {
-      const hash = `${p1.join('')}-${p2.join('')}-${game}`;
+      const hash = `${p1.join('')}-${p2.join('')}`;
 
       if (history.has(hash)) {
         return [Player.One, p1];
@@ -42,7 +42,7 @@ const recursiveCombat = (player1: Deck, player2: Deck): Deck => {
 
       let winner;
       if (p1.length >= card1 && p2.length >= card2) {
-        [winner] = doCombat(p1.slice(0, card1), p2.slice(0, card2), game + 1);
+        [winner] = doCombat(p1.slice(0, card1), p2.slice(0, card2));
       } else {
         winner = card1 > card2 ? Player.One : Player.Two;
       }
@@ -57,7 +57,7 @@ const recursiveCombat = (player1: Deck, player2: Deck): Deck => {
     return [p1.length > 0 ? Player.One : Player.Two, p1.length > 0 ? p1 : p2];
   };
 
-  const [, winningDeck] = doCombat([...player1], [...player2], 1);
+  const [, winningDeck] = doCombat([...player1], [...player2]);
 
   return winningDeck;
 };
