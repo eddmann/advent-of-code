@@ -12,8 +12,8 @@
   (into {} (map parse-bag (str/split-lines input))))
 
 (defn- in-bag? [bags target current]
-    (apply (some-fn #{target} #(in-bag? bags target %1))
-           (keys (bags current))))
+  (apply (some-fn #{target} #(in-bag? bags target %1))
+         (keys (bags current))))
 
 (defn- count-required-bags [bags colour]
   (let [root (bags colour)]
@@ -24,12 +24,8 @@
 (defn part-1
   "Day 07 Part 1"
   [input]
-  (let [bags (parse-bag-rules input)
-        colour "shiny gold"]
-    (reduce
-      #(if (in-bag? bags colour %2) (inc %1) %1)
-      0
-      (keys bags))))
+  (let [bags (parse-bag-rules input)]
+    (count (filter #(in-bag? bags "shiny gold" %1) (keys bags)))))
 
 (defn part-2
   "Day 07 Part 2"
