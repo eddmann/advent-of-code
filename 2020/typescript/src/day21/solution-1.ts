@@ -11,15 +11,10 @@ const parseFoods = (input: string): Food[] =>
     };
   });
 
-const buildFoodMaps = (foods: Food[]) => {
+const buildAllergenIngredientsMap = (foods: Food[]) => {
   const allergenIngredients = new Map<string, Set<string>>();
-  const ingredientOccurrences = new Map<string, number>();
 
   for (const food of foods) {
-    for (const ingredient of food.ingredients) {
-      ingredientOccurrences.set(ingredient, (ingredientOccurrences.get(ingredient) || 0) + 1);
-    }
-
     for (const allergen of food.allergens) {
       allergenIngredients.set(
         allergen,
@@ -30,25 +25,23 @@ const buildFoodMaps = (foods: Food[]) => {
     }
   }
 
-  return { allergenIngredients, ingredientOccurrences };
+  return allergenIngredients;
 };
 
 export const part1 = (input: string): number => {
   const foods = parseFoods(input);
 
-  const { allergenIngredients, ingredientOccurrences } = buildFoodMaps(foods);
-  const allIngredients = new Set([...allergenIngredients.values()].map(ingredients => [...ingredients]).flat());
+  const allergenIngredients = buildAllergenIngredientsMap(foods);
+  const allIngredients = foods.map(({ ingredients }) => [...ingredients]).flat();
+  const badIngredients = new Set([...allergenIngredients.values()].map(ingredients => [...ingredients]).flat());
 
-  return [...ingredientOccurrences.entries()].reduce(
-    (acc, [ingredient, count]) => acc + (allIngredients.has(ingredient) ? 0 : count),
-    0,
-  );
+  return allIngredients.filter(ingredient => !badIngredients.has(ingredient)).length;
 };
 
 export const part2 = (input: string): string => {
   const foods = parseFoods(input);
 
-  const { allergenIngredients } = buildFoodMaps(foods);
+  const allergenIngredients = buildAllergenIngredientsMap(foods);
   const dangerous = [];
 
   while (allergenIngredients.size !== dangerous.length) {
