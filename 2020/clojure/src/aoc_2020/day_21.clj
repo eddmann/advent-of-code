@@ -10,8 +10,8 @@
     (str/split-lines input)))
 
 (defn- build-allergen-ingredients-map [foods]
-  (let [allergen-ingredients (mapcat (fn [[ingredients allergens]]
-                               (map (fn [allergen] {allergen ingredients}) allergens)) foods)]
+  (let [allergen-ingredients (map (fn [[ingredients allergens]]
+                               (zipmap allergens (repeat ingredients))) foods)]
     (apply merge-with set/intersection allergen-ingredients)))
 
 (defn- deduce-allergen-ingredient [possible-ingredients]
