@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]))
 
 (defn- parse-boarding-passes [input]
-  (str/split-lines input))
+  (sort (map location->seat-id (str/split-lines input))))
 
 (defn- to-decimal [location]
   (->> (replace {\F 0 \B 1 \L 0 \R 1} location)
@@ -16,16 +16,11 @@
 (defn part-1
   "Day 05 Part 1"
   [input]
-  (->> (parse-boarding-passes input)
-       (map location->seat-id)
-       (apply max)))
+  (last (parse-boarding-passes input)))
 
 (defn part-2
   "Day 05 Part 2"
   [input]
-  (loop [[x & ys] (->> (parse-boarding-passes input) (map location->seat-id) sort)]
-    (cond
-      (nil? x) nil
-      (empty? ys) nil
-      (= 1 (- (first ys) x)) (recur ys)
-      :else (inc x))))
+  (reduce
+    #(if (> (- %2 %1) 1) (reduced (inc %1)) %2)
+    (parse-boarding-passes input)))
