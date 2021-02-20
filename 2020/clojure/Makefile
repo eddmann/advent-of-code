@@ -8,7 +8,7 @@ solve: ## Solve specific day and part `make solve day=1 part=1`
 	@$(DOCKER) -it $(IMAGE) lein run d$(day).p$(part)
 
 .PHONY: test
-test: # Run test suite
+test: ## Run the test suite
   ifdef CI
 	$(DOCKER) -e CI=1 $(IMAGE) lein test
   else
