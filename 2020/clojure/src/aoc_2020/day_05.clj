@@ -1,9 +1,6 @@
 (ns aoc-2020.day-05
   (:require [clojure.string :as str]))
 
-(defn- parse-boarding-passes [input]
-  (sort (map location->seat-id (str/split-lines input))))
-
 (defn- to-decimal [location]
   (->> (replace {\F 0 \B 1 \L 0 \R 1} location)
        str/join
@@ -12,6 +9,9 @@
 (defn- location->seat-id [location]
   (+ (* (to-decimal (take 7 location)) 8)
      (to-decimal (drop 7 location))))
+
+(defn- parse-boarding-passes [input]
+  (sort (map location->seat-id (str/split-lines input))))
 
 (defn part-1
   "Day 05 Part 1"
