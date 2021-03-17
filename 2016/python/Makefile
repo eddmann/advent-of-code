@@ -5,15 +5,11 @@ DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
 
 .PHONY: solve
 solve: ## Solve specific day (with optional solution) `make solve day=1 sol=1`
-	@$(DOCKER) -it $(IMAGE) python3 src/solve.py $(day) $(sol)
+	@$(DOCKER) -it $(IMAGE) python src/solve.py $(day) $(sol)
 
 .PHONY: test
-test: ## Run test suite
-  ifdef CI
-	$(DOCKER) -e CI=1 $(IMAGE) yarn test
-  else
-	@$(DOCKER) -it $(IMAGE) yarn test
-  endif
+test: ## Run each solutions doctests
+	@$(DOCKER) -it $(IMAGE) python src/test.py
 
 .PHONY: shell
 shell: ## Shell instance for development
