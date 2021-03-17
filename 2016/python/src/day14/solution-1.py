@@ -17,8 +17,8 @@ def md5(value, stretch=0):
 
 def generate_keys(hasher, salt):
     for index in itertools.count(1):
-        if (triple := re.findall(r'(\w)\1\1', hasher(salt + str(index)))):
-            quintuple = triple[0] * 5
+        if (triple := re.search(r'(\w)\1\1', hasher(salt + str(index)))):
+            quintuple = triple.group(1) * 5
             if (any(quintuple in hasher(salt + str(next_index))
                     for next_index in range(index + 1, index + 1001))):
                 yield index
