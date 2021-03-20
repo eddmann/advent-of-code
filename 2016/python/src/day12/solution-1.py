@@ -2,7 +2,7 @@ import day12.operations as operations
 
 
 def parse_instructions(input):
-    return [instruction.split(' ') for instruction in input.splitlines()]
+    return [tuple(instruction.split(' ')) for instruction in input.splitlines()]
 
 
 def execute(instructions, initial_registers):
