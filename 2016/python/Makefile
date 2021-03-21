@@ -9,7 +9,7 @@ solve: ## Solve specific day (with optional solution) `make solve day=1 sol=1`
 
 .PHONY: test
 test: ## Run each solutions doctests
-	@$(DOCKER) -it $(IMAGE) python src/test.py
+	@$(DOCKER) $(IMAGE) python src/test.py
 
 .PHONY: shell
 shell: ## Shell instance for development
