@@ -58,6 +58,11 @@ def find_cells_to_visit(grid):
 
 
 def part1(input):
+    '''
+    >>> part1("###########\\n#0.1.....2#\\n#.#######.#\\n#4.......3#\\n###########")
+    14
+    '''
+
     grid = parse_grid(input)
     visit, start = find_cells_to_visit(grid)
     route_steps = shortest_path_route_steps(grid, visit + [start])
@@ -68,6 +73,11 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2("###########\\n#0.1.....2#\\n#.#######.#\\n#4.......3#\\n###########")
+    20
+    '''
+
     grid = parse_grid(input)
     visit, start = find_cells_to_visit(grid)
     route_steps = shortest_path_route_steps(grid, visit + [start])

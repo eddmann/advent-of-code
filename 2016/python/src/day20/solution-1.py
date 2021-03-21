@@ -3,6 +3,13 @@ def parse_ranges(input):
 
 
 def part1(input):
+    '''
+    >>> part1("""5-8
+    ...          0-2
+    ...          4-7""")
+    3
+    '''
+
     highest = 0
 
     for (low, high) in parse_ranges(input):
@@ -12,6 +19,13 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2("""5-8
+    ...          0-2
+    ...          4-7""")
+    4294967288
+    '''
+
     highest, allowed = 0, 0
 
     for (low, high) in parse_ranges(input):

@@ -37,8 +37,26 @@ def vault_access_routes(passcode, start, vault):
 
 
 def part1(input):
+    '''
+    >>> part1('ihgpwlah')
+    'DDRRRD'
+    >>> part1('kglvqrro')
+    'DDUDRLRRUDRD'
+    >>> part1('ulqzkmiv')
+    'DRURDRUDDLLDLUURRDULRLDUUDDDRR'
+    '''
+
     return next(vault_access_routes(input, (0, 0), (3, 3)))
 
 
 def part2(input):
+    '''
+    >>> part2('ihgpwlah')
+    370
+    >>> part2('kglvqrro')
+    492
+    >>> part2('ulqzkmiv')
+    830
+    '''
+
     return len(list(vault_access_routes(input, (0, 0), (3, 3)))[-1])

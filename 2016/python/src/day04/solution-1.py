@@ -21,6 +21,14 @@ def is_real_room(name, checksum):
 
 
 def part1(input):
+    '''
+    >>> part1("""aaaaa-bbb-z-y-x-123[abxyz]
+    ...          a-b-c-d-e-f-g-h-987[abcde]
+    ...          not-a-real-room-404[oarel]
+    ...          totally-real-room-200[decoy]""")
+    1514
+    '''
+
     return sum(id for (name, id, checksum) in parse_rooms(input) if is_real_room(name, checksum))
 
 

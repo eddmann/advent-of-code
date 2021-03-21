@@ -25,6 +25,11 @@ def leave_cirlce(elf):
 
 
 def part1(input):
+    '''
+    >>> part1('5')
+    3
+    '''
+
     total = int(input)
     head = build_circle(total)
 
@@ -37,6 +42,11 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2('5')
+    2
+    '''
+
     total = int(input)
     head = build_circle(total)
 

@@ -11,6 +11,11 @@ def generate_keypad(input):
 
 
 def part1(input):
+    '''
+    >>> part1("ULL\\nRRDDD\\nLURDL\\nUUUUD")
+    '1985'
+    '''
+
     keypad = generate_keypad("""1 2 3
                                 4 5 6
                                 7 8 9""")
@@ -28,6 +33,11 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2("ULL\\nRRDDD\\nLURDL\\nUUUUD")
+    '5DB3'
+    '''
+
     keypad = generate_keypad(""". . 1 . .
                                 . 2 3 4 .
                                 5 6 7 8 9

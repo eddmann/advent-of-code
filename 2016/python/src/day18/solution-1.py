@@ -13,8 +13,18 @@ def generate_rows(row):
 
 
 def part1(input):
+    '''
+    >>> part1('..^^.')
+    61
+    '''
+
     return sum(sum(row) for row in islice(generate_rows(parse_row(input)), 40))
 
 
 def part2(input):
+    '''
+    >>> part2('..^^.')
+    600001
+    '''
+
     return sum(sum(row) for row in islice(generate_rows(parse_row(input)), 400000))

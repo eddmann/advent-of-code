@@ -23,8 +23,24 @@ def has_ssl_support(ip):
 
 
 def part1(input):
+    '''
+    >>> part1("""abba[mnop]qrst
+    ...          abcd[bddb]xyyx
+    ...          aaaa[qwer]tyui
+    ...          ioxxoj[asdfgh]zxcvbn""")
+    2
+    '''
+
     return sum(has_tls_support(ip) for ip in parse_ips(input))
 
 
 def part2(input):
+    '''
+    >>> part2("""aba[bab]xyz
+    ...          xyx[xyx]xyx
+    ...          aaa[kek]eke
+    ...          zazbz[bzb]cdb""")
+    3
+    '''
+
     return sum(has_ssl_support(ip) for ip in parse_ips(input))

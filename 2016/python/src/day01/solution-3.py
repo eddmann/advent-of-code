@@ -10,6 +10,15 @@ def manhattan_distance(pos):
 
 
 def part1(input):
+    '''
+    >>> part1('R2, L3')
+    5
+    >>> part1('R2, R2, R2')
+    2
+    >>> part1('R5, L5, R5, R3')
+    12
+    '''
+
     dir = 1+0j
     pos = 0+0j
 
@@ -21,6 +30,11 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2('R8, R4, R4, R8')
+    4
+    '''
+
     dir = 1+0j
     pos = 0+0j
     seen = {pos}
