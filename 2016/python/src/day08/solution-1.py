@@ -12,20 +12,19 @@ def rect(screen, width, height):
             for y, row in enumerate(screen)]
 
 
-def rotate_row(screen, rowY, step):
-    return [[screen[y][(x - step) % len(screen[rowY])] if y == rowY else col for x, col in enumerate(row)]
+def rotate_row(screen, row_y, step):
+    return [[screen[y][(x - step) % len(screen[row_y])] if y == row_y else col for x, col in enumerate(row)]
             for y, row in enumerate(screen)]
 
 
-def rotate_col(screen, colX, step):
-    return [[screen[(y - step) % len(screen)][colX] if x == colX else col for x, col in enumerate(row)]
+def rotate_col(screen, col_x, step):
+    return [[screen[(y - step) % len(screen)][col_x] if x == col_x else col for x, col in enumerate(row)]
             for y, row in enumerate(screen)]
 
 
 def apply(screen, instruction):
-    action, * \
-        args = re.match(
-            r'(rect|rotate (?:r|c))[^\d]+(\d+)[^\d]+(\d+)', instruction).groups()
+    action, *args = re.match(
+        r'(rect|rotate (?:r|c))[^\d]+(\d+)[^\d]+(\d+)', instruction).groups()
     args = map(int, args)
 
     if action == 'rect':
