@@ -4,13 +4,15 @@ import math
 
 
 def parse_values(instructions):
-    return [val.groups() for line in instructions if (
-        val := re.match(r'value (\d+) goes to (bot \d+)', line))]
+    return [(int(val.group(1)), val.group(2))
+            for line in instructions
+            if (val := re.match(r'value (\d+) goes to (bot \d+)', line))]
 
 
 def parse_allocations(instructions):
-    return [alloc.groups() for line in instructions if (
-        alloc := re.match(r'(bot \d+) gives low to (\w+ \d+) and high to (\w+ \d+)', line))]
+    return [alloc.groups()
+            for line in instructions
+            if (alloc := re.match(r'(bot \d+) gives low to (\w+ \d+) and high to (\w+ \d+)', line))]
 
 
 def setup_bins(allocations):
@@ -37,7 +39,7 @@ def part1(input):
     bins = setup_bins(parse_allocations(instructions))
 
     for val, bot in parse_values(instructions):
-        bins[bot] = bins[bot](int(val))
+        bins[bot] = bins[bot](val)
 
     return next(bot for bot, allocated in bins.items() if allocated == (17, 61))
 
@@ -47,6 +49,6 @@ def part2(input):
     bins = setup_bins(parse_allocations(instructions))
 
     for val, bot in parse_values(instructions):
-        bins[bot] = bins[bot](int(val))
+        bins[bot] = bins[bot](val)
 
     return math.prod(bins['output {}'.format(i)] for i in range(3))
