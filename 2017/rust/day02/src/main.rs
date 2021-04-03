@@ -1,7 +1,7 @@
 fn main() {
     let input = std::include_str!("input.txt");
-    println!("Part 1: {}", part1(input));
-    println!("Part 2: {}", part2(input));
+    println!("Solution 1, Part 1: {}", part1(input));
+    println!("Solution 1, Part 2: {}", part2(input));
 }
 
 fn parse_numbers(input: &str) -> Vec<Vec<i32>> {
