@@ -8,19 +8,18 @@ fn parse_numbers(input: &str) -> Vec<Vec<i32>> {
     input
         .lines()
         .map(|row| {
-            row.split_ascii_whitespace()
-                .map(|col| col.parse::<i32>())
-                .collect::<Result<Vec<_>, _>>()
+            row.split_whitespace()
+                .map(|col| col.parse().unwrap())
+                .collect()
         })
-        .collect::<Result<Vec<_>, _>>()
-        .unwrap()
+        .collect()
 }
 
 fn part1(input: &str) -> i32 {
     parse_numbers(input)
         .iter()
-        .map(|row| *row.iter().max().unwrap() - *row.iter().min().unwrap())
-        .sum::<i32>()
+        .map(|row| row.iter().max().unwrap() - row.iter().min().unwrap())
+        .sum()
 }
 
 fn part2(input: &str) -> i32 {
@@ -38,5 +37,5 @@ fn part2(input: &str) -> i32 {
 
             return 0;
         })
-        .sum::<i32>()
+        .sum()
 }
