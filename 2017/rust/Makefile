@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-IMAGE = rust:1.50.0-alpine3.12
+IMAGE = rust:1.55.0-alpine3.13
 DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
 
 .PHONY: shell
