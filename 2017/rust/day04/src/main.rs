@@ -11,7 +11,7 @@ fn is_valid(to_key: fn(String) -> String, passphrase: &str) -> bool {
 
     for word in passphrase.split_whitespace() {
         if !seen.insert(to_key(word.to_string())) {
-            return false
+            return false;
         }
     }
 
@@ -36,4 +36,25 @@ fn part2(input: &str) -> usize {
         .lines()
         .filter(|passphrase| is_valid(to_anagram_key, passphrase))
         .count()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(1, part1("aa bb cc dd ee"));
+        assert_eq!(0, part1("aa bb cc dd aa"));
+        assert_eq!(1, part1("aa bb cc dd aaa"));
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(1, part2("abcde fghij"));
+        assert_eq!(0, part2("abcde xyz ecdab"));
+        assert_eq!(1, part2("a ab abc abd abf abj"));
+        assert_eq!(1, part2("iiii oiii ooii oooi oooo"));
+        assert_eq!(0, part2("oiii ioii iioi iiio"));
+    }
 }
