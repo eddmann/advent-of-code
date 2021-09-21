@@ -1,0 +1,15 @@
+name: 2016 Rust Test
+
+on:
+  push:
+    paths:
+      - .github/**
+      - 2017/rust/**
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: make test
+        working-directory: 2017/rust
