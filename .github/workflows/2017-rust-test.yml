@@ -1,4 +1,4 @@
-name: 2016 Rust Test
+name: 2017 Rust Test
 
 on:
   push:
