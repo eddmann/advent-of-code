@@ -17,11 +17,14 @@ struct Point2D {
 
 impl Point2D {
     fn zero() -> Self {
-        Point2D { x: 0, y: 0}
+        Point2D { x: 0, y: 0 }
     }
 
     fn rotate_left(self) -> Self {
-        Point2D { x: -self.y, y: self.x }
+        Point2D {
+            x: -self.y,
+            y: self.x,
+        }
     }
 
     fn neighbours(self) -> Vec<Self> {
@@ -33,7 +36,7 @@ impl Point2D {
             self + Point2D { x: -1, y: 1 },
             self + Point2D { x: 1, y: -1 },
             self + Point2D { x: 1, y: 1 },
-            self + Point2D { x: -1, y: -1 }
+            self + Point2D { x: -1, y: -1 },
         ]
     }
 }
@@ -42,7 +45,10 @@ impl Add for Point2D {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self { x: self.x + other.x, y: self.y + other.y }
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
     }
 }
 
@@ -70,7 +76,9 @@ fn solution1_part1(input: i32) -> i32 {
             let tmp = dx;
             dx = -dy;
             dy = tmp;
-            if dy == 0 { total_steps += 1; }
+            if dy == 0 {
+                total_steps += 1;
+            }
         }
     }
 
@@ -118,8 +126,10 @@ fn solution1_part2(input: i32) -> i32 {
         let mut number = 0;
         for nx in -1..=1 {
             for ny in -1..=1 {
-                if nx == 0 && ny == 0 { continue; }
-                number += map.get(&(x + nx, y +  ny)).unwrap_or(&0);
+                if nx == 0 && ny == 0 {
+                    continue;
+                }
+                number += map.get(&(x + nx, y + ny)).unwrap_or(&0);
             }
         }
 
@@ -134,7 +144,9 @@ fn solution1_part2(input: i32) -> i32 {
             let tmp = dx;
             dx = -dy;
             dy = tmp;
-            if dy == 0 { total_steps += 1; }
+            if dy == 0 {
+                total_steps += 1;
+            }
         }
     }
 
@@ -149,7 +161,11 @@ fn solution2_part2(input: i32) -> i32 {
     let mut dir = Point2D { x: 1, y: 0 };
 
     loop {
-        let number = pos.neighbours().iter().map(|p| map.get(p).unwrap_or(&0)).sum();
+        let number = pos
+            .neighbours()
+            .iter()
+            .map(|p| map.get(p).unwrap_or(&0))
+            .sum();
 
         if number > input {
             return number;
@@ -162,5 +178,22 @@ fn solution2_part2(input: i32) -> i32 {
         }
 
         pos = pos + dir;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(326, solution1_part1(361527));
+        assert_eq!(326, solution2_part1(361527));
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(363010, solution1_part2(361527));
+        assert_eq!(363010, solution2_part2(361527));
     }
 }
