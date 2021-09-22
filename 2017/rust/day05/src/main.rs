@@ -41,6 +41,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(5, part1("0\n3\n0\n1\n-3"));
+        assert_eq!(10, part2("0\n3\n0\n1\n-3"));
     }
 }
