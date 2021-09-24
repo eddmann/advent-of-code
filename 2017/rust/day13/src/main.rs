@@ -85,7 +85,9 @@ fn part1(input: &str) -> usize {
     severity
 }
 
-fn is_undetected_passthru(mut firewall: Firewall) -> bool {
+fn is_undetected_passthru(subject_firewall: &Firewall) -> bool {
+    let mut firewall = subject_firewall.clone();
+
     for tick in 0..=*firewall.keys().max().unwrap() {
         if let Some(scanner) = firewall.get(&tick) {
             if scanner.is_caught() {
@@ -106,7 +108,7 @@ fn part2(input: &str) -> usize {
     let mut delay = 0;
 
     loop {
-        if is_undetected_passthru(firewall.clone()) {
+        if is_undetected_passthru(&firewall) {
             break;
         }
 
