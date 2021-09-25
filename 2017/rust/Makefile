@@ -9,7 +9,7 @@ shell: ## Shell instance for development
 
 .PHONY: test
 test: ## Run each solutions tests
-	$(DOCKER) -e DAY $(IMAGE) sh -c 'for d in /app/$${DAY:-day*}; do cd $$d; cargo test; done'
+	$(DOCKER) -e DAY $(IMAGE) sh -c 'for d in /app/$${DAY:-day*}; do cd $$d; cargo test --release; done'
 
 # https://blog.thapaliya.com/posts/well-documented-makefiles/
 .PHONY: help
