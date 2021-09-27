@@ -10,9 +10,9 @@ fn parse_firewall(input: &str) -> Vec<Layer> {
     input
         .lines()
         .map(|line| {
-            let mut parts = line.split(": ");
-            let depth = parts.next().unwrap().parse::<usize>().unwrap();
-            let range = parts.next().unwrap().parse::<usize>().unwrap();
+            let parts: Vec<_> = line.split(": ").collect();
+            let depth = parts[0].parse::<usize>().expect("Depth");
+            let range = parts[1].parse::<usize>().expect("Range");
             (depth, range)
         })
         .collect()
@@ -48,8 +48,7 @@ fn is_caught(picosecond: usize, range: usize) -> bool {
 }
 
 fn part1(input: &str) -> usize {
-    let firewall = parse_firewall(input);
-    firewall
+    parse_firewall(input)
         .iter()
         .filter_map(|&(depth, range)| {
             if is_caught(depth, range) {
