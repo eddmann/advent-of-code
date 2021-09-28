@@ -87,3 +87,19 @@ fn part2(input: &str) -> String {
 
     cycle[1_000_000_000 % (cycle.len() + 1) - 1].clone()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dance() {
+        let mut gen = dance(
+            &"abcde".to_string(),
+            DanceMove::from_sequence("s1,x3/4,pe/b"),
+        );
+
+        assert_eq!(Some("baedc".to_string()), gen.next());
+        assert_eq!(Some("ceadb".to_string()), gen.next());
+    }
+}
