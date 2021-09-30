@@ -43,18 +43,9 @@ fn knot_hash(message: String) -> u128 {
 }
 
 fn calc_row(hash: u128) -> Vec<bool> {
-    format!("{:x}", hash)
+    format!("{:0128b}", hash)
         .chars()
-        .flat_map(|hex| {
-            format!(
-                "{:04b}",
-                u8::from_str_radix(&hex.to_string(), 16).expect("")
-            )
-            .chars()
-            .map(|bit| bit == '1')
-            .collect::<Vec<bool>>()
-        })
-        .rev()
+        .map(|bit| bit == '1')
         .collect()
 }
 
