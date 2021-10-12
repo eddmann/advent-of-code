@@ -11,9 +11,8 @@ fn part1(input: &str) -> usize {
     let mut buffer = vec![0];
 
     for value in 1..=2017 {
-        pos = (pos + steps) % buffer.len();
-        buffer.insert(pos + 1, value);
-        pos += 1
+        pos = (pos + steps) % buffer.len() + 1;
+        buffer.insert(pos, value);
     }
 
     buffer[pos + 1]
@@ -25,12 +24,11 @@ fn part2(input: &str) -> usize {
     let mut pos = 0;
     let mut second_value = 0;
 
-    for value in 1..=50000000 {
-        pos = (pos + steps) % value;
-        if pos == 0 {
-            second_value = value; // aka. pos + 1
+    for value in 1..=50_000_000 {
+        pos = (pos + steps) % value + 1;
+        if pos == 1 {
+            second_value = value;
         }
-        pos += 1
     }
 
     second_value
