@@ -33,33 +33,28 @@ impl Image {
     }
 
     fn flip_vertical(&self) -> Self {
-        let mut pixels = self.pixels.clone();
+        let mut image = Self::empty(self.size);
 
-        for idx in 0..pixels.len() {
-            let row = idx / self.size;
-            let col = idx % self.size;
-            pixels[idx] = self.pixels[pixels.len() - (self.size * (row + 1) - col)];
+        for row in 0..=image.size / 2 {
+            for col in 0..image.size {
+                image.set_pixel(row, col, self.get_pixel(image.size - row - 1, col));
+                image.set_pixel(image.size - row - 1, col, self.get_pixel(row, col));
+            }
         }
 
-        Image {
-            pixels: pixels,
-            size: self.size,
-        }
+        image
     }
 
     fn rotate_clockwise(&self) -> Self {
-        let mut pixels = self.pixels.clone();
+        let mut image = Self::empty(self.size);
 
-        for idx in 0..pixels.len() {
-            let row = idx / self.size;
-            let col = idx % self.size;
-            pixels[idx] = self.pixels[self.size * (self.size - col - 1) + row];
+        for row in 0..image.size {
+            for col in 0..image.size {
+                image.set_pixel(col, image.size - row - 1, self.get_pixel(row, col));
+            }
         }
 
-        Image {
-            pixels: pixels,
-            size: self.size,
-        }
+        image
     }
 
     fn get_orientations(&self) -> Vec<Self> {
@@ -150,13 +145,19 @@ impl FromStr for Image {
 
 impl fmt::Display for Image {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for row in self.pixels.chunks(self.size) {
-            for &pixel in row {
-                write!(f, "{}", if pixel { '#' } else { '.' });
-            }
-            write!(f, "\n");
-        }
-        write!(f, "")
+        write!(
+            f,
+            "{}",
+            self.pixels
+                .chunks(self.size)
+                .map(|row| {
+                    row.iter()
+                        .map(|&pixel| if pixel { '#' } else { '.' })
+                        .collect::<String>()
+                        + "\n"
+                })
+                .collect::<String>()
+        )
     }
 }
 
