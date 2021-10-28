@@ -9,6 +9,7 @@ fn main() {
 
 type Rules = std::collections::HashMap<Image, Image>;
 type Pixel = bool;
+type Subimage = (usize, usize, Image);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Image {
@@ -69,7 +70,7 @@ impl Image {
         orientations
     }
 
-    fn get_subimage(&self, row: usize, col: usize, size: usize) -> Self {
+    fn get_subimage(&self, row: usize, col: usize, size: usize) -> Subimage {
         let mut subimage = Image::empty(size);
 
         for (dst_row, src_row) in (row..row + size).enumerate() {
@@ -78,15 +79,15 @@ impl Image {
             }
         }
 
-        subimage
+        (row, col, subimage)
     }
 
-    fn get_subimages(&self, step: usize) -> Vec<(usize, usize, Image)> {
+    fn get_subimages(&self, step: usize) -> Vec<Subimage> {
         let mut subimages = vec![];
 
         for row in (0..self.size).step_by(step) {
             for col in (0..self.size).step_by(step) {
-                subimages.push((row, col, self.get_subimage(row, col, step)));
+                subimages.push(self.get_subimage(row, col, step));
             }
         }
 
@@ -98,7 +99,7 @@ impl Image {
         let mut expanded_image = Image::empty(self.size + self.size / step);
 
         for (src_row, src_col, subimage) in self.get_subimages(step) {
-            let replacement = rules.get(&subimage).expect("No replacement image");
+            let replacement = rules.get(&subimage).expect("Replacement image");
             let dst_row = src_row + src_row / step;
             let dst_col = src_col + src_col / step;
 
