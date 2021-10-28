@@ -12,7 +12,7 @@ test: ## Run each solutions tests
 	$(DOCKER) -e DAY $(IMAGE) sh -c 'for d in /app/$${DAY:-day*}; do cd $$d; cargo test --release; done'
 
 .PHONY: fmt
-fmt: # Run rustfmt on each solution
+fmt: ## Run rustfmt on each solution
 	$(DOCKER) guangie88/rustfmt-clippy:1.52.1-stable sh -c "rustfmt -l */src/*.rs"
 
 # https://blog.thapaliya.com/posts/well-documented-makefiles/
