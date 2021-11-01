@@ -62,21 +62,17 @@ fn parse_computing_cluster(input: &str) -> (ClusterMap, VirusCarrier) {
     let mut cluster = ClusterMap::new();
     let lines: Vec<_> = input.split('\n').collect();
 
+    let centre = (lines.len() / 2) as i32;
     let carrier = VirusCarrier {
-        position: Point2D((lines.len() / 2) as i32, (lines.len() / 2) as i32),
+        position: Point2D(centre, centre),
         direction: Point2D(-1, 0),
     };
 
     for (x, line) in lines.into_iter().enumerate() {
         for (y, node) in line.chars().enumerate() {
-            cluster.insert(
-                Point2D(x as i32, y as i32),
-                if node == '#' {
-                    Node::Infected
-                } else {
-                    Node::Clean
-                },
-            );
+            if node == '#' {
+                cluster.insert(Point2D(x as i32, y as i32), Node::Infected);
+            }
         }
     }
 
