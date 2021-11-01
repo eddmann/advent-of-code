@@ -9,7 +9,8 @@ fn main() {
 
 type Rules = std::collections::HashMap<Image, Image>;
 type Pixel = bool;
-type Subimage = (usize, usize, Image);
+struct ImageOffset(usize, usize);
+type Subimage = (ImageOffset, Image);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Image {
@@ -79,7 +80,7 @@ impl Image {
             }
         }
 
-        (row, col, subimage)
+        (ImageOffset(row, col), subimage)
     }
 
     fn get_subimages(&self, step: usize) -> Vec<Subimage> {
@@ -98,7 +99,7 @@ impl Image {
         let step = if self.size % 2 == 0 { 2 } else { 3 };
         let mut expanded_image = Image::empty(self.size + self.size / step);
 
-        for (src_row, src_col, subimage) in self.get_subimages(step) {
+        for (ImageOffset(src_row, src_col), subimage) in self.get_subimages(step) {
             let replacement = rules.get(&subimage).expect("Replacement image");
             let dst_row = src_row + src_row / step;
             let dst_col = src_col + src_col / step;
