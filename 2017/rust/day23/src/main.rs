@@ -1,7 +1,8 @@
 fn main() {
     let input = include_str!("input.txt");
     println!("Solution 1, Part 1: {}", part1(input));
-    println!("Solution 1, Part 2: {}", part2(input));
+    println!("Solution 1, Part 2: {}", solution1_part2(input));
+    println!("Solution 2, Part 2: {}", solution2_part2(input));
 }
 
 type Register = char;
@@ -105,7 +106,7 @@ fn part1(input: &str) -> usize {
     exec.total_mul_executions
 }
 
-fn part2(input: &str) -> i64 {
+fn solution1_part2(input: &str) -> i64 {
     let mut instructions = parse_instructions(input);
 
     let patch = parse_instructions("set g b\nmod g d\njnz g 8\njnz 1 12");
@@ -123,4 +124,19 @@ fn part2(input: &str) -> i64 {
     execute(&instructions, &mut exec);
 
     *exec.registers.get(&'h').expect("Register H")
+}
+
+fn solution2_part2(_input: &str) -> usize {
+    let start = 99 * 100 + 100_000;
+    let end = start + 17_000;
+
+    fn is_not_prime(subject: usize) -> bool {
+        let upper = (subject as f64).sqrt() as usize;
+        (2..=upper).any(|number| subject % number == 0)
+    }
+
+    (start..=end)
+        .step_by(17)
+        .filter(|&subject| is_not_prime(subject))
+        .count()
 }
