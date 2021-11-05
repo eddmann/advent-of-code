@@ -131,8 +131,7 @@ fn solution2_part2(_input: &str) -> usize {
     let end = start + 17_000;
 
     fn is_not_prime(subject: usize) -> bool {
-        let upper = (subject as f64).sqrt() as usize;
-        (2..=upper).any(|number| subject % number == 0)
+        subject < 2 || (2..=(subject as f64).sqrt() as usize).any(|number| subject % number == 0)
     }
 
     (start..=end)
