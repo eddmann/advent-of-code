@@ -16,7 +16,6 @@ type Transitions = std::collections::HashMap<State, [Transition; 2]>;
 
 fn parse_transition(section: &str) -> (State, [Transition; 2]) {
     let parts: Vec<_> = section
-        .replace("left", "l")
         .replace("right", "r")
         .split('\n')
         .map(|line| line.chars().rev().nth(1).expect("Transition property"))
