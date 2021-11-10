@@ -41,3 +41,16 @@ fn part1(input: &str) -> i32 {
 fn part2(input: &str) -> i32 {
     *path(input).iter().max().expect("Furthest steps away")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_path() {
+        assert_eq!(3, *path("ne,ne,ne").last().unwrap());
+        assert_eq!(0, *path("ne,ne,sw,sw").last().unwrap());
+        assert_eq!(2, *path("ne,ne,s,s").last().unwrap());
+        assert_eq!(3, *path("se,sw,se,sw,sw").last().unwrap());
+    }
+}
