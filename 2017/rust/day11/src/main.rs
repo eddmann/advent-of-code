@@ -24,22 +24,19 @@ impl Point2D {
 
 type Steps = i32;
 
-fn path(input: &str) -> Vec<Steps> {
-    input
-        .split(',')
-        .scan(Point2D(0, 0), |pos, dir| {
-            *pos = pos.step(dir);
-            Some((pos.0.abs() + pos.1.abs() + (pos.0 + pos.1).abs()) / 2)
-        })
-        .collect()
+fn path(input: &str) -> impl Iterator<Item = Steps> + '_ {
+    input.split(',').scan(Point2D(0, 0), |pos, dir| {
+        *pos = pos.step(dir);
+        Some((pos.0.abs() + pos.1.abs() + (pos.0 + pos.1).abs()) / 2)
+    })
 }
 
 fn part1(input: &str) -> i32 {
-    *path(input).last().expect("Fewest steps away")
+    path(input).last().expect("Fewest steps away")
 }
 
 fn part2(input: &str) -> i32 {
-    *path(input).iter().max().expect("Furthest steps away")
+    path(input).max().expect("Furthest steps away")
 }
 
 #[cfg(test)]
@@ -48,9 +45,9 @@ mod tests {
 
     #[test]
     fn test_path() {
-        assert_eq!(3, *path("ne,ne,ne").last().unwrap());
-        assert_eq!(0, *path("ne,ne,sw,sw").last().unwrap());
-        assert_eq!(2, *path("ne,ne,s,s").last().unwrap());
-        assert_eq!(3, *path("se,sw,se,sw,sw").last().unwrap());
+        assert_eq!(3, path("ne,ne,ne").last().unwrap());
+        assert_eq!(0, path("ne,ne,sw,sw").last().unwrap());
+        assert_eq!(2, path("ne,ne,s,s").last().unwrap());
+        assert_eq!(3, path("se,sw,se,sw,sw").last().unwrap());
     }
 }
