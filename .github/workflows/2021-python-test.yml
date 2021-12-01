@@ -1,0 +1,15 @@
+name: 2021 Python Test
+
+on:
+  push:
+    paths:
+      - .github/**
+      - 2021/python/**
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: make test
+        working-directory: 2021/python
