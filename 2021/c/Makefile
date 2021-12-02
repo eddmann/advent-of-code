@@ -9,5 +9,5 @@ shell:
 fmt:
 	@$(DOCKER) --entrypoint= mikedld/clang-format sh -c "find . -iname *.h -o -iname *.c | xargs clang-format -i --style=LLVM"
 
-day/%:
+solve/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) sh -c "gcc -o solution solution.c ../shared/* && ./solution"

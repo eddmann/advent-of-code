@@ -1,12 +1,12 @@
+#include "../shared/aoc.h"
 #include "../shared/dynarray.h"
-#include "../shared/input.h"
 #include <stdlib.h>
 
 int *parse_measurements(char *input) {
   int *measurements = dynarray_create(int);
 
   int measurement, offset, read;
-  while (sscanf(input + offset, "%d%n", &measurement, &read)) {
+  while (1 == sscanf(input + offset, "%d%n", &measurement, &read)) {
     dynarray_push(measurements, measurement);
     offset += read;
   }
@@ -14,7 +14,9 @@ int *parse_measurements(char *input) {
   return measurements;
 }
 
-int part1(int *measurements) {
+int part1(char *input) {
+  int *measurements = parse_measurements(input);
+
   int increased = 0;
 
   for (int i = 0, j = 1; i < dynarray_length(measurements) - 1; i++, j++) {
@@ -23,10 +25,14 @@ int part1(int *measurements) {
     }
   }
 
+  dynarray_destroy(measurements);
+
   return increased;
 }
 
-int part2(int *measurements) {
+int part2(char *input) {
+  int *measurements = parse_measurements(input);
+
   int increased = 0;
 
   for (int i = 0, j = 1; i < dynarray_length(measurements) - 3; i++, j++) {
@@ -37,18 +43,9 @@ int part2(int *measurements) {
     }
   }
 
+  dynarray_destroy(measurements);
+
   return increased;
 }
 
-int main(int argc, char *argv[]) {
-  char *input = read_input_or_exit("input.txt");
-  int *measurements = parse_measurements(input);
-
-  printf("Part 1: %d\n", part1(measurements));
-  printf("Part 2: %d\n", part2(measurements));
-
-  dynarray_destroy(measurements);
-  free(input);
-
-  return EXIT_SUCCESS;
-}
+AOC_MAIN();

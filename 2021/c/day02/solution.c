@@ -1,5 +1,5 @@
+#include "../shared/aoc.h"
 #include "../shared/dynarray.h"
-#include "../shared/input.h"
 #include <stdlib.h>
 
 typedef struct Instruction {
@@ -26,7 +26,9 @@ instruction *parse_course(char *input) {
   return course;
 }
 
-int part1(instruction *course) {
+int part1(char *input) {
+  instruction *course = parse_course(input);
+
   int horizontal = 0;
   int depth = 0;
 
@@ -44,10 +46,14 @@ int part1(instruction *course) {
     }
   }
 
+  dynarray_destroy(course);
+
   return horizontal * depth;
 }
 
-int part2(instruction *course) {
+int part2(char *input) {
+  instruction *course = parse_course(input);
+
   int horizontal = 0;
   int depth = 0;
   int aim = 0;
@@ -67,18 +73,9 @@ int part2(instruction *course) {
     }
   }
 
+  dynarray_destroy(course);
+
   return horizontal * depth;
 }
 
-int main(int argc, char *argv[]) {
-  char *input = read_input_or_exit("input.txt");
-  instruction *course = parse_course(input);
-
-  printf("Part 1: %d\n", part1(course));
-  printf("Part 2: %d\n", part2(course));
-
-  dynarray_destroy(course);
-  free(input);
-
-  return EXIT_SUCCESS;
-}
+AOC_MAIN();
