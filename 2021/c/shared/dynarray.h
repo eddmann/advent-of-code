@@ -11,12 +11,7 @@
  * void *memory
  */
 
-enum {
-    CAPACITY,
-    LENGTH,
-    STRIDE,
-    DYNARRAY_FIELDS
-};
+enum { CAPACITY, LENGTH, STRIDE, DYNARRAY_FIELDS };
 
 void *_dynarray_create(size_t length, size_t stride);
 void _dynarray_destroy(void *arr);
@@ -32,16 +27,18 @@ void _dynarray_pop(void *arr, void *dest);
 #define DYNARRAY_DEFAULT_CAP 1
 #define DYNARRAY_RESIZE_FACTOR 2
 
-#define dynarray_create(type) _dynarray_create(DYNARRAY_DEFAULT_CAP, sizeof(type))
-#define dynarray_create_prealloc(type, capacity) _dynarray_create(capacity, sizeof(type))
+#define dynarray_create(type)                                                  \
+  _dynarray_create(DYNARRAY_DEFAULT_CAP, sizeof(type))
+#define dynarray_create_prealloc(type, capacity)                               \
+  _dynarray_create(capacity, sizeof(type))
 #define dynarray_destroy(arr) _dynarray_destroy(arr)
 
 #define dynarray_push(arr, x) arr = _dynarray_push(arr, &x)
-#define dynarray_push_rval(arr, x) \
-    do { \
-        __auto_type temp = x; \
-        arr = _dynarray_push(arr, &temp); \
-    } while (0)
+#define dynarray_push_rval(arr, x)                                             \
+  do {                                                                         \
+    __auto_type temp = x;                                                      \
+    arr = _dynarray_push(arr, &temp);                                          \
+  } while (0)
 
 #define dynarray_pop(arr, xptr) _dynarray_pop(arr, xptr)
 
