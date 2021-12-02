@@ -1,6 +1,6 @@
 
 def parse_measurements(input):
-    return [int(measurement) for measurement in input.split('\n')]
+    return [int(measurement) for measurement in input.splitlines()]
 
 
 def part1(input):
