@@ -29,6 +29,13 @@ static char *read_input(const char *filename) {
   return buffer;
 }
 
+#ifdef RUN_TESTS
+
+#define AOC_MAIN()                                                             \
+  int main(int argc, char *argv[]) { return EXIT_SUCCESS; }
+
+#else
+
 #define AOC_MAIN()                                                             \
   int main(int argc, char *argv[]) {                                           \
     char *input = read_input("input.txt");                                     \
@@ -37,3 +44,5 @@ static char *read_input(const char *filename) {
     free(input);                                                               \
     return EXIT_SUCCESS;                                                       \
   }
+
+#endif

@@ -11,3 +11,6 @@ fmt:
 
 solve/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) sh -c "gcc -o solution solution.c ../shared/* && ./solution"
+
+test/%:
+	@$(DOCKER) -w /app/day$* $(IMAGE) sh -c "gcc -D RUN_TESTS -o solution solution.c ../shared/* && ./solution"
