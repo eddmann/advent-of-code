@@ -43,18 +43,18 @@ def part2(input):
     230
     '''
 
-    oxygen_generator_rating = parse_diagnostic_report(input)
-    co2_scrubber_rating = parse_diagnostic_report(input)
+    oxygen_generator_ratings = parse_diagnostic_report(input)
+    co2_scrubber_ratings = parse_diagnostic_report(input)
 
-    for bit_position in range(max_bit_width(oxygen_generator_rating), -1, -1):
-        oxygen_bit = common_bit(oxygen_generator_rating, bit_position,
+    for bit_position in range(max_bit_width(oxygen_generator_ratings), -1, -1):
+        oxygen_bit = common_bit(oxygen_generator_ratings, bit_position,
                                 most_common=True)
-        oxygen_generator_rating = [value for value in oxygen_generator_rating
-                                   if (value >> bit_position) & 1 == oxygen_bit]
+        oxygen_generator_ratings = [value for value in oxygen_generator_ratings
+                                    if (value >> bit_position) & 1 == oxygen_bit]
 
-        co2_bit = common_bit(co2_scrubber_rating, bit_position,
+        co2_bit = common_bit(co2_scrubber_ratings, bit_position,
                              most_common=False)
-        co2_scrubber_rating = [value for value in co2_scrubber_rating
-                               if (value >> bit_position) & 1 == co2_bit]
+        co2_scrubber_ratings = [value for value in co2_scrubber_ratings
+                                if (value >> bit_position) & 1 == co2_bit]
 
-    return oxygen_generator_rating[0] * co2_scrubber_rating[0]
+    return oxygen_generator_ratings[0] * co2_scrubber_ratings[0]
