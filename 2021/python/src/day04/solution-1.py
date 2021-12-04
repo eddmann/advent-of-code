@@ -28,6 +28,11 @@ def is_winner(board):
 
 
 def part1(input):
+    '''
+    >>> part1(open('/app/src/day04/test-input.txt').read())
+    4512
+    '''
+
     (numbers, boards) = parse_bingo_subsystem(input)
 
     for number in numbers:
@@ -41,6 +46,11 @@ def part1(input):
 
 
 def part2(input):
+    '''
+    >>> part2(open('/app/src/day04/test-input.txt').read())
+    1924
+    '''
+
     (numbers, boards) = parse_bingo_subsystem(input)
 
     for number in numbers:
