@@ -44,7 +44,7 @@ int max_coord(vent *hydrothermal_vents) {
 int part1(char *input) {
   vent *hydrothermal_vents = parse_hydrothermal_vents(input);
 
-  int coord = max_coord(hydrothermal_vents);
+  int coord = max_coord(hydrothermal_vents) + 1;
   int grid[coord][coord];
   memset(grid, 0, sizeof(int) * coord * coord);
 
@@ -78,7 +78,7 @@ int part1(char *input) {
 int part2(char *input) {
   vent *hydrothermal_vents = parse_hydrothermal_vents(input);
 
-  int coord = max_coord(hydrothermal_vents);
+  int coord = max_coord(hydrothermal_vents) + 1;
   int grid[coord][coord];
   memset(grid, 0, sizeof(int) * coord * coord);
 
