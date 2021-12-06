@@ -5,7 +5,7 @@
 int *parse_measurements(char *input) {
   int *measurements = dynarray_create(int);
 
-  int measurement, offset, read;
+  int measurement, offset = 0, read = 0;
   while (1 == sscanf(input + offset, "%d%n", &measurement, &read)) {
     dynarray_push(measurements, measurement);
     offset += read;
@@ -14,7 +14,7 @@ int *parse_measurements(char *input) {
   return measurements;
 }
 
-int part1(char *input) {
+int day01_part1(char *input) {
   int *measurements = parse_measurements(input);
 
   int increased = 0;
@@ -30,7 +30,7 @@ int part1(char *input) {
   return increased;
 }
 
-int part2(char *input) {
+int day01_part2(char *input) {
   int *measurements = parse_measurements(input);
 
   int increased = 0;
@@ -48,4 +48,4 @@ int part2(char *input) {
   return increased;
 }
 
-AOC_MAIN();
+AOC_MAIN(day01);

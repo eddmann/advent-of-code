@@ -1,3 +1,6 @@
+#ifndef AOC
+#define AOC
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,20 +32,26 @@ static char *read_input(const char *filename) {
   return buffer;
 }
 
-#ifdef RUN_TESTS
+#ifdef TEST_RUNNER
 
-#define AOC_MAIN()                                                             \
+#define AOC_MAIN(day)                                                          \
   int main(int argc, char *argv[]) { return EXIT_SUCCESS; }
 
-#else
+#elif defined(SINGLE_EXECUTABLE)
 
-#define AOC_MAIN()                                                             \
+#define AOC_MAIN(day)                                                          \
   int main(int argc, char *argv[]) {                                           \
     char *input = read_input("input.txt");                                     \
-    printf("Part 1: %ld\n", part1(input));                                     \
-    printf("Part 2: %ld\n", part2(input));                                     \
+    printf("Part 1: %ld\n", day##_part1(input));                               \
+    printf("Part 2: %ld\n", day##_part2(input));                               \
     free(input);                                                               \
     return EXIT_SUCCESS;                                                       \
   }
+
+#else
+
+#define AOC_MAIN(day)
+
+#endif
 
 #endif

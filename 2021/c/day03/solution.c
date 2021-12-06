@@ -78,7 +78,7 @@ int common_bit(int *diagnostic_report, int bit_position, int is_msb) {
 #define lsb(diagnostic_report, bit_position)                                   \
   common_bit(diagnostic_report, bit_position, 0)
 
-int part1(char *input) {
+int day03_part1(char *input) {
   int *diagnostic_report = parse_diagnostic_report(input);
 
   int gamma_rate = 0, epsilon_rate = 0;
@@ -96,7 +96,7 @@ int part1(char *input) {
   return gamma_rate * epsilon_rate;
 }
 
-int part2(char *input) {
+int day03_part2(char *input) {
   int *oxygen = parse_diagnostic_report(input);
   int oxygen_len = dynarray_length(oxygen);
 
@@ -137,4 +137,4 @@ int part2(char *input) {
   return first_value(oxygen) * first_value(co2);
 }
 
-AOC_MAIN();
+AOC_MAIN(day03);

@@ -27,8 +27,8 @@ long simulate_days(char *input, int days) {
   return sum;
 }
 
-long part1(char *input) { return simulate_days(input, 80); }
+long day06_part1(char *input) { return simulate_days(input, 80); }
 
-long part2(char *input) { return simulate_days(input, 256); }
+long day06_part2(char *input) { return simulate_days(input, 256); }
 
-AOC_MAIN();
+AOC_MAIN(day06);

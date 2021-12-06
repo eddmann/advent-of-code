@@ -20,7 +20,7 @@ typedef struct Vent {
 vent *parse_hydrothermal_vents(char *input) {
   vent *vents = dynarray_create(vent);
 
-  int x1, y1, x2, y2, offset, read;
+  int x1, y1, x2, y2, offset = 0, read = 0;
   while (4 == sscanf(input + offset, "%d,%d%*s%d,%d%n", &x1, &y1, &x2, &y2, &read)) {
     vent vent = {.x1 = x1, .y1 = y1, .x2 = x2, .y2 = y2};
     dynarray_push(vents, vent);
@@ -41,7 +41,7 @@ int max_coord(vent *hydrothermal_vents) {
   return max;
 }
 
-int part1(char *input) {
+int day05_part1(char *input) {
   vent *hydrothermal_vents = parse_hydrothermal_vents(input);
 
   int coord = max_coord(hydrothermal_vents) + 1;
@@ -75,7 +75,7 @@ int part1(char *input) {
   return overlaps;
 }
 
-int part2(char *input) {
+int day05_part2(char *input) {
   vent *hydrothermal_vents = parse_hydrothermal_vents(input);
 
   int coord = max_coord(hydrothermal_vents) + 1;
@@ -105,4 +105,4 @@ int part2(char *input) {
   return overlaps;
 }
 
-AOC_MAIN();
+AOC_MAIN(day05);

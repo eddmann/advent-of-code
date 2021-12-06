@@ -107,7 +107,7 @@ int sum_unstamped_numbers(int *board) {
   return sum;
 }
 
-int part1(char *input) {
+int day04_part1(char *input) {
   int offset = 0;
   int *numbers = parse_numbers(input, &offset);
   int **boards = parse_boards(input, &offset);
@@ -139,7 +139,7 @@ score:
   return score;
 }
 
-int part2(char *input) {
+int day04_part2(char *input) {
   int offset = 0;
   int *numbers = parse_numbers(input, &offset);
   int **boards = parse_boards(input, &offset);
@@ -171,4 +171,4 @@ score:
   return score;
 }
 
-AOC_MAIN();
+AOC_MAIN(day04);

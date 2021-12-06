@@ -11,7 +11,7 @@ instruction *parse_course(char *input) {
   instruction *course = dynarray_create(instruction);
 
   char move;
-  int times, offset, read;
+  int times, offset = 0, read = 0;
 
   while (2 == sscanf(input + offset, "%c%*s%d\n%n", &move, &times, &read)) {
     instruction in;
@@ -26,7 +26,7 @@ instruction *parse_course(char *input) {
   return course;
 }
 
-int part1(char *input) {
+int day02_part1(char *input) {
   instruction *course = parse_course(input);
 
   int horizontal = 0;
@@ -51,7 +51,7 @@ int part1(char *input) {
   return horizontal * depth;
 }
 
-int part2(char *input) {
+int day02_part2(char *input) {
   instruction *course = parse_course(input);
 
   int horizontal = 0;
@@ -78,4 +78,4 @@ int part2(char *input) {
   return horizontal * depth;
 }
 
-AOC_MAIN();
+AOC_MAIN(day02);
