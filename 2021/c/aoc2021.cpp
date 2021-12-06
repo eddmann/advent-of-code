@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "day01/input.h"
 #include "day01/solution.c"
@@ -19,12 +20,19 @@
   std::cout << day##_part2(day##_input) << "\n\n";
 
 int main() {
+  auto start = std::chrono::high_resolution_clock::now();
+
   PRINT_DAY(day01)
   PRINT_DAY(day02)
   PRINT_DAY(day03)
   PRINT_DAY(day04)
   PRINT_DAY(day05)
   PRINT_DAY(day06)
+
+  auto finish = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsed = finish - start;
+  std::cout << "Elapsed time: " << elapsed.count() << "s\n";
 
   return 0;
 }
