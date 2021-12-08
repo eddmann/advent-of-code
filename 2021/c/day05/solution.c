@@ -21,7 +21,8 @@ vent *parse_hydrothermal_vents(char *input) {
   vent *vents = dynarray_create(vent);
 
   int x1, y1, x2, y2, offset = 0, read = 0;
-  while (4 == sscanf(input + offset, "%d,%d%*s%d,%d%n", &x1, &y1, &x2, &y2, &read)) {
+  while (4 ==
+         sscanf(input + offset, "%d,%d%*s%d,%d%n", &x1, &y1, &x2, &y2, &read)) {
     vent vent = {.x1 = x1, .y1 = y1, .x2 = x2, .y2 = y2};
     dynarray_push(vents, vent);
     offset += read;
