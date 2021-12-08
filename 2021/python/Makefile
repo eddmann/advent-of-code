@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-IMAGE = python:3.9.2-alpine3.13
+IMAGE = python:3.10.1-alpine3.15
 DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
 
 .PHONY: solve
