@@ -15,6 +15,10 @@
 #include "day06/solution.c"
 #include "day07/input.h"
 #include "day07/solution.c"
+#include "day08/input.h"
+#include "day08/solution.c"
+#include "day09/input.h"
+#include "day09/solution.c"
 
 #define PRINT_DAY(day) \
   std::cout << #day << "\n"; \
@@ -31,6 +35,8 @@ int main() {
   PRINT_DAY(day05)
   PRINT_DAY(day06)
   PRINT_DAY(day07)
+  PRINT_DAY(day08)
+  PRINT_DAY(day09)
 
   auto finish = std::chrono::high_resolution_clock::now();
 
