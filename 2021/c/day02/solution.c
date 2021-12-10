@@ -1,38 +1,36 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct Instruction {
   char move;
-  int times;
-} instruction;
+  uint8_t times;
+} instruction_t;
 
-instruction *parse_course(char *input) {
-  instruction *course = dynarray_create(instruction);
+static instruction_t *parse_course(const char *input) {
+  instruction_t *course = dynarray_create(instruction_t);
 
   char move;
-  int times, offset = 0, read = 0;
+  uint8_t times;
+  size_t offset = 0, read = 0;
 
-  while (2 == sscanf(input + offset, "%c%*s%d\n%n", &move, &times, &read)) {
-    instruction in;
-    in.move = move;
-    in.times = times;
-
-    dynarray_push(course, in);
-
+  while (2 ==
+         sscanf(input + offset, "%c%*s%" SCNu8 "\n%n", &move, &times, &read)) {
+    instruction_t instruction = {.move = move, .times = times};
+    dynarray_push(course, instruction);
     offset += read;
   }
 
   return course;
 }
 
-int day02_part1(char *input) {
-  instruction *course = parse_course(input);
+uint32_t day02_part1(char *input) {
+  instruction_t *course = parse_course(input);
 
-  int horizontal = 0;
-  int depth = 0;
+  uint32_t horizontal = 0, depth = 0;
 
-  for (int i = 0; i < dynarray_length(course); i++) {
+  for (size_t i = 0; i < dynarray_length(course); i++) {
     switch (course[i].move) {
     case 'f':
       horizontal += course[i].times;
@@ -51,14 +49,12 @@ int day02_part1(char *input) {
   return horizontal * depth;
 }
 
-int day02_part2(char *input) {
-  instruction *course = parse_course(input);
+uint32_t day02_part2(char *input) {
+  instruction_t *course = parse_course(input);
 
-  int horizontal = 0;
-  int depth = 0;
-  int aim = 0;
+  uint32_t horizontal = 0, depth = 0, aim = 0;
 
-  for (int i = 0; i < dynarray_length(course); i++) {
+  for (size_t i = 0; i < dynarray_length(course); i++) {
     switch (course[i].move) {
     case 'f':
       horizontal += course[i].times;
@@ -78,4 +74,4 @@ int day02_part2(char *input) {
   return horizontal * depth;
 }
 
-AOC_MAIN(day02);
+AOC_MAIN(day02, 1507611, 1880593125);

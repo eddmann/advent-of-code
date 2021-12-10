@@ -1,16 +1,18 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-#define STAMPED -1
+#define STAMPED 255
 #define GRID_SIZE 5
 
-int *parse_numbers(char *input, int *offset) {
-  int *numbers = dynarray_create(int);
+static uint8_t *parse_numbers(const char *input, size_t *offset) {
+  uint8_t *numbers = dynarray_create(uint8_t);
 
-  int number, read;
-  while (1 == sscanf(input + (*offset), "%d%n", &number, &read)) {
+  uint8_t number;
+  size_t read = 0;
+  while (1 == sscanf(input + (*offset), "%" SCNu8 "%n", &number, &read)) {
     dynarray_push(numbers, number);
     *offset += read + 1;
     if (input[*offset - 1] != ',') {
@@ -21,11 +23,12 @@ int *parse_numbers(char *input, int *offset) {
   return numbers;
 }
 
-int *parse_board(char *input, int *offset) {
-  int *board = dynarray_create(int);
+static uint8_t *parse_board(const char *input, size_t *offset) {
+  uint8_t *board = dynarray_create(uint8_t);
 
-  int number, read;
-  while (1 == sscanf(input + (*offset), "%d%n", &number, &read)) {
+  uint8_t number;
+  size_t read = 0;
+  while (1 == sscanf(input + (*offset), "%" SCNu8 "%n", &number, &read)) {
     dynarray_push(board, number);
     *offset += read + 1;
     if (input[*offset - 1] == '\n' && input[*offset] == '\n') {
@@ -36,27 +39,27 @@ int *parse_board(char *input, int *offset) {
   return board;
 }
 
-int **parse_boards(char *input, int *offset) {
-  int **boards = dynarray_create(int *);
+static uint8_t **parse_boards(const char *input, size_t *offset) {
+  uint8_t **boards = dynarray_create(uint8_t *);
 
   while (input[*offset] != '\0') {
-    int *board = parse_board(input, offset);
+    uint8_t *board = parse_board(input, offset);
     dynarray_push(boards, board);
   }
 
   return boards;
 }
 
-void stamp_if_found(int *board, int number) {
-  for (int i = 0; i < dynarray_length(board); i++) {
+static void stamp_if_found(uint8_t *board, uint8_t number) {
+  for (size_t i = 0; i < dynarray_length(board); i++) {
     if (board[i] == number) {
       board[i] = STAMPED;
     }
   }
 }
 
-bool is_winning_col(int *board, int col) {
-  for (int i = 0; i < GRID_SIZE; i++) {
+static bool is_winning_col(uint8_t *board, size_t col) {
+  for (size_t i = 0; i < GRID_SIZE; i++) {
     if (board[i * GRID_SIZE + col] != STAMPED) {
       return false;
     }
@@ -65,8 +68,8 @@ bool is_winning_col(int *board, int col) {
   return true;
 }
 
-bool is_winning_row(int *board, int row) {
-  for (int i = 0; i < GRID_SIZE; i++) {
+static bool is_winning_row(uint8_t *board, size_t row) {
+  for (size_t i = 0; i < GRID_SIZE; i++) {
     if (board[GRID_SIZE * row + i] != STAMPED) {
       return false;
     }
@@ -75,8 +78,8 @@ bool is_winning_row(int *board, int row) {
   return true;
 }
 
-bool is_winner(int *board) {
-  for (int i = 0; i < dynarray_length(board); i++) {
+static bool is_winner(uint8_t *board) {
+  for (size_t i = 0; i < dynarray_length(board); i++) {
     if (is_winning_col(board, i) || is_winning_row(board, i)) {
       return true;
     }
@@ -85,8 +88,8 @@ bool is_winner(int *board) {
   return false;
 }
 
-bool is_all_winners(int **boards) {
-  for (int i = 0; i < dynarray_length(boards); i++) {
+static bool is_all_winners(uint8_t **boards) {
+  for (size_t i = 0; i < dynarray_length(boards); i++) {
     if (!is_winner(boards[i])) {
       return false;
     }
@@ -95,10 +98,10 @@ bool is_all_winners(int **boards) {
   return true;
 }
 
-int sum_unstamped_numbers(int *board) {
-  int sum = 0;
+static uint32_t sum_unstamped_numbers(uint8_t *board) {
+  uint32_t sum = 0;
 
-  for (int i = 0; i < dynarray_length(board); i++) {
+  for (size_t i = 0; i < dynarray_length(board); i++) {
     if (board[i] != STAMPED) {
       sum += board[i];
     }
@@ -107,18 +110,18 @@ int sum_unstamped_numbers(int *board) {
   return sum;
 }
 
-int day04_part1(char *input) {
-  int offset = 0;
-  int *numbers = parse_numbers(input, &offset);
-  int **boards = parse_boards(input, &offset);
+uint32_t day04_part1(const char *input) {
+  size_t offset = 0;
+  uint8_t *numbers = parse_numbers(input, &offset);
+  uint8_t **boards = parse_boards(input, &offset);
 
-  int score = 0;
+  uint32_t score = 0;
 
-  for (int i = 0; i < dynarray_length(numbers); i++) {
-    int number = numbers[i];
+  for (size_t i = 0; i < dynarray_length(numbers); i++) {
+    uint8_t number = numbers[i];
 
-    for (int j = 0; j < dynarray_length(boards); j++) {
-      int *board = boards[j];
+    for (size_t j = 0; j < dynarray_length(boards); j++) {
+      uint8_t *board = boards[j];
 
       stamp_if_found(board, number);
 
@@ -131,26 +134,25 @@ int day04_part1(char *input) {
 
 score:
   dynarray_destroy(numbers);
-  for (int i = 0; i < dynarray_length(boards); i++) {
+  for (size_t i = 0; i < dynarray_length(boards); i++)
     dynarray_destroy(boards[i]);
-  }
   dynarray_destroy(boards);
 
   return score;
 }
 
-int day04_part2(char *input) {
-  int offset = 0;
-  int *numbers = parse_numbers(input, &offset);
-  int **boards = parse_boards(input, &offset);
+uint32_t day04_part2(const char *input) {
+  size_t offset = 0;
+  uint8_t *numbers = parse_numbers(input, &offset);
+  uint8_t **boards = parse_boards(input, &offset);
 
-  int score = 0;
+  uint32_t score = 0;
 
-  for (int i = 0; i < dynarray_length(numbers); i++) {
-    int number = numbers[i];
+  for (size_t i = 0; i < dynarray_length(numbers); i++) {
+    uint8_t number = numbers[i];
 
-    for (int j = 0; j < dynarray_length(boards); j++) {
-      int *board = boards[j];
+    for (size_t j = 0; j < dynarray_length(boards); j++) {
+      uint8_t *board = boards[j];
 
       stamp_if_found(board, number);
 
@@ -163,12 +165,11 @@ int day04_part2(char *input) {
 
 score:
   dynarray_destroy(numbers);
-  for (int i = 0; i < dynarray_length(boards); i++) {
+  for (size_t i = 0; i < dynarray_length(boards); i++)
     dynarray_destroy(boards[i]);
-  }
   dynarray_destroy(boards);
 
   return score;
 }
 
-AOC_MAIN(day04);
+AOC_MAIN(day04, 60368, 17435);

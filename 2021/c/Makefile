@@ -10,7 +10,7 @@ fmt:
 	@$(DOCKER) --entrypoint= mikedld/clang-format sh -c "find . -iname *.h -o -iname *.c | xargs clang-format -i --style=LLVM"
 
 solve/%:
-	@$(DOCKER) -it -w /app/day$* $(IMAGE) sh -c "gcc -D SINGLE_EXECUTABLE -o solution solution.c ../shared/* && ./solution"
+	@$(DOCKER) -it -w /app/day$* $(IMAGE) sh -c "gcc -D SINGLE_EXECUTABLE -std=gnu11 -march=native -O2 -o solution solution.c ../shared/* && ./solution"
 
 test/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) sh -c "gcc -D TEST_RUNNER -o solution solution.c ../shared/* && ./solution"

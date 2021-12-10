@@ -1,15 +1,16 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
+#include <stdint.h>
 #include <stdlib.h>
 
 #define BUFFER_SIZE 4096
 
-int syntax_error_score(char line[BUFFER_SIZE]) {
+static uint32_t syntax_error_score(char line[BUFFER_SIZE]) {
   char *stack = dynarray_create(char);
 
-  int score = 0;
+  uint32_t score = 0;
 
-  for (int i = 0; line[i] != '\0' && score == 0; i++) {
+  for (size_t i = 0; line[i] != '\0' && score == 0; i++) {
     char token = line[i];
 
     if (!(token == ')' || token == ']' || token == '}' || token == '>')) {
@@ -34,10 +35,10 @@ int syntax_error_score(char line[BUFFER_SIZE]) {
   return score;
 }
 
-long autocomplete_score(char line[BUFFER_SIZE]) {
+static uint64_t autocomplete_score(char line[BUFFER_SIZE]) {
   char *stack = dynarray_create(char);
 
-  for (int i = 0; line[i] != '\0'; i++) {
+  for (size_t i = 0; line[i] != '\0'; i++) {
     char token = line[i];
 
     if (token == ')' || token == ']' || token == '}' || token == '>') {
@@ -49,7 +50,7 @@ long autocomplete_score(char line[BUFFER_SIZE]) {
     dynarray_push(stack, token);
   }
 
-  long score = 0;
+  uint64_t score = 0;
   while (dynarray_length(stack) > 0) {
     char token;
     dynarray_pop(stack, &token);
@@ -70,7 +71,7 @@ long autocomplete_score(char line[BUFFER_SIZE]) {
   return score;
 }
 
-int cmp_ascending(const void *a, const void *b) {
+static int cmp_ascending(const void *a, const void *b) {
   if (*(long *)a - *(long *)b < 0)
     return -1;
   if (*(long *)a - *(long *)b > 0)
@@ -78,7 +79,7 @@ int cmp_ascending(const void *a, const void *b) {
   return 0;
 }
 
-int day10_part1(char *input) {
+uint32_t day10_part1(const char *input) {
   char line[BUFFER_SIZE];
   int read = 0, offset = 0, score = 0;
 
@@ -90,26 +91,26 @@ int day10_part1(char *input) {
   return score;
 }
 
-long day10_part2(char *input) {
+uint64_t day10_part2(const char *input) {
   char line[BUFFER_SIZE];
-  int read = 0, offset = 0;
-  long *scores = dynarray_create(long);
+  size_t read = 0, offset = 0;
+  uint64_t *scores = dynarray_create(uint64_t);
 
   while (1 == sscanf(input + offset, "%s%n", line, &read)) {
     if (syntax_error_score(line) == 0) {
-      long score = autocomplete_score(line);
+      uint64_t score = autocomplete_score(line);
       dynarray_push(scores, score);
     }
     offset += read;
   }
 
-  qsort(scores, dynarray_length(scores), sizeof(long), cmp_ascending);
+  qsort(scores, dynarray_length(scores), sizeof(uint64_t), cmp_ascending);
 
-  long result = scores[dynarray_length(scores) / 2];
+  uint32_t result = scores[dynarray_length(scores) / 2];
 
   dynarray_destroy(scores);
 
   return result;
 }
 
-AOC_MAIN(day10);
+AOC_MAIN(day10, 390993, 2391385187);

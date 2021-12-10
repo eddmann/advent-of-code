@@ -1,12 +1,14 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
+#include <stdint.h>
 #include <stdlib.h>
 
-int *parse_measurements(char *input) {
-  int *measurements = dynarray_create(int);
+static uint16_t *parse_measurements(const char *input) {
+  uint16_t *measurements = dynarray_create(uint16_t);
 
-  int measurement, offset = 0, read = 0;
-  while (1 == sscanf(input + offset, "%d%n", &measurement, &read)) {
+  uint16_t measurement;
+  size_t offset = 0, read = 0;
+  while (1 == sscanf(input + offset, "%" SCNu16 "%n", &measurement, &read)) {
     dynarray_push(measurements, measurement);
     offset += read;
   }
@@ -14,12 +16,12 @@ int *parse_measurements(char *input) {
   return measurements;
 }
 
-int day01_part1(char *input) {
-  int *measurements = parse_measurements(input);
+uint16_t day01_part1(const char *input) {
+  uint16_t *measurements = parse_measurements(input);
 
-  int increased = 0;
+  uint16_t increased = 0;
 
-  for (int i = 0, j = 1; i < dynarray_length(measurements) - 1; i++, j++) {
+  for (size_t i = 0, j = 1; i < dynarray_length(measurements) - 1; i++, j++) {
     if (measurements[j] > measurements[i]) {
       increased += 1;
     }
@@ -30,14 +32,16 @@ int day01_part1(char *input) {
   return increased;
 }
 
-int day01_part2(char *input) {
-  int *measurements = parse_measurements(input);
+uint16_t day01_part2(const char *input) {
+  uint16_t *measurements = parse_measurements(input);
 
-  int increased = 0;
+  uint16_t increased = 0;
 
-  for (int i = 0, j = 1; i < dynarray_length(measurements) - 3; i++, j++) {
-    int window_1 = measurements[i] + measurements[i + 1] + measurements[i + 2];
-    int window_2 = measurements[j] + measurements[j + 1] + measurements[j + 2];
+  for (size_t i = 0, j = 1; i < dynarray_length(measurements) - 3; i++, j++) {
+    uint16_t window_1 =
+        measurements[i] + measurements[i + 1] + measurements[i + 2];
+    uint16_t window_2 =
+        measurements[j] + measurements[j + 1] + measurements[j + 2];
     if (window_2 > window_1) {
       increased += 1;
     }
@@ -48,4 +52,4 @@ int day01_part2(char *input) {
   return increased;
 }
 
-AOC_MAIN(day01);
+AOC_MAIN(day01, 1446, 1486);

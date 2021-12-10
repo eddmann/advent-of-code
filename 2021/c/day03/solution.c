@@ -1,11 +1,13 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #define NIL 0
 
-int to_dec(char *bin) {
-  int dec = 0;
+static uint32_t to_dec(const char *bin) {
+  uint32_t dec = 0;
 
   while (*bin) {
     dec *= 2;
@@ -16,13 +18,14 @@ int to_dec(char *bin) {
   return dec;
 }
 
-int *parse_diagnostic_report(char *input) {
-  int *diagnostic_report = dynarray_create(int);
+static uint32_t *parse_diagnostic_report(const char *input) {
+  uint32_t *diagnostic_report = dynarray_create(uint32_t);
 
   char bin[13];
-  int offset = 0, read = 0;
+  size_t offset = 0, read = 0;
+
   while (1 == sscanf(input + offset, "%s\n%n", bin, &read)) {
-    int dec = to_dec(bin);
+    uint32_t dec = to_dec(bin);
     dynarray_push(diagnostic_report, dec);
     offset += read;
   }
@@ -30,30 +33,30 @@ int *parse_diagnostic_report(char *input) {
   return diagnostic_report;
 }
 
-int bit_width(int *diagnostic_report) {
-  int width = 0;
+static int32_t bit_width(uint32_t *diagnostic_report) {
+  int32_t width = 0;
 
-  for (int i = 0; i < dynarray_length(diagnostic_report); i++) {
-    int msb;
+  for (size_t i = 0; i < dynarray_length(diagnostic_report); i++) {
+    int32_t msb;
     asm("bsrl %1,%0" : "=r"(msb) : "r"(diagnostic_report[i]));
-    if (msb > width) {
+    if (msb > width)
       width = msb;
-    }
   }
 
   return width;
 }
 
-int first_value(int *diagnostic_report) {
-  for (int i = 0; i < dynarray_length(diagnostic_report); i++) {
+static uint32_t first_value(uint32_t *diagnostic_report) {
+  for (size_t i = 0; i < dynarray_length(diagnostic_report); i++) {
     if (diagnostic_report[i] != NIL) {
       return diagnostic_report[i];
     }
   }
 }
 
-int common_bit(int *diagnostic_report, int bit_position, int is_msb) {
-  int zeros = 0, ones = 0;
+static uint8_t common_bit(uint32_t *diagnostic_report, uint8_t bit_position,
+                          bool is_msb) {
+  uint16_t zeros = 0, ones = 0;
 
   for (int i = 0; i < dynarray_length(diagnostic_report); i++) {
     if (diagnostic_report[i] == NIL)
@@ -74,16 +77,16 @@ int common_bit(int *diagnostic_report, int bit_position, int is_msb) {
 }
 
 #define msb(diagnostic_report, bit_position)                                   \
-  common_bit(diagnostic_report, bit_position, 1)
+  common_bit(diagnostic_report, bit_position, true)
 #define lsb(diagnostic_report, bit_position)                                   \
-  common_bit(diagnostic_report, bit_position, 0)
+  common_bit(diagnostic_report, bit_position, false)
 
-int day03_part1(char *input) {
-  int *diagnostic_report = parse_diagnostic_report(input);
+uint32_t day03_part1(const char *input) {
+  uint32_t *diagnostic_report = parse_diagnostic_report(input);
 
-  int gamma_rate = 0, epsilon_rate = 0;
+  uint32_t gamma_rate = 0, epsilon_rate = 0;
 
-  for (int i = bit_width(diagnostic_report); i >= 0; i--) {
+  for (int32_t i = bit_width(diagnostic_report); i >= 0; i--) {
     if (msb(diagnostic_report, i)) {
       gamma_rate |= 1 << i;
     } else {
@@ -96,18 +99,18 @@ int day03_part1(char *input) {
   return gamma_rate * epsilon_rate;
 }
 
-int day03_part2(char *input) {
-  int *oxygen = parse_diagnostic_report(input);
-  int oxygen_len = dynarray_length(oxygen);
+static uint32_t day03_part2(const char *input) {
+  uint32_t *oxygen = parse_diagnostic_report(input);
+  size_t oxygen_len = dynarray_length(oxygen);
 
-  int *co2 = parse_diagnostic_report(input);
-  int co2_len = dynarray_length(co2);
+  uint32_t *co2 = parse_diagnostic_report(input);
+  size_t co2_len = dynarray_length(co2);
 
-  for (int i = bit_width(oxygen); i >= 0; i--) {
+  for (int32_t i = bit_width(oxygen); i >= 0; i--) {
     if (oxygen_len > 1) {
-      int oxygen_bit = msb(oxygen, i);
+      uint8_t oxygen_bit = msb(oxygen, i);
 
-      for (int j = 0; j < dynarray_length(oxygen); j++) {
+      for (size_t j = 0; j < dynarray_length(oxygen); j++) {
         if (oxygen[j] == NIL)
           continue;
         if ((oxygen[j] >> i & 1) != oxygen_bit) {
@@ -118,9 +121,9 @@ int day03_part2(char *input) {
     }
 
     if (co2_len > 1) {
-      int co2_bit = lsb(co2, i);
+      uint8_t co2_bit = lsb(co2, i);
 
-      for (int j = 0; j < dynarray_length(co2); j++) {
+      for (size_t j = 0; j < dynarray_length(co2); j++) {
         if (co2[j] == NIL)
           continue;
         if ((co2[j] >> i & 1) != co2_bit) {
@@ -137,4 +140,4 @@ int day03_part2(char *input) {
   return first_value(oxygen) * first_value(co2);
 }
 
-AOC_MAIN(day03);
+AOC_MAIN(day03, 3242606, 4856080);

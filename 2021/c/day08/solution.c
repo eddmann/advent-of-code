@@ -1,5 +1,6 @@
 #include "../shared/aoc.h"
 #include "../shared/dynarray.h"
+#include <stdint.h>
 #include <stdlib.h>
 
 #define MAX_SEGMENTS 8
@@ -10,14 +11,15 @@
 typedef struct Entry {
   char PATTERNS;
   char output[OUTPUT_DIGITS][MAX_SEGMENTS];
-} entry;
+} entry_t;
 
-entry *parse_entries(char *input) {
-  entry *entries = dynarray_create(entry);
+static entry_t *parse_entries(const char *input) {
+  entry_t *entries = dynarray_create(entry_t);
 
-  int found = 0, read = 0, offset = 0;
+  uint8_t found;
+  size_t read = 0, offset = 0;
   while (1) {
-    entry e;
+    entry_t e;
     found =
         sscanf(input + offset, "%s %s %s %s %s %s %s %s %s %s | %s %s %s %s%n",
                &e.patterns[0], &e.patterns[1], &e.patterns[2], &e.patterns[3],
@@ -33,7 +35,7 @@ entry *parse_entries(char *input) {
   return entries;
 }
 
-char *find_pattern_with_len(char PATTERNS, int len) {
+static char *find_pattern_with_len(char PATTERNS, size_t len) {
   for (int i = 0; i < DIGIT_PATTERNS; i++) {
     if (strlen(patterns[i]) == len) {
       return patterns[i];
@@ -41,8 +43,8 @@ char *find_pattern_with_len(char PATTERNS, int len) {
   }
 }
 
-int count_pattern_similarities(char *a, char *b) {
-  int sum = 0;
+static uint8_t count_pattern_similarities(char *a, char *b) {
+  uint8_t sum = 0;
 
   for (char *aa = a; *aa != '\0'; aa++) {
     for (char *bb = b; *bb != '\0'; bb++) {
@@ -53,17 +55,17 @@ int count_pattern_similarities(char *a, char *b) {
   return sum;
 }
 
-int decode_output(entry e) {
-  char *one = find_pattern_with_len(e.patterns, 2);
-  char *four = find_pattern_with_len(e.patterns, 4);
+static uint16_t decode_output(entry_t entry) {
+  char *one = find_pattern_with_len(entry.patterns, 2);
+  char *four = find_pattern_with_len(entry.patterns, 4);
 
-  char decoded[4];
+  char decoded[OUTPUT_DIGITS];
 
-  for (int i = 0; i < OUTPUT_DIGITS; i++) {
-    char *digit = e.output[i];
-    int digit_len = strlen(digit);
-    int one_sim = count_pattern_similarities(digit, one);
-    int four_sim = count_pattern_similarities(digit, four);
+  for (size_t i = 0; i < OUTPUT_DIGITS; i++) {
+    char *digit = entry.output[i];
+    uint8_t digit_len = strlen(digit);
+    uint8_t one_sim = count_pattern_similarities(digit, one);
+    uint8_t four_sim = count_pattern_similarities(digit, four);
 
     if (one_sim == 1) {
       if (digit_len == 6)
@@ -90,14 +92,14 @@ int decode_output(entry e) {
   return atoi(decoded);
 }
 
-int day08_part1(char *input) {
-  entry *entries = parse_entries(input);
+uint32_t day08_part1(const char *input) {
+  entry_t *entries = parse_entries(input);
 
-  int sum = 0;
+  uint32_t sum = 0;
 
-  for (int i = 0; i < dynarray_length(entries); i++) {
-    for (int j = 0; j < OUTPUT_DIGITS; j++) {
-      int len = strlen(entries[i].output[j]);
+  for (size_t i = 0; i < dynarray_length(entries); i++) {
+    for (size_t j = 0; j < OUTPUT_DIGITS; j++) {
+      uint32_t len = strlen(entries[i].output[j]);
       sum += len == 2 || len == 3 || len == 4 || len == 7;
     }
   }
@@ -107,12 +109,12 @@ int day08_part1(char *input) {
   return sum;
 }
 
-int day08_part2(char *input) {
-  entry *entries = parse_entries(input);
+uint32_t day08_part2(const char *input) {
+  entry_t *entries = parse_entries(input);
 
-  int sum = 0;
+  uint32_t sum = 0;
 
-  for (int i = 0; i < dynarray_length(entries); i++) {
+  for (size_t i = 0; i < dynarray_length(entries); i++) {
     sum += decode_output(entries[i]);
   }
 
@@ -121,4 +123,4 @@ int day08_part2(char *input) {
   return sum;
 }
 
-AOC_MAIN(day08);
+AOC_MAIN(day08, 237, 1009098);
