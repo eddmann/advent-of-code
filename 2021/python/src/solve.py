@@ -17,17 +17,12 @@ def load_solution(file_path):
     return solution
 
 
-def read_input(file_path):
-    with open(file_path, 'r') as file:
-        return file.read()
-
-
 def main(argv):
     day_no, solution_no = map(int, argv)
 
     day_dir = "{}/day{:02}".format(os.path.dirname(__file__), day_no)
     solution = load_solution("{}/solution-{}.py".format(day_dir, solution_no))
-    input_content = read_input(day_dir + "/input.txt")
+    input_content = open(day_dir + "/input.txt").read()
 
     print("Day {}, Solution {}".format(day_no, solution_no))
 
