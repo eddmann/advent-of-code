@@ -16,4 +16,4 @@ test/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) sh -c "gcc -D TEST_RUNNER -o solution solution.c ../shared/* && ./solution"
 
 build:
-	@$(DOCKER) -w /app $(IMAGE) sh -c "g++ -Wno-pointer-arith -fpermissive -o aoc2021 ./aoc2021.cpp shared/* && ./aoc2021"
+	@$(DOCKER) -w /app $(IMAGE) sh -c "g++ -Wno-pointer-arith -fpermissive -O2 -o aoc2021 ./aoc2021.cpp shared/* && ./aoc2021"

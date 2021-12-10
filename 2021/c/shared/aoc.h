@@ -36,7 +36,7 @@ static char *read_input(const char *filename) {
 
 #ifdef TEST_RUNNER
 
-#define AOC_MAIN(day, part1_answer, part2_answer)                                                          \
+#define AOC_MAIN(day, part1_answer, part2_answer)                              \
   int main(int argc, char *argv[]) { return EXIT_SUCCESS; }
 
 #elif defined(SINGLE_EXECUTABLE)
