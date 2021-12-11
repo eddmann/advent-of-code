@@ -97,6 +97,9 @@ uint16_t day11_part2(const char *input) {
     }
   }
 
+  free(*grid);
+  free(grid);
+
   return total_steps;
 }
 
