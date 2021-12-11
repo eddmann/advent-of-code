@@ -13,7 +13,7 @@ typedef struct Point {
 } point_t;
 
 static uint8_t **parse_heightmap(const char *input) {
-  uint8_t *rows = calloc((GRID_SIZE + 2) * (GRID_SIZE + 2), sizeof(int));
+  uint8_t *rows = calloc((GRID_SIZE + 2) * (GRID_SIZE + 2), sizeof(uint8_t));
   uint8_t **heightmap = malloc((GRID_SIZE + 2) * sizeof(uint8_t *));
   for (size_t i = 0; i < GRID_SIZE + 2; i++) {
     heightmap[i] = rows + i * (GRID_SIZE + 2);
