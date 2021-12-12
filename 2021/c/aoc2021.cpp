@@ -30,7 +30,10 @@
   std::cout << day##_part2(day##_input) << "\n\n";
 
 int main() {
-  auto start = std::chrono::high_resolution_clock::now();
+  typedef std::chrono::high_resolution_clock Time;
+  typedef std::chrono::milliseconds ms;
+
+  auto start = Time::now();
 
   PRINT_DAY(day01)
   PRINT_DAY(day02)
@@ -44,10 +47,9 @@ int main() {
   PRINT_DAY(day10)
   PRINT_DAY(day11)
 
-  auto finish = std::chrono::high_resolution_clock::now();
-
-  std::chrono::duration<double> elapsed = finish - start;
-  std::cout << "Elapsed time: " << elapsed.count() << "s\n";
+  auto end = Time::now();
+  ms elapsed = std::chrono::duration_cast<ms>(end - start);
+  std::cout << "Elapsed time: " << elapsed.count() << "ms\n";
 
   return 0;
 }
