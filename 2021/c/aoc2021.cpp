@@ -23,6 +23,8 @@
 #include "day10/solution.c"
 #include "day11/input.h"
 #include "day11/solution.c"
+#include "day12/input.h"
+#include "day12/solution.c"
 
 #define PRINT_DAY(day) \
   std::cout << #day << "\n"; \
@@ -46,6 +48,7 @@ int main() {
   PRINT_DAY(day09)
   PRINT_DAY(day10)
   PRINT_DAY(day11)
+  PRINT_DAY(day12)
 
   auto end = Time::now();
   ms elapsed = std::chrono::duration_cast<ms>(end - start);
