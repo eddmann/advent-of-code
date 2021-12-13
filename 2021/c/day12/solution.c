@@ -69,9 +69,9 @@ static cave_t *build_cave_graph(const char *input) {
     uint8_t from_id = id(from);
     uint8_t to_id = id(to);
 
-    caves[from_id].is_small = from[0] > 'a';
+    caves[from_id].is_small = from[0] >= 'a';
     caves[from_id].edges[caves[from_id].edges_len++] = to_id;
-    caves[to_id].is_small = to[0] > 'a';
+    caves[to_id].is_small = to[0] >= 'a';
     caves[to_id].edges[caves[to_id].edges_len++] = from_id;
 
     offset += read;
