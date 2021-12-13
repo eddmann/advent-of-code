@@ -11,6 +11,10 @@ solve: ## Solve specific day (with optional solution) `make solve day=1 sol=1`
 test: ## Run each solutions doctests
 	@$(DOCKER) $(IMAGE) python src/test.py
 
+.PHONY: fmt
+fmt: ## Format code based on pep8 standards
+	@$(DOCKER) $(IMAGE) sh -c "pip install --upgrade autopep8 && autopep8 --recursive --in-place /app/src"
+
 .PHONY: shell
 shell: ## Shell instance for development
 	@$(DOCKER) -it $(IMAGE) sh
