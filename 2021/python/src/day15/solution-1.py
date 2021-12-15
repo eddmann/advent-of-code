@@ -29,8 +29,8 @@ def calc_lowest_risk(grid, scale=1):
         risk, position = heapq.heappop(queue)
 
         for nposition in get_neighbours(grid, position, scale):
-            nrisk = risk + risk_level(grid, nposition)
-            if nposition not in risk_levels or nrisk < risk_levels[nposition]:
+            if nposition not in risk_levels:
+                nrisk = risk + risk_level(grid, nposition)
                 risk_levels[nposition] = nrisk
                 heapq.heappush(queue, (nrisk, nposition))
 
