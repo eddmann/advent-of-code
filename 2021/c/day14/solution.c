@@ -32,6 +32,20 @@ static parsed_input_t parse_template_and_rules(const char *input) {
   return parsed;
 }
 
+uint64_t score(uint64_t frequencies[26]) {
+  uint64_t max = 0;
+  uint64_t min = INT64_MAX;
+
+  for (size_t chr = 0; chr < 26; chr++) {
+    if (frequencies[chr] == 0)
+      continue;
+    max = frequencies[chr] > max ? frequencies[chr] : max;
+    min = frequencies[chr] < min ? frequencies[chr] : min;
+  }
+
+  return max - min;
+}
+
 uint64_t polymerize(char *template_, uint32_t rules[TOTAL_PAIRS],
                     size_t steps) {
   uint64_t frequencies[26] = {0};
@@ -62,17 +76,7 @@ uint64_t polymerize(char *template_, uint32_t rules[TOTAL_PAIRS],
     }
   }
 
-  uint64_t max = 0;
-  uint64_t min = INT64_MAX;
-
-  for (size_t chr = 0; chr < 26; chr++) {
-    if (frequencies[chr] == 0)
-      continue;
-    max = frequencies[chr] > max ? frequencies[chr] : max;
-    min = frequencies[chr] < min ? frequencies[chr] : min;
-  }
-
-  return max - min;
+  return score(frequencies);
 }
 
 uint64_t day14_part1(const char *input) {
