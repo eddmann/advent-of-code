@@ -29,6 +29,8 @@
 #include "day13/solution.c"
 #include "day14/input.h"
 #include "day14/solution.c"
+#include "day15/input.h"
+#include "day15/solution.c"
 #include "day17/input.h"
 #include "day17/solution.c"
 
@@ -57,6 +59,7 @@ int main() {
   PRINT_DAY(day12)
   PRINT_DAY(day13)
   PRINT_DAY(day14)
+  PRINT_DAY(day15)
   PRINT_DAY(day17)
 
   auto end = Time::now();
