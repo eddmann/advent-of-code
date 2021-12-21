@@ -1,4 +1,5 @@
 from itertools import product, combinations
+from collections import deque
 
 
 def parse_scanners(input):
@@ -59,13 +60,13 @@ def part1(input):
     79
     '''
 
-    scanners = parse_scanners(input)
-    mapped_beacons = scanners.pop(0)
+    scanners = deque(parse_scanners(input))
+    mapped_beacons = scanners.popleft()
 
     while scanners:
-        for idx, scanner in enumerate(scanners):
-            if map_beacons(mapped_beacons, scanner):
-                del scanners[idx]
+        scanner = scanners.popleft()
+        if not map_beacons(mapped_beacons, scanner):
+            scanners.append(scanner)
 
     return len(mapped_beacons)
 
@@ -76,15 +77,16 @@ def part2(input):
     3621
     '''
 
-    scanners = parse_scanners(input)
-    mapped_beacons = scanners.pop(0)
+    scanners = deque(parse_scanners(input))
+    mapped_beacons = scanners.popleft()
     distances = []
 
     while scanners:
-        for idx, scanner in enumerate(scanners):
-            if distance := map_beacons(mapped_beacons, scanner):
-                distances.append(distance)
-                del scanners[idx]
+        scanner = scanners.popleft()
+        if distance := map_beacons(mapped_beacons, scanner):
+            distances.append(distance)
+            continue
+        scanners.append(scanner)
 
     return max(
         sum(abs(a - b) for a, b in zip(d1, d2))
