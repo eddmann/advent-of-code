@@ -14,28 +14,25 @@ typedef struct {
 } image_t;
 
 static image_t parse_image(const char *input) {
-  image_t image;
-  memset(image.pixels, false, sizeof(image.pixels));
-  image.size = 0;
-  image.default_value = false;
+  image_t image = {0};
 
   size_t offset = 0;
-  size_t row = 0;
 
   for (; offset < 512; offset++)
     image.algorithm[offset] = input[offset] == '#';
 
   offset += 2; // new lines
 
+  size_t col = 0;
   while (input[offset] != '\0') {
     if (input[offset] == '\n') {
       offset += 1;
       image.size += 1;
-      row = 0;
+      col = 0;
       continue;
     }
 
-    image.pixels[image.size][row++] = input[offset++] == '#';
+    image.pixels[image.size][col++] = input[offset++] == '#';
   }
 
   image.size += 1;
@@ -64,7 +61,7 @@ static bool enhance_pixel(image_t *image, int16_t x, int16_t y) {
 }
 
 static void enhance(image_t *image) {
-  bool next_pixels[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE];
+  bool next_pixels[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE] = {0};
 
   for (int16_t y = -1; y <= image->size; y++) {
     for (int16_t x = -1; x <= image->size; x++) {
