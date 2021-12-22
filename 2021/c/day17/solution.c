@@ -1,5 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
