@@ -33,17 +33,29 @@
 #include "day15/solution.c"
 #include "day17/input.h"
 #include "day17/solution.c"
+#include "day20/input.h"
+#include "day20/solution.c"
 
 #define PRINT_DAY(day) \
+  day_start = Time::now(); \
   std::cout << #day << "\n"; \
   std::cout << day##_part1(day##_input) << "\n"; \
-  std::cout << day##_part2(day##_input) << "\n\n";
+  std::cout << day##_part2(day##_input) << "\n"; \
+  day_end = Time::now(); \
+  day_elapsed = std::chrono::duration_cast<ms>(day_end - day_start); \
+  std::cout << "Time: " << day_elapsed.count() << "ms\n\n";
+
 
 int main() {
+  typedef std::chrono::_V2::system_clock::time_point TimePoint;
   typedef std::chrono::high_resolution_clock Time;
   typedef std::chrono::milliseconds ms;
 
-  auto start = Time::now();
+  TimePoint day_start;
+  TimePoint day_end;
+  ms day_elapsed;
+
+  TimePoint start = Time::now();
 
   PRINT_DAY(day01)
   PRINT_DAY(day02)
@@ -61,10 +73,11 @@ int main() {
   PRINT_DAY(day14)
   PRINT_DAY(day15)
   PRINT_DAY(day17)
+  PRINT_DAY(day20)
 
-  auto end = Time::now();
+  TimePoint end = Time::now();
   ms elapsed = std::chrono::duration_cast<ms>(end - start);
-  std::cout << "Elapsed time: " << elapsed.count() << "ms\n";
+  std::cout << "Total time: " << elapsed.count() << "ms\n";
 
   return 0;
 }
