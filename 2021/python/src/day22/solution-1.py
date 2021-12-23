@@ -2,7 +2,7 @@ from re import findall
 
 
 def parse_reboot_steps(input):
-    return [(step[1] == 'n', tuple(map(int, findall('[-0-9]+', step))))
+    return [('on' in step, tuple(map(int, findall('[-0-9]+', step))))
             for step in input.splitlines()]
 
 
@@ -25,7 +25,7 @@ def intersect(a, b):
 
 def part1(input):
     steps = parse_reboot_steps(input)
-    cubes = set()
+    on_cubes = set()
 
     for step in steps:
         on, (xs, Xs, ys, Ys, zs, Zs) = step
@@ -34,11 +34,11 @@ def part1(input):
             for y in range(max(-50, ys), min(50, Ys) + 1):
                 for z in range(max(-50, zs), min(50, Zs) + 1):
                     if on:
-                        cubes.add((x, y, z))
+                        on_cubes.add((x, y, z))
                     else:
-                        cubes.discard((x, y, z))
+                        on_cubes.discard((x, y, z))
 
-    return len(cubes)
+    return len(on_cubes)
 
 
 def part2(input):
