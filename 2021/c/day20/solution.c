@@ -21,21 +21,27 @@ static image_t parse_image(const char *input) {
   for (; offset < 512; offset++)
     image.algorithm[offset] = input[offset] == '#';
 
-  offset += 2; // new lines
+  offset += 2; // empty lines
 
   size_t col = 0;
-  while (input[offset] != '\0') {
+
+  while (true) {
+    if (input[offset] == '\0') {
+      image.size += 1;
+      break;
+    }
+
     if (input[offset] == '\n') {
+      col = 0;
       offset += 1;
       image.size += 1;
-      col = 0;
       continue;
     }
 
-    image.pixels[image.size][col++] = input[offset++] == '#';
+    image.pixels[image.size][col] = input[offset] == '#';
+    col += 1;
+    offset += 1;
   }
-
-  image.size += 1;
 
   return image;
 }
