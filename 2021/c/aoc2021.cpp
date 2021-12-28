@@ -31,6 +31,8 @@
 #include "day14/solution.c"
 #include "day15/input.h"
 #include "day15/solution.c"
+#include "day16/input.h"
+#include "day16/solution.c"
 #include "day17/input.h"
 #include "day17/solution.c"
 #include "day20/input.h"
@@ -74,6 +76,7 @@ int main() {
   PRINT_DAY(day13)
   PRINT_DAY(day14)
   PRINT_DAY(day15)
+  PRINT_DAY(day16)
   PRINT_DAY(day17)
   PRINT_DAY(day20)
   PRINT_DAY(day25)
