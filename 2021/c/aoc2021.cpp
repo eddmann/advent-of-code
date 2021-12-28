@@ -37,6 +37,8 @@
 #include "day17/solution.c"
 #include "day20/input.h"
 #include "day20/solution.c"
+#include "day22/input.h"
+#include "day22/solution.c"
 #include "day25/input.h"
 #include "day25/solution.c"
 
@@ -79,6 +81,7 @@ int main() {
   PRINT_DAY(day16)
   PRINT_DAY(day17)
   PRINT_DAY(day20)
+  PRINT_DAY(day22)
   PRINT_DAY(day25)
 
   TimePoint end = Time::now();
