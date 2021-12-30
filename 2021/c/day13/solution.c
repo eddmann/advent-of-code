@@ -93,6 +93,7 @@ uint32_t day13_part2(const char *input) {
   for (int i = 0; i < dynarray_length(folds); i++)
     apply_fold(&paper, folds[i]);
 
+#ifndef TEST_RUNNER
   printf("\n");
   for (int y = 0; y < paper.height; y++) {
     for (int x = 0; x < paper.width; x++)
@@ -100,6 +101,7 @@ uint32_t day13_part2(const char *input) {
     printf("\n");
   }
   printf("\n");
+#endif
 
   dynarray_destroy(folds);
 
