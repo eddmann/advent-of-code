@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static inline int64_t min_int64(int64_t a, int64_t b) { return a < b ? a : b; }
-static inline int64_t max_int64(int64_t a, int64_t b) { return a > b ? a : b; }
-
 typedef struct {
   int64_t x1, x2, y1, y2, z1, z2;
   bool on;
@@ -37,12 +34,12 @@ static bool has_intersection(cuboid_t a, cuboid_t b) {
 }
 
 static cuboid_t intersect(cuboid_t a, cuboid_t b) {
-  return (cuboid_t){.x1 = max_int64(a.x1, b.x1),
-                    .x2 = min_int64(a.x2, b.x2),
-                    .y1 = max_int64(a.y1, b.y1),
-                    .y2 = min_int64(a.y2, b.y2),
-                    .z1 = max_int64(a.z1, b.z1),
-                    .z2 = min_int64(a.z2, b.z2),
+  return (cuboid_t){.x1 = MAX(a.x1, b.x1),
+                    .x2 = MIN(a.x2, b.x2),
+                    .y1 = MAX(a.y1, b.y1),
+                    .y2 = MIN(a.y2, b.y2),
+                    .z1 = MAX(a.z1, b.z1),
+                    .z2 = MIN(a.z2, b.z2),
                     .on = !b.on};
 }
 

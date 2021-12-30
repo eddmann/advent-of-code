@@ -6,6 +6,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a > _b ? _a : _b;                                                         \
+  })
+
+#define MIN(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a < _b ? _a : _b;                                                         \
+  })
+
+#ifdef TEST_RUNNER
+
+#define AOC_MAIN(day, part1_answer, part2_answer)                              \
+  int main(int argc, char *argv[]) { return EXIT_SUCCESS; }
+
+#elif defined(SINGLE_EXECUTABLE)
+
 static char *read_input(const char *filename) {
   FILE *file = fopen(filename, "rb");
 
@@ -33,13 +54,6 @@ static char *read_input(const char *filename) {
 
   return buffer;
 }
-
-#ifdef TEST_RUNNER
-
-#define AOC_MAIN(day, part1_answer, part2_answer)                              \
-  int main(int argc, char *argv[]) { return EXIT_SUCCESS; }
-
-#elif defined(SINGLE_EXECUTABLE)
 
 #define AOC_MAIN(day, part1_answer, part2_answer)                              \
   int main(int argc, char *argv[]) {                                           \

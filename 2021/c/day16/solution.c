@@ -2,13 +2,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static inline uint64_t min_uint64(uint64_t a, uint64_t b) {
-  return a < b ? a : b;
-}
-static inline uint64_t max_uint64(uint64_t a, uint64_t b) {
-  return a > b ? a : b;
-}
-
 typedef struct {
   char *stream;
   uint16_t pos;
@@ -174,13 +167,13 @@ uint64_t eval(packet_t *packet) {
   case 2: {
     uint64_t min = INT64_MAX;
     for (uint8_t i = 0; i < packet->num_subpackets; i++)
-      min = min_uint64(min, eval(packet->subpackets[i]));
+      min = MIN(min, eval(packet->subpackets[i]));
     return min;
   }
   case 3: {
     uint64_t max = 0;
     for (uint8_t i = 0; i < packet->num_subpackets; i++)
-      max = max_uint64(max, eval(packet->subpackets[i]));
+      max = MAX(max, eval(packet->subpackets[i]));
     return max;
   }
   case 4:

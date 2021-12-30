@@ -30,7 +30,7 @@ static uint32_t max_height_reached(int32_t vel_x, int32_t vel_y,
     vel_x = (vel_x - 1 < 0) ? 0 : vel_x - 1;
     vel_y -= 1;
 
-    max_y = cur_y > max_y ? cur_y : max_y;
+    max_y = MAX(max_y, cur_y);
 
     if (cur_x >= target_bounds.from_x && cur_x <= target_bounds.to_x &&
         cur_y >= target_bounds.from_y && cur_y <= target_bounds.to_y) {
@@ -68,7 +68,7 @@ uint64_t day17_part1(const char *input) {
   for (int32_t x = 0; x < VELOCITY_BOUNDS; x++) {
     for (int32_t y = -VELOCITY_BOUNDS; y < VELOCITY_BOUNDS; y++) {
       uint32_t height = max_height_reached(x, y, target_bounds);
-      max = height > max ? height : max;
+      max = MAX(max, height);
     }
   }
 

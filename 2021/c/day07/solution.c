@@ -4,19 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define max(a, b)                                                              \
-  ({                                                                           \
-    __typeof__(a) _a = (a);                                                    \
-    __typeof__(b) _b = (b);                                                    \
-    _a > _b ? _a : _b;                                                         \
-  })
-#define min(a, b)                                                              \
-  ({                                                                           \
-    __typeof__(a) _a = (a);                                                    \
-    __typeof__(b) _b = (b);                                                    \
-    _a < _b ? _a : _b;                                                         \
-  })
-
 static uint16_t *parse_crab_positions(const char *input) {
   uint16_t *crabs = dynarray_create(uint16_t);
 
@@ -34,7 +21,7 @@ static uint16_t max_crab_position(uint16_t *crabs) {
   uint16_t position = 0;
 
   for (size_t i = 0; i < dynarray_length(crabs); i++) {
-    position = max(position, crabs[i]);
+    position = MAX(position, crabs[i]);
   }
 
   return position;
@@ -59,7 +46,7 @@ uint32_t day07_part1(const char *input) {
   for (uint16_t position = 1; position <= max_crab_position(crabs);
        position++) {
     least_fuel_burnt =
-        min(least_fuel_burnt, calc_fuel_burnt(crabs, position, true));
+        MIN(least_fuel_burnt, calc_fuel_burnt(crabs, position, true));
   }
 
   dynarray_destroy(crabs);
@@ -74,7 +61,7 @@ int day07_part2(const char *input) {
   for (uint16_t position = 1; position <= max_crab_position(crabs);
        position++) {
     least_fuel_burnt =
-        min(least_fuel_burnt, calc_fuel_burnt(crabs, position, false));
+        MIN(least_fuel_burnt, calc_fuel_burnt(crabs, position, false));
   }
 
   dynarray_destroy(crabs);

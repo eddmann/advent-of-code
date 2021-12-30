@@ -39,8 +39,8 @@ uint64_t score(uint64_t frequencies[26]) {
   for (size_t chr = 0; chr < 26; chr++) {
     if (frequencies[chr] == 0)
       continue;
-    max = frequencies[chr] > max ? frequencies[chr] : max;
-    min = frequencies[chr] < min ? frequencies[chr] : min;
+    max = MAX(max, frequencies[chr]);
+    min = MIN(min, frequencies[chr]);
   }
 
   return max - min;

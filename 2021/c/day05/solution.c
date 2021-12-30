@@ -4,12 +4,6 @@
 #include <stdlib.h>
 
 #define sgn(a, b) (b < a) - (a < b)
-#define max(a, b)                                                              \
-  ({                                                                           \
-    __typeof__(a) _a = (a);                                                    \
-    __typeof__(b) _b = (b);                                                    \
-    _a > _b ? _a : _b;                                                         \
-  })
 
 typedef struct Vent {
   uint16_t x1, y1, x2, y2;
@@ -35,8 +29,8 @@ static uint16_t max_coord(vent_t *hydrothermal_vents) {
   uint16_t max;
 
   for (size_t i = 0; i < dynarray_length(hydrothermal_vents); i++) {
-    max = max(max, max(hydrothermal_vents[i].x1, hydrothermal_vents[i].x2));
-    max = max(max, max(hydrothermal_vents[i].y1, hydrothermal_vents[i].y2));
+    max = MAX(max, MAX(hydrothermal_vents[i].x1, hydrothermal_vents[i].x2));
+    max = MAX(max, MAX(hydrothermal_vents[i].y1, hydrothermal_vents[i].y2));
   }
 
   return max;
