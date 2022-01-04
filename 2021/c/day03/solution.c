@@ -1,8 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 #define NIL 0
 
@@ -22,7 +18,7 @@ static uint32_t *parse_diagnostic_report(const char *input) {
   uint32_t *diagnostic_report = dynarray_create(uint32_t);
 
   char bin[13];
-  size_t offset = 0, read = 0;
+  uint32_t offset = 0, read = 0;
 
   while (1 == sscanf(input + offset, "%s\n%n", bin, &read)) {
     uint32_t dec = to_dec(bin);
@@ -52,6 +48,8 @@ static uint32_t first_value(uint32_t *diagnostic_report) {
       return diagnostic_report[i];
     }
   }
+
+  return 0;
 }
 
 static uint8_t common_bit(uint32_t *diagnostic_report, uint8_t bit_position,
@@ -81,7 +79,7 @@ static uint8_t common_bit(uint32_t *diagnostic_report, uint8_t bit_position,
 #define lsb(diagnostic_report, bit_position)                                   \
   common_bit(diagnostic_report, bit_position, false)
 
-uint32_t day03_part1(const char *input) {
+static uint64_t part1(const char *input) {
   uint32_t *diagnostic_report = parse_diagnostic_report(input);
 
   uint32_t gamma_rate = 0, epsilon_rate = 0;
@@ -99,7 +97,7 @@ uint32_t day03_part1(const char *input) {
   return gamma_rate * epsilon_rate;
 }
 
-static uint32_t day03_part2(const char *input) {
+static uint64_t part2(const char *input) {
   uint32_t *oxygen = parse_diagnostic_report(input);
   size_t oxygen_len = dynarray_length(oxygen);
 

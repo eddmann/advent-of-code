@@ -1,7 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdint.h>
-#include <stdlib.h>
 
 #define TOTAL_PAIRS (26 * 26)
 #define idx(chr) (chr - 'A')
@@ -9,7 +6,7 @@
 #define left(pair) (pair / 26)
 #define right(pair) (pair % 26)
 
-typedef struct ParsedInput {
+typedef struct {
   char template_[10];
   uint32_t rules[TOTAL_PAIRS];
 } parsed_input_t;
@@ -17,9 +14,9 @@ typedef struct ParsedInput {
 static parsed_input_t parse_template_and_rules(const char *input) {
   parsed_input_t parsed = {0};
 
-  size_t offset, read;
+  uint32_t offset = 0, read = 0;
 
-  sscanf(input, "%s\n\n%n", &parsed.template_, &read);
+  sscanf(input, "%s\n\n%n", parsed.template_, &read);
   offset += read;
 
   char left, right, translation;
@@ -79,12 +76,12 @@ uint64_t polymerize(char *template_, uint32_t rules[TOTAL_PAIRS],
   return score(frequencies);
 }
 
-uint64_t day14_part1(const char *input) {
+static uint64_t part1(const char *input) {
   parsed_input_t parsed = parse_template_and_rules(input);
   return polymerize(parsed.template_, parsed.rules, 10);
 }
 
-uint64_t day14_part2(const char *input) {
+static uint64_t part2(const char *input) {
   parsed_input_t parsed = parse_template_and_rules(input);
   return polymerize(parsed.template_, parsed.rules, 40);
 }

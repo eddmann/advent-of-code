@@ -1,8 +1,4 @@
 #include "../shared/aoc.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define MAX_IMAGE_SIZE 200
 
@@ -95,7 +91,7 @@ static uint64_t total_lit_pixels(image_t image) {
   return total;
 }
 
-uint64_t day20_part1(const char *input) {
+static uint64_t part1(const char *input) {
   image_t image = parse_image(input);
 
   for (int i = 0; i < 2; i++)
@@ -104,7 +100,7 @@ uint64_t day20_part1(const char *input) {
   return total_lit_pixels(image);
 }
 
-uint64_t day20_part2(const char *input) {
+static uint64_t part2(const char *input) {
   image_t image = parse_image(input);
 
   for (int i = 0; i < 50; i++)

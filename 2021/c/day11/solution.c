@@ -1,12 +1,9 @@
 #include "../shared/aoc.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 #define GRID_SIZE 10
 #define MAX_ENERGY_LEVEL 9
 
-uint8_t **build_octopus_grid(const char *input) {
+static uint8_t **build_octopus_grid(const char *input) {
   uint8_t *rows = calloc(GRID_SIZE * GRID_SIZE, sizeof(uint8_t));
   uint8_t **grid = malloc(GRID_SIZE * sizeof(uint8_t *));
 
@@ -23,7 +20,7 @@ uint8_t **build_octopus_grid(const char *input) {
   return grid;
 }
 
-void step(uint8_t **grid) {
+static void step(uint8_t **grid) {
   for (size_t i = 0; i < GRID_SIZE * GRID_SIZE; i++)
     (*grid)[i] += 1;
 
@@ -59,10 +56,10 @@ void step(uint8_t **grid) {
   }
 }
 
-uint16_t day11_part1(const char *input) {
+static uint64_t part1(const char *input) {
   uint8_t **grid = build_octopus_grid(input);
 
-  uint16_t total_flashes = 0;
+  uint64_t total_flashes = 0;
 
   for (uint8_t i = 0; i < 100; i++) {
     step(grid);
@@ -77,10 +74,10 @@ uint16_t day11_part1(const char *input) {
   return total_flashes;
 }
 
-uint16_t day11_part2(const char *input) {
+static uint64_t part2(const char *input) {
   uint8_t **grid = build_octopus_grid(input);
 
-  uint16_t total_steps = 0;
+  uint64_t total_steps = 0;
 
   bool next_step = true;
   while (next_step) {

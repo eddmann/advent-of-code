@@ -1,7 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdint.h>
-#include <stdlib.h>
 
 #define MAX_STREAM_LENGTH 1315 * 4
 
@@ -17,7 +14,7 @@ typedef struct packet {
   struct packet **subpackets;
 } packet_t;
 
-bitstream_t *create_bitstream(const char *input) {
+static bitstream_t *create_bitstream(const char *input) {
   bitstream_t *bitstream = calloc(1, sizeof(bitstream_t));
   bitstream->stream = calloc(1, MAX_STREAM_LENGTH);
 
@@ -87,7 +84,7 @@ bitstream_t *create_bitstream(const char *input) {
   return bitstream;
 }
 
-uint16_t parse_uint(bitstream_t *bitstream, uint8_t num_bits) {
+static uint16_t parse_uint(bitstream_t *bitstream, uint8_t num_bits) {
   uint16_t res = 0;
   for (uint8_t i = 0; i < num_bits; i++)
     res = res * 2 + (bitstream->stream[bitstream->pos + i] - '0');
@@ -97,7 +94,7 @@ uint16_t parse_uint(bitstream_t *bitstream, uint8_t num_bits) {
   return res;
 }
 
-packet_t *parse_packet(bitstream_t *bitstream) {
+static packet_t *parse_packet(bitstream_t *bitstream) {
   packet_t *packet = calloc(1, sizeof(packet_t));
   packet->subpackets = dynarray_create(packet_t *);
 
@@ -139,38 +136,38 @@ packet_t *parse_packet(bitstream_t *bitstream) {
   return packet;
 }
 
-uint64_t calc_version_total(packet_t *packet) {
+static uint64_t calc_version_total(packet_t *packet) {
   uint64_t total = packet->version;
-  for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++) {
+  for (size_t i = 0; i < dynarray_length(packet->subpackets); i++) {
     total += calc_version_total(packet->subpackets[i]);
   }
 
   return total;
 }
 
-uint64_t eval(packet_t *packet) {
+static uint64_t eval(packet_t *packet) {
   switch (packet->type) {
   case 0: {
     uint64_t sum = 0;
-    for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++)
+    for (size_t i = 0; i < dynarray_length(packet->subpackets); i++)
       sum += eval(packet->subpackets[i]);
     return sum;
   }
   case 1: {
     uint64_t prod = 1;
-    for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++)
+    for (size_t i = 0; i < dynarray_length(packet->subpackets); i++)
       prod *= eval(packet->subpackets[i]);
     return prod;
   }
   case 2: {
     uint64_t min = INT64_MAX;
-    for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++)
+    for (size_t i = 0; i < dynarray_length(packet->subpackets); i++)
       min = MIN(min, eval(packet->subpackets[i]));
     return min;
   }
   case 3: {
     uint64_t max = 0;
-    for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++)
+    for (size_t i = 0; i < dynarray_length(packet->subpackets); i++)
       max = MAX(max, eval(packet->subpackets[i]));
     return max;
   }
@@ -187,10 +184,9 @@ uint64_t eval(packet_t *packet) {
   }
 }
 
-void packet_destroy(packet_t *packet) {
-  for (uint8_t i = 0; i < dynarray_length(packet->subpackets); i++) {
+static void packet_destroy(packet_t *packet) {
+  for (size_t i = 0; i < dynarray_length(packet->subpackets); i++)
     packet_destroy(packet->subpackets[i]);
-  }
 
   dynarray_destroy(packet->subpackets);
   free(packet);
@@ -201,7 +197,7 @@ void bitstream_destroy(bitstream_t *bitstream) {
   free(bitstream);
 }
 
-uint64_t day16_part1(const char *input) {
+static uint64_t part1(const char *input) {
   bitstream_t *bitstream = create_bitstream(input);
   packet_t *root_packet = parse_packet(bitstream);
 
@@ -213,7 +209,7 @@ uint64_t day16_part1(const char *input) {
   return total;
 }
 
-uint64_t day16_part2(const char *input) {
+static uint64_t part2(const char *input) {
   bitstream_t *bitstream = create_bitstream(input);
   packet_t *root_packet = parse_packet(bitstream);
 

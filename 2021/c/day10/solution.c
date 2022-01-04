@@ -1,7 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdint.h>
-#include <stdlib.h>
 
 #define BUFFER_SIZE 4096
 
@@ -79,9 +76,10 @@ static int cmp_ascending(const void *a, const void *b) {
   return 0;
 }
 
-uint32_t day10_part1(const char *input) {
+static uint64_t part1(const char *input) {
   char line[BUFFER_SIZE];
-  int read = 0, offset = 0, score = 0;
+  uint32_t read = 0, offset = 0;
+  uint64_t score = 0;
 
   while (1 == sscanf(input + offset, "%s%n", line, &read)) {
     score += syntax_error_score(line);
@@ -91,9 +89,9 @@ uint32_t day10_part1(const char *input) {
   return score;
 }
 
-uint64_t day10_part2(const char *input) {
+static uint64_t part2(const char *input) {
   char line[BUFFER_SIZE];
-  size_t read = 0, offset = 0;
+  uint32_t read = 0, offset = 0;
   uint64_t *scores = dynarray_create(uint64_t);
 
   while (1 == sscanf(input + offset, "%s%n", line, &read)) {
@@ -106,7 +104,7 @@ uint64_t day10_part2(const char *input) {
 
   qsort(scores, dynarray_length(scores), sizeof(uint64_t), cmp_ascending);
 
-  uint32_t result = scores[dynarray_length(scores) / 2];
+  uint64_t result = scores[dynarray_length(scores) / 2];
 
   dynarray_destroy(scores);
 

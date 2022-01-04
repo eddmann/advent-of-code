@@ -1,17 +1,14 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 #define STAMPED 255
 #define GRID_SIZE 5
 
-static uint8_t *parse_numbers(const char *input, size_t *offset) {
+static uint8_t *parse_numbers(const char *input, uint32_t *offset) {
   uint8_t *numbers = dynarray_create(uint8_t);
 
   uint8_t number;
-  size_t read = 0;
+  uint32_t read = 0;
+
   while (1 == sscanf(input + (*offset), "%" SCNu8 "%n", &number, &read)) {
     dynarray_push(numbers, number);
     *offset += read + 1;
@@ -23,11 +20,11 @@ static uint8_t *parse_numbers(const char *input, size_t *offset) {
   return numbers;
 }
 
-static uint8_t *parse_board(const char *input, size_t *offset) {
+static uint8_t *parse_board(const char *input, uint32_t *offset) {
   uint8_t *board = dynarray_create(uint8_t);
 
   uint8_t number;
-  size_t read = 0;
+  uint32_t read = 0;
   while (1 == sscanf(input + (*offset), "%" SCNu8 "%n", &number, &read)) {
     dynarray_push(board, number);
     *offset += read + 1;
@@ -39,7 +36,7 @@ static uint8_t *parse_board(const char *input, size_t *offset) {
   return board;
 }
 
-static uint8_t **parse_boards(const char *input, size_t *offset) {
+static uint8_t **parse_boards(const char *input, uint32_t *offset) {
   uint8_t **boards = dynarray_create(uint8_t *);
 
   while (input[*offset] != '\0') {
@@ -98,8 +95,8 @@ static bool is_all_winners(uint8_t **boards) {
   return true;
 }
 
-static uint32_t sum_unstamped_numbers(uint8_t *board) {
-  uint32_t sum = 0;
+static uint64_t sum_unstamped_numbers(uint8_t *board) {
+  uint64_t sum = 0;
 
   for (size_t i = 0; i < dynarray_length(board); i++) {
     if (board[i] != STAMPED) {
@@ -110,12 +107,12 @@ static uint32_t sum_unstamped_numbers(uint8_t *board) {
   return sum;
 }
 
-uint32_t day04_part1(const char *input) {
-  size_t offset = 0;
+static uint64_t part1(const char *input) {
+  uint32_t offset = 0;
   uint8_t *numbers = parse_numbers(input, &offset);
   uint8_t **boards = parse_boards(input, &offset);
 
-  uint32_t score = 0;
+  uint64_t score = 0;
 
   for (size_t i = 0; i < dynarray_length(numbers); i++) {
     uint8_t number = numbers[i];
@@ -134,19 +131,17 @@ uint32_t day04_part1(const char *input) {
 
 score:
   dynarray_destroy(numbers);
-  for (size_t i = 0; i < dynarray_length(boards); i++)
-    dynarray_destroy(boards[i]);
   dynarray_destroy(boards);
 
   return score;
 }
 
-uint32_t day04_part2(const char *input) {
-  size_t offset = 0;
+static uint64_t part2(const char *input) {
+  uint32_t offset = 0;
   uint8_t *numbers = parse_numbers(input, &offset);
   uint8_t **boards = parse_boards(input, &offset);
 
-  uint32_t score = 0;
+  uint64_t score = 0;
 
   for (size_t i = 0; i < dynarray_length(numbers); i++) {
     uint8_t number = numbers[i];

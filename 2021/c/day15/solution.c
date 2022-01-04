@@ -1,24 +1,21 @@
 #include "../shared/aoc.h"
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define GRID_SIZE 100
 
 typedef struct {
   uint32_t risk, point;
-} rpoint_t;
+} r_point_t;
 
 typedef struct {
-  rpoint_t *points;
+  r_point_t *points;
   uint32_t length, size;
 } point_heap_t;
 
-void point_heap_push(point_heap_t *heap, uint32_t risk, uint32_t point) {
+static void point_heap_push(point_heap_t *heap, uint32_t risk, uint32_t point) {
   if (heap->length + 1 >= heap->size) {
     heap->size = heap->size ? heap->size * 2 : 4;
     heap->points =
-        (rpoint_t *)realloc(heap->points, heap->size * sizeof(rpoint_t));
+        (r_point_t *)realloc(heap->points, heap->size * sizeof(r_point_t));
   }
 
   uint32_t i = heap->length + 1;
@@ -35,7 +32,7 @@ void point_heap_push(point_heap_t *heap, uint32_t risk, uint32_t point) {
   heap->length++;
 }
 
-uint32_t point_heap_pop(point_heap_t *heap) {
+static uint32_t point_heap_pop(point_heap_t *heap) {
   uint32_t point = heap->points[1].point;
 
   heap->points[1] = heap->points[heap->length];
@@ -57,15 +54,15 @@ uint32_t point_heap_pop(point_heap_t *heap) {
   return point;
 }
 
-uint8_t risk_level(uint8_t grid[GRID_SIZE * GRID_SIZE], uint32_t x,
-                   uint32_t y) {
+static uint8_t risk_level(uint8_t grid[GRID_SIZE * GRID_SIZE], uint32_t x,
+                          uint32_t y) {
   uint8_t risk = ((x / GRID_SIZE) + (y / GRID_SIZE) +
                   grid[(x % GRID_SIZE) * GRID_SIZE + (y % GRID_SIZE)]) %
                  9;
   return risk == 0 ? 9 : risk;
 }
 
-uint32_t calc_lowest_risk(const char *input, uint8_t scale) {
+static uint32_t calc_lowest_risk(const char *input, uint8_t scale) {
   uint8_t grid[GRID_SIZE * GRID_SIZE];
 
   size_t input_idx = 0;
@@ -115,8 +112,8 @@ uint32_t calc_lowest_risk(const char *input, uint8_t scale) {
   return risk_levels[(GRID_SIZE * scale) * (GRID_SIZE * scale) - 1];
 }
 
-uint64_t day15_part1(const char *input) { return calc_lowest_risk(input, 1); }
+static uint64_t part1(const char *input) { return calc_lowest_risk(input, 1); }
 
-uint64_t day15_part2(const char *input) { return calc_lowest_risk(input, 5); }
+static uint64_t part2(const char *input) { return calc_lowest_risk(input, 5); }
 
 AOC_MAIN(day15, 811, 3012);

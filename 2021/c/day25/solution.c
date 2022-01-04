@@ -1,16 +1,12 @@
 #include "../shared/aoc.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define MAX_SIZE 150
 
-uint64_t day25_part1(const char *input) {
+static uint64_t part1(const char *input) {
   char cucumbers[MAX_SIZE][MAX_SIZE];
   uint16_t width = 0, height = 0;
 
-  size_t offset = 0, read = 0;
+  uint32_t offset = 0, read = 0;
   while (1 == sscanf(input + offset, "%s\n%n", cucumbers[height], &read)) {
     height += 1;
     offset += read;
@@ -66,6 +62,6 @@ uint64_t day25_part1(const char *input) {
   return total_steps;
 }
 
-uint64_t day25_part2(const char *input) { return 0; }
+static uint64_t part2(const char *input) { return 0; }
 
 AOC_MAIN(day25, 412, 0);

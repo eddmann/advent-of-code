@@ -1,7 +1,10 @@
 #ifndef AOC
 #define AOC
 
+#include "dynarray.h"
+#include <assert.h>
 #include <inttypes.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,6 +21,8 @@
     __typeof__(b) _b = (b);                                                    \
     _a < _b ? _a : _b;                                                         \
   })
+
+#ifdef TEST_RUNNER
 
 static char *read_input(const char *filename) {
   FILE *file = fopen(filename, "rb");
@@ -47,25 +52,21 @@ static char *read_input(const char *filename) {
   return buffer;
 }
 
-#ifdef TEST_RUNNER
-
-#define AOC_MAIN(day, part1_answer, part2_answer)                              \
+#define AOC_MAIN(day, p1_answer, p2_answer)                                    \
   int main(int argc, char *argv[]) {                                           \
     char *input = read_input("input.txt");                                     \
-    uint64_t part1 = day##_part1(input);                                       \
-    if (part1 == part1_answer) {                                               \
+    uint64_t p1 = part1(input);                                                \
+    if (p1 == p1_answer) {                                                     \
       printf(#day " p1 ✔\n");                                                  \
     } else {                                                                   \
-      printf(#day " p1 ✗ - expected %" PRId64 ", got %" PRId64 "\n",           \
-             part1_answer, part1);                                             \
+      printf(#day " p1 ✗ - expected " #p1_answer ", got %" PRId64 "\n", p1);   \
       exit(1);                                                                 \
     }                                                                          \
-    uint64_t part2 = day##_part2(input);                                       \
-    if (part2 == part2_answer) {                                               \
+    uint64_t p2 = part2(input);                                                \
+    if (p2 == p2_answer) {                                                     \
       printf(#day " p2 ✔\n");                                                  \
     } else {                                                                   \
-      printf(#day " p2 ✗ - expected %" PRId64 ", got %" PRId64 "\n",           \
-             part2_answer, part2);                                             \
+      printf(#day " p2 ✗ - expected " #p2_answer ", got %" PRId64 "\n", p2);   \
       exit(1);                                                                 \
     }                                                                          \
     free(input);                                                               \
@@ -74,20 +75,54 @@ static char *read_input(const char *filename) {
 
 #elif defined(SINGLE_EXECUTABLE)
 
-#define AOC_MAIN(day, part1_answer, part2_answer)                              \
+static char *read_input(const char *filename) {
+  FILE *file = fopen(filename, "rb");
+
+  if (!file) {
+    printf("[ERROR] File not found\n");
+    exit(EXIT_FAILURE);
+  }
+
+  fseek(file, 0, SEEK_END);
+  size_t length = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  char *buffer = (char *)malloc(length + 1);
+
+  size_t read = length > 0 ? fread(buffer, 1, length, file) : 0;
+  if (read != length) {
+    free(buffer);
+    printf("[ERROR] Failed to read file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  fclose(file);
+
+  buffer[length] = '\0';
+
+  return buffer;
+}
+
+#define AOC_MAIN(day, p1_answer, p2_answer)                                    \
   int main(int argc, char *argv[]) {                                           \
     char *input = read_input("input.txt");                                     \
-    uint64_t part1 = day##_part1(input);                                       \
-    printf("Part 1: %" PRId64 "\n", part1);                                    \
-    uint64_t part2 = day##_part2(input);                                       \
-    printf("Part 2: %" PRId64 "\n", part2);                                    \
+    printf("Part 1: %" PRId64 "\n", part1(input));                             \
+    printf("Part 2: %" PRId64 "\n", part2(input));                             \
     free(input);                                                               \
     return EXIT_SUCCESS;                                                       \
   }
 
 #else
 
-#define AOC_MAIN(day, part1_answer, part2_answer)
+#define AOC_MAIN(day, p1_answer, p2_answer)                                    \
+  void day(char *input) {                                                      \
+    uint64_t p1 = part1(input);                                                \
+    assert(p1 == p1_answer);                                                   \
+    printf("Part 1: %" PRId64 "\n", p1);                                       \
+    uint64_t p2 = part2(input);                                                \
+    assert(p2 == p2_answer);                                                   \
+    printf("Part 2: %" PRId64 "\n", p2);                                       \
+  }
 
 #endif
 

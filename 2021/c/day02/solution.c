@@ -1,9 +1,6 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdint.h>
-#include <stdlib.h>
 
-typedef struct Instruction {
+typedef struct {
   char move;
   uint8_t times;
 } instruction_t;
@@ -13,11 +10,11 @@ static instruction_t *parse_course(const char *input) {
 
   char move;
   uint8_t times;
-  size_t offset = 0, read = 0;
+  uint32_t offset = 0, read = 0;
 
   while (2 ==
          sscanf(input + offset, "%c%*s%" SCNu8 "\n%n", &move, &times, &read)) {
-    instruction_t instruction = {.move = move, .times = times};
+    instruction_t instruction = {move, times};
     dynarray_push(course, instruction);
     offset += read;
   }
@@ -25,10 +22,10 @@ static instruction_t *parse_course(const char *input) {
   return course;
 }
 
-uint32_t day02_part1(char *input) {
+static uint64_t part1(char *input) {
   instruction_t *course = parse_course(input);
 
-  uint32_t horizontal = 0, depth = 0;
+  uint64_t horizontal = 0, depth = 0;
 
   for (size_t i = 0; i < dynarray_length(course); i++) {
     switch (course[i].move) {
@@ -49,10 +46,10 @@ uint32_t day02_part1(char *input) {
   return horizontal * depth;
 }
 
-uint32_t day02_part2(char *input) {
+static uint64_t part2(char *input) {
   instruction_t *course = parse_course(input);
 
-  uint32_t horizontal = 0, depth = 0, aim = 0;
+  uint64_t horizontal = 0, depth = 0, aim = 0;
 
   for (size_t i = 0; i < dynarray_length(course); i++) {
     switch (course[i].move) {

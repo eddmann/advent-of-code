@@ -1,16 +1,11 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 #define GRID_SIZE 100
 #define MAX_HEIGHT 9
 
-typedef struct Point {
-  int x;
-  int y;
-} point_t;
+typedef struct {
+  uint16_t x, y;
+} hm_point_t;
 
 static uint8_t **parse_heightmap(const char *input) {
   uint8_t *rows = calloc((GRID_SIZE + 2) * (GRID_SIZE + 2), sizeof(uint8_t));
@@ -19,7 +14,7 @@ static uint8_t **parse_heightmap(const char *input) {
     heightmap[i] = rows + i * (GRID_SIZE + 2);
   }
 
-  int pos = 0;
+  size_t pos = 0;
   for (size_t x = 1; x <= GRID_SIZE; x++) {
     for (size_t y = 1; y <= GRID_SIZE; y++) {
       heightmap[x][y] = input[pos++] - '0';
@@ -35,8 +30,8 @@ static uint8_t **parse_heightmap(const char *input) {
   return heightmap;
 }
 
-static point_t *find_low_points(uint8_t **heightmap) {
-  point_t *low_points = dynarray_create(point_t);
+static hm_point_t *find_low_points(uint8_t **heightmap) {
+  hm_point_t *low_points = dynarray_create(hm_point_t);
 
   for (size_t x = 1; x <= GRID_SIZE; x++) {
     for (size_t y = 1; y <= GRID_SIZE; y++) {
@@ -44,7 +39,7 @@ static point_t *find_low_points(uint8_t **heightmap) {
           heightmap[x][y] < heightmap[x][y - 1] &&
           heightmap[x][y] < heightmap[x + 1][y] &&
           heightmap[x][y] < heightmap[x][y + 1]) {
-        point_t point = {.x = x, .y = y};
+        hm_point_t point = {.x = x, .y = y};
         dynarray_push(low_points, point);
       }
     }
@@ -53,20 +48,20 @@ static point_t *find_low_points(uint8_t **heightmap) {
   return low_points;
 }
 
-static uint32_t calc_basin_size(uint8_t **heightmap, point_t start) {
+static uint32_t calc_basin_size(uint8_t **heightmap, hm_point_t start) {
   bool *rows = calloc((GRID_SIZE + 2) * (GRID_SIZE + 2), sizeof(bool));
   bool **visited = malloc((GRID_SIZE + 2) * sizeof(bool *));
   for (size_t i = 0; i < GRID_SIZE + 2; i++) {
     visited[i] = rows + i * (GRID_SIZE + 2);
   }
 
-  point_t *stack = dynarray_create(point_t);
+  hm_point_t *stack = dynarray_create(hm_point_t);
   dynarray_push(stack, start);
 
   uint32_t size = 0;
 
   while (dynarray_length(stack) > 0) {
-    point_t point;
+    hm_point_t point;
     dynarray_pop(stack, &point);
 
     if (heightmap[point.x][point.y] == MAX_HEIGHT ||
@@ -77,13 +72,13 @@ static uint32_t calc_basin_size(uint8_t **heightmap, point_t start) {
     visited[point.x][point.y] = true;
     size += 1;
 
-    point_t up = {.x = point.x - 1, .y = point.y};
+    hm_point_t up = {.x = point.x - 1, .y = point.y};
     dynarray_push(stack, up);
-    point_t down = {.x = point.x + 1, .y = point.y};
+    hm_point_t down = {.x = point.x + 1, .y = point.y};
     dynarray_push(stack, down);
-    point_t left = {.x = point.x, .y = point.y - 1};
+    hm_point_t left = {.x = point.x, .y = point.y - 1};
     dynarray_push(stack, left);
-    point_t right = {.x = point.x, .y = point.y + 1};
+    hm_point_t right = {.x = point.x, .y = point.y + 1};
     dynarray_push(stack, right);
   }
 
@@ -98,14 +93,14 @@ static int cmp_descending(const void *a, const void *b) {
   return *(int *)b - *(int *)a;
 }
 
-uint32_t day09_part1(const char *input) {
+static uint64_t part1(const char *input) {
   uint8_t **heightmap = parse_heightmap(input);
-  point_t *low_points = find_low_points(heightmap);
+  hm_point_t *low_points = find_low_points(heightmap);
 
   uint32_t sum = 0;
 
   for (size_t i = 0; i < dynarray_length(low_points); i++) {
-    point_t low_point = low_points[i];
+    hm_point_t low_point = low_points[i];
     sum += heightmap[low_point.x][low_point.y] + 1;
   }
 
@@ -116,9 +111,9 @@ uint32_t day09_part1(const char *input) {
   return sum;
 }
 
-uint32_t day09_part2(const char *input) {
+static uint64_t part2(const char *input) {
   uint8_t **heightmap = parse_heightmap(input);
-  point_t *low_points = find_low_points(heightmap);
+  hm_point_t *low_points = find_low_points(heightmap);
   uint32_t *basins = dynarray_create(uint32_t);
 
   for (size_t i = 0; i < dynarray_length(low_points); i++) {

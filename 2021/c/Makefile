@@ -2,11 +2,14 @@
 
 IMAGE = gcc:11.2.0
 DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
-CFLAGS = -std=gnu11 -march=native -O2
+CFLAGS = -std=gnu11 -march=native -O2 -Wall
+SOURCE = $(wildcard shared/* day*/input.h day*/solution.c)
 
+.PHONY: shell
 shell:
 	@$(DOCKER) -it $(IMAGE) bash
 
+.PHONY: fmt
 fmt:
 	@$(DOCKER) --entrypoint= mikedld/clang-format \
 	  sh -c 'find . -iname *.h -o -iname *.c | xargs clang-format -i --style=LLVM'
@@ -15,6 +18,7 @@ solve/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) \
 	  sh -c 'gcc -D SINGLE_EXECUTABLE ${CFLAGS} -o solution solution.c ../shared/* && ./solution'
 
+.PHONY: test
 test:
 	@$(DOCKER) -e DAY -w /app $(IMAGE) \
 	  sh -c ' \
@@ -24,6 +28,7 @@ test:
 		  ./solution || exit 1; \
 	    done'
 
+.PHONY: build
 build:
-	@$(DOCKER) -w /app $(IMAGE) \
-	  sh -c 'g++ -Wno-pointer-arith -fpermissive -O2 -o aoc2021 ./aoc2021.cpp shared/* && ./aoc2021'
+	@$(DOCKER) -e DAY -w /app $(IMAGE) \
+	  sh -c 'gcc ${CFLAGS} -o aoc2021 $(SOURCE) aoc2021.c && ./aoc2021'

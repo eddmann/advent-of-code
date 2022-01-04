@@ -1,8 +1,4 @@
 #include "../shared/aoc.h"
-#include "../shared/dynarray.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 typedef struct {
   int64_t x1, x2, y1, y2, z1, z2;
@@ -12,13 +8,13 @@ typedef struct {
 static cuboid_t *parse_cuboids(const char *input) {
   cuboid_t *cuboids = dynarray_create(cuboid_t);
 
-  size_t offset = 0, read = 0;
+  uint32_t offset = 0, read = 0;
   int64_t x1, y1, z1, x2, y2, z2;
   char state[5];
 
   while (sscanf(input + offset,
-                " %s x=%" PRId64 "..%" PRId64 ",y=%" PRId64 "..%" PRId64
-                ",z=%" PRId64 "..%" PRId64 "%n",
+                " %s x=%" SCNi64 "..%" SCNi64 ",y=%" SCNi64 "..%" SCNi64
+                ",z=%" SCNi64 "..%" SCNi64 "%n",
                 state, &x1, &x2, &y1, &y2, &z1, &z2, &read) == 7) {
     cuboid_t c = {x1, x2, y1, y2, z1, z2, state[1] == 'n'};
     dynarray_push(cuboids, c);
@@ -75,7 +71,7 @@ static int64_t total_on_cubes(cuboid_t *cuboids) {
   return total;
 }
 
-uint64_t day22_part1(const char *input) {
+static uint64_t part1(const char *input) {
   cuboid_t *cuboids = parse_cuboids(input);
 
   cuboid_t *bounded_cuboids = dynarray_create(cuboid_t);
@@ -94,7 +90,7 @@ uint64_t day22_part1(const char *input) {
   return total;
 }
 
-uint64_t day22_part2(const char *input) {
+static uint64_t part2(const char *input) {
   cuboid_t *cuboids = parse_cuboids(input);
 
   uint64_t total = total_on_cubes(cuboids);

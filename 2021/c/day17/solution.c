@@ -1,7 +1,4 @@
 #include "../shared/aoc.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 #define VELOCITY_BOUNDS 157
 
@@ -13,8 +10,10 @@ typedef struct {
 static target_bounds_t parse_target_bounds(const char *input) {
   target_bounds_t target_bounds;
 
-  sscanf(input, "target area: x=%d..%d, y=%d..%d", &target_bounds.from_x,
-         &target_bounds.to_x, &target_bounds.from_y, &target_bounds.to_y);
+  sscanf(input,
+         "target area: x=%" SCNu32 "..%" SCNu32 ", y=%" SCNu32 "..%" SCNu32,
+         &target_bounds.from_x, &target_bounds.to_x, &target_bounds.from_y,
+         &target_bounds.to_y);
 
   return target_bounds;
 }
@@ -41,8 +40,8 @@ static uint32_t max_height_reached(int32_t vel_x, int32_t vel_y,
   return 0;
 }
 
-static uint32_t is_target_hit(int32_t vel_x, int32_t vel_y,
-                              target_bounds_t target_bounds) {
+static bool is_target_hit(int32_t vel_x, int32_t vel_y,
+                          target_bounds_t target_bounds) {
   int32_t cur_x = 0, cur_y = 0;
 
   while (cur_x <= target_bounds.to_x && cur_y >= target_bounds.from_y) {
@@ -60,25 +59,24 @@ static uint32_t is_target_hit(int32_t vel_x, int32_t vel_y,
   return false;
 }
 
-uint64_t day17_part1(const char *input) {
+static uint64_t part1(const char *input) {
   target_bounds_t target_bounds = parse_target_bounds(input);
 
-  uint32_t max = 0;
+  uint64_t max = 0;
 
   for (int32_t x = 0; x < VELOCITY_BOUNDS; x++) {
     for (int32_t y = -VELOCITY_BOUNDS; y < VELOCITY_BOUNDS; y++) {
-      uint32_t height = max_height_reached(x, y, target_bounds);
-      max = MAX(max, height);
+      max = MAX(max, max_height_reached(x, y, target_bounds));
     }
   }
 
   return max;
 }
 
-uint64_t day17_part2(const char *input) {
+static uint64_t part2(const char *input) {
   target_bounds_t target_bounds = parse_target_bounds(input);
 
-  uint32_t total = 0;
+  uint64_t total = 0;
 
   for (int32_t x = 0; x < VELOCITY_BOUNDS; x++) {
     for (int32_t y = -VELOCITY_BOUNDS; y < VELOCITY_BOUNDS; y++) {
