@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := shell
+.DEFAULT_GOAL := build
 
 IMAGE = gcc:11.2.0
 DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app

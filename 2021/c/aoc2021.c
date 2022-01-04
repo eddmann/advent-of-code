@@ -53,6 +53,8 @@ void day25(const char *input);
 int main(int argc, char **argv) {
   struct timeval start, end, diff;
 
+  printf("   ,--.\n  ()   \\\n   /    \\\n _/______\\_\n(__________)\n(/  @  @  \\)\n(`._,()._,')  AoC 2021 in C\n(  `-'`-'  )\n \\        /\n  \\,,,,,,/\n");
+
   gettimeofday(&start, NULL);
 
   RUN(day01);
