@@ -32,3 +32,27 @@ test:
 build:
 	@$(DOCKER) -e DAY -w /app $(IMAGE) \
 	  sh -c 'gcc ${CFLAGS} -o aoc2021 $(SOURCE) aoc2021.c && ./aoc2021'
+
+.PHONY: pico/setup
+pico/setup:
+	rm -fr pico/pico-sdk
+	git clone git@github.com:raspberrypi/pico-sdk.git pico/pico-sdk
+	git -C pico/pico-sdk submodule update --init
+
+.PHONY: pico/build
+pico/build:
+	@docker run --rm \
+	  -v $(PWD):/app \
+	  -w /app \
+	  -e PICO_SDK_PATH="/app/pico/pico-sdk" \
+	  xingrz/rpi-pico-builder:latest \
+	  bash -c 'mkdir -p pico/build && cd pico/build && cmake .. && make'
+
+.PHONY: pico/shell
+pico/shell:
+	@docker run --rm -it \
+	  -v $(PWD):/app \
+	  -w /app \
+	  -e PICO_SDK_PATH="/app/pico/pico-sdk" \
+	  xingrz/rpi-pico-builder:latest \
+	  bash
