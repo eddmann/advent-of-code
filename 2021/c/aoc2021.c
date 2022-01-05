@@ -53,7 +53,9 @@ void day25(const char *input);
 int main(int argc, char **argv) {
   struct timeval start, end, diff;
 
-  printf("   ,--.\n  ()   \\\n   /    \\\n _/______\\_\n(__________)\n(/  @  @  \\)\n(`._,()._,')  AoC 2021 in C\n(  `-'`-'  )\n \\        /\n  \\,,,,,,/\n");
+  printf("   ,--.\n  ()   \\\n   /    \\\n _/______\\_\n(__________)\n(/  @  @ "
+         " \\)\n(`._,()._,')  AoC 2021 in C\n(  `-'`-'  )\n \\        /\n  "
+         "\\,,,,,,/\n");
 
   gettimeofday(&start, NULL);
 
@@ -82,7 +84,8 @@ int main(int argc, char **argv) {
   timersub(&end, &start, &diff);
 
   uint64_t total = (uint64_t)(diff.tv_sec * 1000000) + (uint64_t)diff.tv_usec;
-  printf("\nTotal: %" PRId64 " μs (%.2f s)\n", total, (double)total / 1000000.0);
+  printf("\nTotal: %" PRId64 " μs (%.2f s)\n", total,
+         (double)total / 1000000.0);
 
   return EXIT_SUCCESS;
 }
