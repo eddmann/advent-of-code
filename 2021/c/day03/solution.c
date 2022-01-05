@@ -33,10 +33,17 @@ static int32_t bit_width(uint32_t *diagnostic_report) {
   int32_t width = 0;
 
   for (size_t i = 0; i < dynarray_length(diagnostic_report); i++) {
-    int32_t msb;
+    int32_t msb = 0;
+
+  #ifdef AOC_PICO
+    uint32_t report = diagnostic_report[i];
+    while (report >>= 1)
+      msb++;
+  #else
     asm("bsrl %1,%0" : "=r"(msb) : "r"(diagnostic_report[i]));
-    if (msb > width)
-      width = msb;
+  #endif
+
+    width = MAX(width, msb);
   }
 
   return width;
