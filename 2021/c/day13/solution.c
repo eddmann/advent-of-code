@@ -89,7 +89,7 @@ static uint64_t part2(const char *input) {
   for (size_t i = 0; i < dynarray_length(folds); i++)
     apply_fold(&paper, folds[i]);
 
-#ifdef SINGLE_EXECUTABLE
+#ifdef AOC_SINGLE_EXECUTABLE
   printf("\n");
   for (size_t y = 0; y < paper.height; y++) {
     for (size_t x = 0; x < paper.width; x++)

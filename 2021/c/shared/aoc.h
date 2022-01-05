@@ -22,7 +22,7 @@
     _a < _b ? _a : _b;                                                         \
   })
 
-#ifdef TEST_RUNNER
+#ifdef AOC_TEST_RUNNER
 
 static char *read_input(const char *filename) {
   FILE *file = fopen(filename, "rb");
@@ -73,7 +73,7 @@ static char *read_input(const char *filename) {
     return EXIT_SUCCESS;                                                       \
   }
 
-#elif defined(SINGLE_EXECUTABLE)
+#elif defined(AOC_SINGLE_EXECUTABLE)
 
 static char *read_input(const char *filename) {
   FILE *file = fopen(filename, "rb");
@@ -111,6 +111,15 @@ static char *read_input(const char *filename) {
     free(input);                                                               \
     return EXIT_SUCCESS;                                                       \
   }
+
+#elif defined(AOC_PICO)
+
+#define SCNu8 "hhu"
+#define SCNi64 "lli"
+
+#define AOC_MAIN(day, p1_answer, p2_answer)                                    \
+  uint64_t day##_part1(char *input) { return part1(input); }                   \
+  uint64_t day##_part2(char *input) { return part2(input); }
 
 #else
 

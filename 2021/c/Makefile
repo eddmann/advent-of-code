@@ -16,7 +16,7 @@ fmt:
 
 solve/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) \
-	  sh -c 'gcc -D SINGLE_EXECUTABLE ${CFLAGS} -o solution solution.c ../shared/* && ./solution'
+	  sh -c 'gcc -D AOC_SINGLE_EXECUTABLE ${CFLAGS} -o solution solution.c ../shared/* && ./solution'
 
 .PHONY: test
 test:
@@ -24,7 +24,7 @@ test:
 	  sh -c ' \
 	    for s in /app/day$${DAY:-*}/solution.c; \
 	      do cd $$(dirname $$s); \
-	      gcc -D TEST_RUNNER ${CFLAGS} -o solution solution.c ../shared/*; \
+	      gcc -D AOC_TEST_RUNNER ${CFLAGS} -o solution solution.c ../shared/*; \
 		  ./solution || exit 1; \
 	    done'
 
