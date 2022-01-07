@@ -2,7 +2,7 @@
 
 IMAGE = gcc:11.2.0
 DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
-CFLAGS = -std=gnu11 -march=native -O2 -Wall
+CFLAGS = -std=gnu11 -march=native -Ofast -Wall -Werror
 SOURCE = $(wildcard shared/* day*/input.h day*/solution.c)
 
 .PHONY: shell
