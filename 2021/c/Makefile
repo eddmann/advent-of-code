@@ -12,7 +12,7 @@ shell:
 .PHONY: fmt
 fmt:
 	@$(DOCKER) --entrypoint= mikedld/clang-format \
-	  sh -c 'find . -iname *.h -o -iname *.c | xargs clang-format -i --style=LLVM'
+	  sh -c "find . -type f -iname '*.h' -o -iname '*.c' | xargs clang-format -i --style=LLVM"
 
 solve/%:
 	@$(DOCKER) -w /app/day$* $(IMAGE) \
