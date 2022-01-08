@@ -28,7 +28,7 @@ The desired end-goal is to be able to run the entire calendar on the Microcontro
 | Day 15 | ✔      | ✔   |      |
 | Day 16 | ✔      | ✔   |      |
 | Day 17 | ✔      | ✔   |      |
-| Day 18 | ✔      |     |      |
+| Day 18 | ✔      | ✔   |      |
 | Day 19 | ✔      |     |      |
 | Day 20 | ✔      | ✔   |      |
 | Day 21 | ✔      |     |      |
