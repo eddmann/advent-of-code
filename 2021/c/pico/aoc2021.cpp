@@ -23,6 +23,7 @@
 #include "../day15/input.h"
 #include "../day16/input.h"
 #include "../day17/input.h"
+#include "../day18/input.h"
 #include "../day20/input.h"
 #include "../day22/input.h"
 #include "../day25/input.h"
@@ -71,30 +72,30 @@ inline void blank_screen() {
 }
 
 SOLUTION(day01);
-SOLUTION(day02);
+NOT_IMPLEMENTED(day02);
 SOLUTION(day03);
-SOLUTION(day04);
-SOLUTION(day05);
-SOLUTION(day06);
-SOLUTION(day07);
-SOLUTION(day08);
+NOT_IMPLEMENTED(day04);
+NOT_IMPLEMENTED(day05);
+NOT_IMPLEMENTED(day06);
+NOT_IMPLEMENTED(day07);
+NOT_IMPLEMENTED(day08);
 SOLUTION(day09);
 SOLUTION(day10);
 SOLUTION(day11);
 SOLUTION(day12);
-SOLUTION(day13);
+NOT_IMPLEMENTED(day13);
 SOLUTION(day14);
-SOLUTION(day15);
+NOT_IMPLEMENTED(day15);
 SOLUTION(day16);
 SOLUTION(day17);
-NOT_IMPLEMENTED(day18);
+SOLUTION(day18);
 NOT_IMPLEMENTED(day19);
-SOLUTION(day20);
+NOT_IMPLEMENTED(day20);
 NOT_IMPLEMENTED(day21);
 NOT_IMPLEMENTED(day22);
 NOT_IMPLEMENTED(day23);
 NOT_IMPLEMENTED(day24);
-SOLUTION(day25);
+NOT_IMPLEMENTED(day25);
 
 void (*solutions[])() = {day01, day02, day03, day04, day05, day06,
                          day07, day08, day09, day10, day11, day12,
