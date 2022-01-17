@@ -24,6 +24,7 @@
 #include "day18/input.h"
 #include "day20/input.h"
 #include "day22/input.h"
+#include "day23/input.h"
 #include "day25/input.h"
 
 void day01(const char *input);
@@ -46,6 +47,7 @@ void day17(const char *input);
 void day18(const char *input);
 void day20(const char *input);
 void day22(const char *input);
+void day23(const char *input);
 void day25(const char *input);
 
 #define RUN(day)                                                               \
@@ -81,6 +83,7 @@ int main(int argc, char **argv) {
   RUN(day18);
   RUN(day20);
   RUN(day22);
+  RUN(day23);
   RUN(day25);
 
   gettimeofday(&end, NULL);
