@@ -56,3 +56,15 @@ pico/shell:
 	  -e PICO_SDK_PATH="/app/pico/pico-sdk" \
 	  xingrz/rpi-pico-builder:latest \
 	  bash
+
+.PHONY: valgrind/build
+valgrind/build:
+	docker build -t eddmann/aoc2021-valgrid - < Dockerfile.valgrind
+
+valgrind/memcheck/%:
+	@$(DOCKER) -it -w /app/day$* eddmann/aoc2021-valgrid \
+	  sh -c 'gcc -D AOC_SINGLE_EXECUTABLE ${CFLAGS} -g -o solution solution.c ../shared/* && valgrind ./solution'
+
+valgrind/massif/%:
+	@$(DOCKER) -it -w /app/day$* eddmann/aoc2021-valgrid \
+	  sh -c 'gcc -D AOC_SINGLE_EXECUTABLE ${CFLAGS} -g -o solution solution.c ../shared/* && valgrind --tool=massif ./solution && ms_print massif.out.*'
