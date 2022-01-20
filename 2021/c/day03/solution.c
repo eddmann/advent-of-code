@@ -139,10 +139,12 @@ static uint64_t part2(const char *input) {
     }
   }
 
+  uint64_t result = first_value(oxygen) * first_value(co2);
+
   dynarray_destroy(oxygen);
   dynarray_destroy(co2);
 
-  return first_value(oxygen) * first_value(co2);
+  return result;
 }
 
 AOC_MAIN(day03, 3242606, 4856080);
