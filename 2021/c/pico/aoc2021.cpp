@@ -25,7 +25,10 @@
 #include "../day17/input.h"
 #include "../day18/input.h"
 #include "../day20/input.h"
+#include "../day21/input.h"
 #include "../day22/input.h"
+#include "../day23/input.h"
+#include "../day24/input.h"
 #include "../day25/input.h"
 
 #define TOTAL_DAYS 25
@@ -77,9 +80,9 @@ SOLUTION(day03);
 NOT_IMPLEMENTED(day04);
 NOT_IMPLEMENTED(day05);
 NOT_IMPLEMENTED(day06);
-NOT_IMPLEMENTED(day07);
+SOLUTION(day07);
 NOT_IMPLEMENTED(day08);
-SOLUTION(day09);
+NOT_IMPLEMENTED(day09);
 SOLUTION(day10);
 SOLUTION(day11);
 SOLUTION(day12);
@@ -91,16 +94,17 @@ SOLUTION(day17);
 SOLUTION(day18);
 NOT_IMPLEMENTED(day19);
 NOT_IMPLEMENTED(day20);
-NOT_IMPLEMENTED(day21);
+SOLUTION(day21);
 NOT_IMPLEMENTED(day22);
 NOT_IMPLEMENTED(day23);
 NOT_IMPLEMENTED(day24);
-NOT_IMPLEMENTED(day25);
+SOLUTION(day25);
 
 void (*solutions[])() = {day01, day02, day03, day04, day05, day06,
                          day07, day08, day09, day10, day11, day12,
                          day13, day14, day15, day16, day17, day18,
-                         day19, day20, day21, day23, day24, day25};
+                         day19, day20, day21, day22, day23, day24,
+                         day25};
 
 void display_answer(uint8_t day) {
   blank_screen();
