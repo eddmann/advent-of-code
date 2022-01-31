@@ -22,6 +22,7 @@
 #include "day16/input.h"
 #include "day17/input.h"
 #include "day18/input.h"
+#include "day19/input.h"
 #include "day20/input.h"
 #include "day21/input.h"
 #include "day22/input.h"
@@ -47,6 +48,7 @@ void day15(const char *input);
 void day16(const char *input);
 void day17(const char *input);
 void day18(const char *input);
+void day19(const char *input);
 void day20(const char *input);
 void day21(const char *input);
 void day22(const char *input);
@@ -85,6 +87,7 @@ int main(int argc, char **argv) {
   RUN(day16);
   RUN(day17);
   RUN(day18);
+  RUN(day19);
   RUN(day20);
   RUN(day21);
   RUN(day22);
