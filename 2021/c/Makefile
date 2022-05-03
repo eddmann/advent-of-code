@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
-IMAGE = gcc:11.2.0
-DOCKER = docker run --rm -v $(PWD):/app:rw,delegated -w /app
+IMAGE = gcc:11.3.0-bullseye
+DOCKER = docker run --rm -v $(PWD):/app -w /app
 CFLAGS = -lm -std=gnu11 -march=native -Ofast -Wall -Werror
 SOURCE = $(wildcard shared/* day*/input.h day*/solution.c)
 
@@ -20,7 +20,7 @@ solve/%:
 
 .PHONY: test
 test:
-	@$(DOCKER) -e DAY -w /app $(IMAGE) \
+	@$(DOCKER) -e DAY $(IMAGE) \
 	  sh -c ' \
 	    for s in /app/day$${DAY:-*}/solution.c; \
 	      do cd $$(dirname $$s); \
@@ -30,7 +30,7 @@ test:
 
 .PHONY: build
 build:
-	@$(DOCKER) -e DAY -w /app $(IMAGE) \
+	@$(DOCKER) $(IMAGE) \
 	  sh -c 'gcc ${CFLAGS} -o aoc2021 $(SOURCE) aoc2021.c && ./aoc2021'
 
 .PHONY: pico/setup
