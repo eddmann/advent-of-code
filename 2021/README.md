@@ -3,6 +3,8 @@
 For the 2021 calendar I decided to solve each day using [Python](./python) and [C](./c).
 
 The idea behind implementing the solutions additionally in C was to get a better undetstanding of how another low-level systems language works, having enjoyed solving the 2017 calendar in Rust.
+As an additional requirement I also imposed that the entire C calendar should complete in **under half-a-second**.
+Upon completition, execution time averages at `405544 μs (0.41 s)` on my MacBook Pro.
 
 As an extended project I am also working on compiling these C solutions for the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/).
 The desired end-goal is to be able to run the entire calendar on the Microcontroller using a [Pico Display Pack](https://shop.pimoroni.com/products/pico-display-pack) to present the answers.
