@@ -13,3 +13,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: make test
         working-directory: 2021/c
+  benchmark:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build
+        working-directory: 2021/c
