@@ -59,7 +59,7 @@ pico/shell:
 
 .PHONY: valgrind/build
 valgrind/build:
-	docker build -t eddmann/aoc2021-valgrid - < Dockerfile.valgrind
+	docker build -t eddmann/aoc2021-valgrid - < valgrind.Dockerfile
 
 valgrind/memcheck/%:
 	@$(DOCKER) -it -w /app/day$* eddmann/aoc2021-valgrid \
