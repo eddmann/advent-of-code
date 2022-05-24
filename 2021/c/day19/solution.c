@@ -4,218 +4,435 @@ typedef struct {
   int32_t x, y, z;
 } point_t;
 
-typedef struct {
-  point_t points[1024];
-  size_t size;
-} pointset_t;
+typedef struct beacon {
+  point_t point;
+  struct beacon *next;
+} beacon_t;
 
-static pointset_t *parse_scanners(const char *input) {
-  pointset_t *scanners = dynarray_create(pointset_t);
-  pointset_t ps = {0};
+typedef struct distance {
+  bool is_match;
+  uint32_t distance;
+  beacon_t *from, *to;
+  struct distance *next;
+} distance_t;
 
-  uint32_t read = 0, offset = 0;
-  char line[1024];
+typedef struct scanner {
+  bool is_aligned;
+  beacon_t *reference_beacons[3];
+  point_t position;
+  beacon_t *beacons;
+  distance_t *distances;
+  struct scanner *next;
+} scanner_t;
 
-  while (1 == sscanf(input + offset, "%[^\n]\n%n", line, &read)) {
-    offset += read;
+static point_t point_orient(point_t *point, uint8_t orientation) {
+  int32_t a = point->x, b = point->y, c = point->z;
 
-    if (line[0] == '\n') {
-      continue;
-    }
-
-    if (line[1] == '-') {
-      if (ps.size > 0) {
-        dynarray_push(scanners, ps);
-        memset(&ps, 0, sizeof(pointset_t));
-      }
-
-      continue;
-    }
-
-    point_t point = {0};
-    sscanf(line, "%d,%d,%d", &point.x, &point.y, &point.z);
-    ps.points[ps.size++] = point;
-  }
-
-  dynarray_push(scanners, ps);
-
-  return scanners;
-}
-
-static int32_t point_sum(point_t p) { return p.x + p.y + p.z; }
-
-static int32_t point_len_sq(point_t p) {
-  return p.x * p.x + p.y * p.y + p.z * p.z;
-}
-
-static point_t point_sub(point_t a, point_t b) {
-  return (point_t){a.x - b.x, a.y - b.y, a.z - b.z};
-}
-
-static point_t point_add(point_t a, point_t b) {
-  return (point_t){a.x + b.x, a.y + b.y, a.z + b.z};
-}
-
-static point_t point_abs(point_t p) {
-  return (point_t){abs(p.x), abs(p.y), abs(p.z)};
-}
-
-static point_t point_orient(point_t p, uint8_t ori) {
-  int a = p.x, b = p.y, c = p.z;
   point_t all_orientations[24] = {
       {+a, +b, +c}, {+b, +c, +a}, {+c, +a, +b}, {+c, +b, -a}, {+b, +a, -c},
       {+a, +c, -b}, {+a, -b, -c}, {+b, -c, -a}, {+c, -a, -b}, {+c, -b, +a},
       {+b, -a, +c}, {+a, -c, +b}, {-a, +b, -c}, {-b, +c, -a}, {-c, +a, -b},
       {-c, +b, +a}, {-b, +a, +c}, {-a, +c, +b}, {-a, -b, +c}, {-b, -c, +a},
       {-c, -a, +b}, {-c, -b, -a}, {-b, -a, -c}, {-a, -c, -b}};
-  return all_orientations[ori];
+
+  return all_orientations[orientation];
 }
 
-static bool pointset_exists(pointset_t *ps, point_t p) {
-  for (size_t i = 0; i < ps->size; i++) {
-    point_t cur = ps->points[i];
-    if (cur.x == p.x && cur.y == p.y && cur.z == p.z)
-      return true;
+static point_t point_subtract(point_t *a, point_t *b) {
+  return (point_t){a->x - b->x, a->y - b->y, a->z - b->z};
+}
+
+static point_t point_add(point_t *a, point_t *b) {
+  return (point_t){a->x + b->x, a->y + b->y, a->z + b->z};
+}
+
+static int point_compare(point_t *a, point_t *b) {
+  if (a->x < b->x) {
+    return -1;
   }
-  return false;
+
+  if (a->x == b->x && a->y < b->y) {
+    return -1;
+  }
+
+  if (a->x == b->x && a->y == b->y && a->z < b->z) {
+    return -1;
+  }
+
+  if (a->x == b->x && a->y == b->y && a->z == b->z) {
+    return 0;
+  }
+
+  return 1;
 }
 
-static void pointset_add(pointset_t *ps, point_t p) {
-  if (pointset_exists(ps, p))
+static inline void insert_distance(scanner_t *scanner, distance_t *distance) {
+  distance->next = NULL;
+
+  if (scanner->distances == NULL) {
+    scanner->distances = distance;
     return;
-
-  ps->points[ps->size++] = p;
-}
-
-static uint8_t pointset_count_common(pointset_t *a, pointset_t *b) {
-  uint8_t count = 0;
-
-  for (size_t i = 0; i < a->size; i++)
-    if (pointset_exists(b, a->points[i]))
-      count++;
-
-  return count;
-}
-
-static void pointset_orient(pointset_t *result, pointset_t *ps, uint8_t ori) {
-  *result = *ps;
-  for (size_t i = 0; i < result->size; i++)
-    result->points[i] = point_orient(result->points[i], ori);
-}
-
-static void build_offsets(pointset_t *result, pointset_t *ps, point_t p) {
-  for (size_t i = 0; i < ps->size; i++)
-    result->points[i] = point_sub(ps->points[i], p);
-  result->size = ps->size;
-}
-
-static void build_distances(pointset_t *result, pointset_t *ps, point_t p) {
-  for (size_t i = 0; i < ps->size; i++) {
-    point_t offset = {point_len_sq(point_sub(ps->points[i], p)), 0, 0};
-    result->points[i] = offset;
   }
-  result->size = ps->size;
-}
 
-static void update_accum_distances(pointset_t *accum,
-                                   pointset_t *accum_distances) {
-  for (size_t i = 0; i < accum->size; i++)
-    build_distances(&accum_distances[i], accum, accum->points[i]);
-}
+  distance_t *current = scanner->distances, *previous = NULL;
 
-static bool enough_common_points(pointset_t *accum, pointset_t *accum_distances,
-                                 pointset_t *ps, point_t *a, point_t *b) {
-  pointset_t off = {0};
-
-  for (size_t i = 0; i < ps->size; i++) {
-    point_t p2 = ps->points[i];
-    build_distances(&off, ps, p2);
-
-    for (size_t j = 0; j < accum->size; j++) {
-      point_t p1 = accum->points[j];
-      if (pointset_count_common(&off, &accum_distances[j]) >= 12) {
-        *a = p1, *b = p2;
-        return true;
+  while (current != NULL) {
+    if (distance->distance < current->distance) {
+      if (previous == NULL) {
+        scanner->distances = distance;
+        distance->next = current;
+      } else {
+        previous->next = distance;
+        distance->next = current;
       }
+      return;
     }
+
+    previous = current;
+    current = current->next;
   }
 
-  return false;
+  previous->next = distance;
 }
 
-static bool does_scanner_match(pointset_t *accum, pointset_t *accum_distances,
-                               pointset_t *ps, point_t *result_offset,
-                               uint8_t *result_ori) {
-  point_t a, b;
-  if (!enough_common_points(accum, accum_distances, ps, &a, &b))
-    return false;
+static void compute_beacon_distances(scanner_t *scanner, beacon_t *beacon) {
+  beacon_t *current = scanner->beacons;
 
-  pointset_t off1 = {0}, off2 = {0};
-  build_offsets(&off1, accum, a);
-  build_offsets(&off2, ps, b);
+  while (current != NULL) {
+    if (current == beacon) {
+      current = current->next;
+      continue;
+    }
 
-  pointset_t oriented = {0};
-  for (uint8_t ori = 0; ori < 24; ori++) {
-    pointset_orient(&oriented, &off2, ori);
-    if (pointset_count_common(&off1, &oriented) >= 12) {
-      *result_offset = point_sub(a, point_orient(b, ori));
-      *result_ori = ori;
+    point_t difference = point_subtract(&beacon->point, &current->point);
+
+    distance_t *new_distance = (distance_t *)calloc(1, sizeof(distance_t));
+    new_distance->distance = difference.x * difference.x +
+                             difference.y * difference.y +
+                             difference.z * difference.z;
+    new_distance->from = beacon;
+    new_distance->to = current;
+    new_distance->next = NULL;
+
+    insert_distance(scanner, new_distance);
+
+    current = current->next;
+  }
+}
+
+static void move_uncommon_beacon_distances(scanner_t *from, scanner_t *to) {
+  distance_t *current = from->distances, *next = NULL;
+
+  while (current != NULL) {
+    next = current->next;
+
+    if (!current->is_match) {
+      insert_distance(to, current);
+    } else {
+      free(current);
+    }
+
+    current = next;
+  }
+
+  from->distances = NULL;
+}
+
+static bool insert_unseen_beacon(scanner_t *scanner, beacon_t *beacon) {
+  beacon->next = NULL;
+
+  if (scanner->beacons == NULL) {
+    scanner->beacons = beacon;
+    return true;
+  }
+
+  beacon_t *current = scanner->beacons, *previous = NULL;
+
+  while (current != NULL) {
+    int comparison = point_compare(&beacon->point, &current->point);
+
+    if (comparison == 0) {
+      return false;
+    }
+
+    if (comparison == -1) {
+      if (previous == NULL) {
+        scanner->beacons = beacon;
+        beacon->next = current;
+      } else {
+        previous->next = beacon;
+        beacon->next = current;
+      }
       return true;
     }
+
+    previous = current;
+    current = current->next;
+  }
+
+  previous->next = beacon;
+
+  return true;
+}
+
+static void align_scanner_beacons(scanner_t *scanner, scanner_t *reference) {
+  point_t *reference_points[3], *points[3];
+
+  for (uint8_t i = 0; i < 3; i++) {
+    reference_points[i] = &reference->reference_beacons[i]->point;
+    points[i] = &scanner->reference_beacons[i]->point;
+  }
+
+  for (uint8_t orientation = 0; orientation < 24; orientation++) {
+    point_t diff[3];
+
+    for (int ref = 0; ref < 3; ref++) {
+      diff[ref] = point_orient(points[ref], orientation);
+      diff[ref] = point_subtract(reference_points[ref], &diff[ref]);
+
+      if (ref == 0)
+        continue;
+
+      if (diff[ref].x != diff[0].x || diff[ref].y != diff[0].y ||
+          diff[ref].z != diff[0].z)
+        goto next_orientation;
+    }
+
+    scanner->position = diff[0];
+    scanner->is_aligned = true;
+
+    beacon_t *current = scanner->beacons;
+    while (current != NULL) {
+      current->point = point_orient(&current->point, orientation);
+      current->point = point_add(&current->point, diff);
+      current = current->next;
+    }
+
+    break;
+  next_orientation:
+  }
+}
+
+static void merge_scanner_beacons(scanner_t *from, scanner_t *to) {
+  move_uncommon_beacon_distances(from, to);
+
+  beacon_t *current = from->beacons, *next = NULL;
+
+  while (current != NULL) {
+    next = current->next;
+
+    if (!insert_unseen_beacon(to, current))
+      free(current);
+
+    current = next;
+  }
+
+  from->beacons = NULL;
+}
+
+static bool align_reference_beacons(scanner_t *scanner, distance_t *distance) {
+  if (distance->from == scanner->reference_beacons[0]) {
+    scanner->reference_beacons[2] = distance->to;
+    return true;
+  }
+
+  else if (distance->from == scanner->reference_beacons[1]) {
+    beacon_t *tmp = scanner->reference_beacons[0];
+    scanner->reference_beacons[0] = scanner->reference_beacons[1];
+    scanner->reference_beacons[1] = tmp;
+    scanner->reference_beacons[2] = distance->to;
+    return true;
+  }
+
+  else if (distance->to == scanner->reference_beacons[0]) {
+    scanner->reference_beacons[2] = distance->from;
+    return true;
+  }
+
+  else if (distance->to == scanner->reference_beacons[1]) {
+    beacon_t *tmp = scanner->reference_beacons[0];
+    scanner->reference_beacons[0] = scanner->reference_beacons[1];
+    scanner->reference_beacons[1] = tmp;
+    scanner->reference_beacons[2] = distance->from;
+    return true;
   }
 
   return false;
 }
 
-// locations calculated in part 1 are shared with part 2 for speed
-pointset_t locations = {0};
+static uint8_t count_common_distances(scanner_t *scanner_a,
+                                      scanner_t *scanner_b) {
+  if (scanner_a->distances == NULL || scanner_b->distances == NULL)
+    return 0;
+
+  distance_t *match = scanner_b->distances;
+  while (match != NULL) {
+    match->is_match = false;
+    match = match->next;
+  }
+
+  uint8_t common_distances = 0;
+  bool has_reference_pair = false, has_third_reference = false;
+
+  distance_t *current_a = scanner_a->distances;
+  distance_t *current_b = scanner_b->distances;
+
+  while (current_a != NULL && current_b != NULL) {
+    if (current_a->distance < current_b->distance) {
+      current_a = current_a->next;
+      continue;
+    }
+
+    if (current_a->distance > current_b->distance) {
+      current_b = current_b->next;
+      continue;
+    }
+
+    common_distances += 1;
+    current_b->is_match = true;
+
+    if (!has_reference_pair) {
+      scanner_a->reference_beacons[0] = current_a->from;
+      scanner_a->reference_beacons[1] = current_a->to;
+      scanner_b->reference_beacons[0] = current_b->from;
+      scanner_b->reference_beacons[1] = current_b->to;
+      has_reference_pair = true;
+    } else if (!has_third_reference) {
+      has_third_reference = align_reference_beacons(scanner_a, current_a) &&
+                            align_reference_beacons(scanner_b, current_b);
+    }
+
+    current_a = current_a->next;
+    current_b = current_b->next;
+  }
+
+  return common_distances;
+}
+
+static void match_scanners(scanner_t *head) {
+  bool is_matched = false;
+
+  head->is_aligned = true;
+
+  while (!is_matched) {
+    is_matched = true;
+
+    scanner_t *current = head->next;
+
+    while (current != NULL) {
+      if (current->is_aligned) {
+        current = current->next;
+        continue;
+      }
+
+      if (count_common_distances(head, current) >= 66) {
+        align_scanner_beacons(current, head);
+        merge_scanner_beacons(current, head);
+        is_matched = false;
+      }
+
+      current = current->next;
+    }
+  }
+}
+
+static scanner_t *parse_scanners(const char *input) {
+  char buffer[1000];
+  uint32_t offset = 0, read = 0;
+
+  scanner_t *head = NULL, *current = NULL, *previous = NULL;
+
+  while (1 == sscanf(input + offset, "%[^\n]\n%n", buffer, &read)) {
+    if (buffer[1] == '-') {
+      current = (scanner_t *)calloc(1, sizeof(scanner_t));
+      if (head == NULL)
+        head = current;
+      if (previous != NULL)
+        previous->next = current;
+      previous = current;
+      offset += read;
+      continue;
+    }
+
+    beacon_t *beacon = (beacon_t *)calloc(1, sizeof(beacon_t));
+    sscanf(buffer, "%d,%d,%d", &beacon->point.x, &beacon->point.y,
+           &beacon->point.z);
+
+    if (insert_unseen_beacon(current, beacon))
+      compute_beacon_distances(current, beacon);
+
+    offset += read;
+  }
+
+  return head;
+}
+
+static void destroy_scanners(scanner_t *head) {
+  scanner_t *curr_scanner = head, *next_scanner = NULL;
+
+  while (curr_scanner != NULL) {
+    next_scanner = curr_scanner->next;
+
+    beacon_t *current_beacon = curr_scanner->beacons, *next_beacon = NULL;
+    while (current_beacon != NULL) {
+      next_beacon = current_beacon->next;
+      free(current_beacon);
+      current_beacon = next_beacon;
+    }
+
+    distance_t *current_distance = curr_scanner->distances,
+               *next_distance = NULL;
+    while (current_distance != NULL) {
+      next_distance = current_distance->next;
+      free(current_distance);
+      current_distance = next_distance;
+    }
+
+    free(curr_scanner);
+
+    curr_scanner = next_scanner;
+  }
+}
 
 static uint64_t part1(const char *input) {
-  pointset_t *scanners = parse_scanners(input);
+  scanner_t *head = parse_scanners(input);
+  match_scanners(head);
 
-  pointset_t accum = scanners[0];
-  pointset_t accum_distances[400] = {0};
-  update_accum_distances(&accum, accum_distances);
-
-  uint8_t aligned_total = 1, ori;
-  bool scanner_aligned[25] = {true};
-
-  for (size_t i = 0; aligned_total < dynarray_length(scanners);
-       i = (i + 1) % dynarray_length(scanners)) {
-    if (scanner_aligned[i])
-      continue;
-
-    point_t offset;
-    pointset_t current = scanners[i];
-    if (does_scanner_match(&accum, accum_distances, &current, &offset, &ori)) {
-      pointset_add(&locations, offset);
-
-      for (size_t j = 0; j < current.size; j++) {
-        point_t p = current.points[j];
-        pointset_add(&accum, point_add(point_orient(p, ori), offset));
-      }
-
-      update_accum_distances(&accum, accum_distances);
-      scanner_aligned[i] = true;
-      aligned_total++;
-    }
+  uint64_t total_beacons = 0;
+  beacon_t *current = head->beacons;
+  while (current != NULL) {
+    total_beacons++;
+    current = current->next;
   }
 
-  dynarray_destroy(scanners);
+  destroy_scanners(head);
 
-  return accum.size;
+  return total_beacons;
 }
 
 static uint64_t part2(const char *input) {
+  scanner_t *head = parse_scanners(input);
+  match_scanners(head);
+
+  scanner_t *scanner = head;
   uint64_t max_distance = 0;
 
-  for (size_t i = 0; i < locations.size; i++) {
-    for (size_t j = 0; j < locations.size; j++) {
-      int32_t distance = point_sum(
-          point_abs(point_sub(locations.points[i], locations.points[j])));
-      max_distance = MAX(max_distance, distance);
+  while (scanner != NULL) {
+    point_t point_a = scanner->position;
+
+    scanner_t *other_scanner = scanner->next;
+    while (other_scanner != NULL) {
+      point_t point_b = other_scanner->position;
+      max_distance = MAX(max_distance, abs(point_b.x - point_a.x) +
+                                           abs(point_b.y - point_a.y) +
+                                           abs(point_b.z - point_a.z));
+      other_scanner = other_scanner->next;
     }
+
+    scanner = scanner->next;
   }
+
+  destroy_scanners(head);
 
   return max_distance;
 }
