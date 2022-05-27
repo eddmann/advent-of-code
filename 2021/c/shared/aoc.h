@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 #define MAX(a, b)                                                              \
   ({                                                                           \
@@ -105,10 +106,18 @@ static char *read_input(const char *filename) {
 
 #define AOC_MAIN(day, p1_answer, p2_answer)                                    \
   int main(int argc, char *argv[]) {                                           \
+    struct timeval start, end, diff;                                           \
+    gettimeofday(&start, NULL);                                                \
     char *input = read_input("input.txt");                                     \
     printf("Part 1: %" PRId64 "\n", part1(input));                             \
     printf("Part 2: %" PRId64 "\n", part2(input));                             \
     free(input);                                                               \
+    gettimeofday(&end, NULL);                                                  \
+    timersub(&end, &start, &diff);                                             \
+    uint64_t total =                                                           \
+        (uint64_t)(diff.tv_sec * 1000000) + (uint64_t)diff.tv_usec;            \
+    printf("Time: %" PRId64 " μs (%.3f s)\n", total,                           \
+           (double)total / 1000000.0);                                         \
     return EXIT_SUCCESS;                                                       \
   }
 
@@ -125,12 +134,20 @@ static char *read_input(const char *filename) {
 
 #define AOC_MAIN(day, p1_answer, p2_answer)                                    \
   void day(char *input) {                                                      \
+    struct timeval start, end, diff;                                           \
+    gettimeofday(&start, NULL);                                                \
     uint64_t p1 = part1(input);                                                \
     assert(p1 == p1_answer);                                                   \
     printf("Part 1: %" PRId64 "\n", p1);                                       \
     uint64_t p2 = part2(input);                                                \
     assert(p2 == p2_answer);                                                   \
     printf("Part 2: %" PRId64 "\n", p2);                                       \
+    gettimeofday(&end, NULL);                                                  \
+    timersub(&end, &start, &diff);                                             \
+    uint64_t total =                                                           \
+        (uint64_t)(diff.tv_sec * 1000000) + (uint64_t)diff.tv_usec;            \
+    printf("Time: %" PRId64 " μs (%.3f s)\n", total,                           \
+           (double)total / 1000000.0);                                         \
   }
 
 #endif

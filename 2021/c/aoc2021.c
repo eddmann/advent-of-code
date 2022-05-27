@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
   timersub(&end, &start, &diff);
 
   uint64_t total = (uint64_t)(diff.tv_sec * 1000000) + (uint64_t)diff.tv_usec;
-  printf("\nTotal: %" PRId64 " μs (%.2f s)\n", total,
+  printf("\n---\nTotal time: %" PRId64 " μs (%.3f s)\n", total,
          (double)total / 1000000.0);
 
   return EXIT_SUCCESS;
