@@ -1,0 +1,60 @@
+input: read("aoc2018_day01.input")
+
+let parse_deltas = lines >> map(int);
+
+part_one: {
+  parse_deltas(input) |> reduce(+, 0);
+}
+
+part_two: {
+  let scan = |fn, initial, collection| {
+    let mut previous = initial;
+    map(
+      |value| { previous = fn(previous, value); },
+      collection
+    );
+  };
+
+  let mut seen = {};
+  
+  parse_deltas(input)
+    |> cycle
+    |> scan(+, 0)
+    |> find(|frequency| {
+      if seen `contains` frequency {
+        return true;
+      }
+      seen = seen + {frequency};
+      false;
+    });
+}
+
+test: {
+  input: "+1\n+1\n+1"
+  part_one: 3
+}
+
+test: {
+  input: "+1\n+1\n-2"
+  part_one: 0
+}
+
+test: {
+  input: "-1\n-2\n-3"
+  part_one: -6
+}
+
+test: {
+  input: "+3\n+3\n+4\n-2\n-4"
+  part_two: 10
+}
+
+test: {
+  input: "-6\n+3\n+8\n+5\n-6"
+  part_two: 5
+}
+
+test: {
+  input: "+7\n+7\n-2\n-7\n-4"
+  part_two: 14
+}
