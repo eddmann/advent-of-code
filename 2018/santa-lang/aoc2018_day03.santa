@@ -15,7 +15,7 @@ let compute_fabric = reduce(
   |fabric, claim| {
     compute_squares(claim)
       |> reduce(
-        |fabric, square| fabric + #{square: if fabric[square] { fabric[square] + {claim["id"]} } else { {claim["id"]} }},
+        |fabric, square| update(square, {}, |v| v + {claim["id"]}, fabric),
         fabric
       );
   },
@@ -26,7 +26,7 @@ part_one: {
   parse_claims(input)
     |> compute_fabric
     |> filter(|square| size(square) > 1)
-    |> size
+    |> size;
 }
 
 part_two: {
@@ -37,7 +37,7 @@ part_two: {
 
   claims
     |> find(|claim| compute_squares(claim) |> all(|square| fabric[square] |> size == 1))
-    |> |claim| claim["id"];
+    |> get("id");
 }
 
 test: {
