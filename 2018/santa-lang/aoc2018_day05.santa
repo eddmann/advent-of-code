@@ -1,0 +1,39 @@
+input: read("aoc2018_day05.input")
+
+let reaction_units = |polymer| {
+  polymer
+    |> reduce(
+      |polymer, unit| {
+        if polymer[-1] != unit && upper(unit) == upper(if polymer[-1] { polymer[-1] } else { "" }) {
+          polymer[0..-1]
+        } else {
+          polymer + [unit]
+        }
+      },
+      []
+    )
+    |> size;
+};
+
+part_one: reaction_units(input)
+
+part_two: {
+  let unit_types = input |> reduce(|types, unit| types + {lower(unit)}, {});
+
+  unit_types
+    |> map(
+      |type| {
+        input
+          |> replace(type, "")
+          |> replace(upper(type), "")
+          |> reaction_units;
+      }
+    )
+    |> min;
+}
+
+test: {
+  input: "dabAcCaCBAcCcaDA"
+  part_one: 10
+  part_two: 4
+}
