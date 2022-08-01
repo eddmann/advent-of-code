@@ -1,9 +1,5 @@
 input: read("aoc2018_day04.input")
 
-let sleep_or_default = |sleep, guard| {
-  if sleep[guard] { sleep[guard] } else { zip(0..59, [0] * 60) };
-};
-
 let tally_guards_sleep = |input| {
   input
     |> lines
@@ -11,7 +7,7 @@ let tally_guards_sleep = |input| {
     |> reduce_s(
       |[sleep, guard, start], action| {
         if action[25] == "#" {
-          return [sleep, int((action |> split(" "))[3][1..]), nil];
+          return [sleep, int(split(" ", action)[3][1..]), nil];
         }
 
         if action[25] == "a" {
@@ -20,27 +16,44 @@ let tally_guards_sleep = |input| {
 
         let sleep_range = start..int(action[15..17]) - 1;
 
-        let updated_sleep = sleep_or_default(sleep, guard)
-          |> map(|[minute, total]| {
-            [minute, if sleep_range `contains` minute { total + 1 } else { total }]
-          });
+        let updated_sleep = update(
+          guard,
+          #{},
+          |guard_sleep| {
+            reduce(
+              |hours, hour| update(hour, 0, _ + 1, hours),
+              guard_sleep,
+              sleep_range
+            );
+          },
+          sleep
+        );
         
-        return [sleep + #{guard: updated_sleep}, guard, nil];
+        return [updated_sleep, guard, nil];
       },
       [#{}, nil, nil]
-    );
+    )
+    |> map(reduce(|hours, total, hour| hours + [[hour, total]], []))
 };
 
 part_one: {
   let guards_sleep = tally_guards_sleep(input);
 
-  let guards = guards_sleep |> reduce(
-    |acc, v, k| acc + [[k, v |> reduce(|acc, [_, t]| acc + t, 0)]],
-    []
-  );
+  let id = guards_sleep
+    |> reduce(
+      |guards, hours, id| {
+        guards + [[id, hours |> reduce(|total, [_, time]| total + time, 0)]];
+      },
+      []
+    )
+    |> sort(|a, b| a[1] < b[1])
+    |> first
+    |> first;
 
-  let id = (guards |> sort(|a, b| a[1] < b[1]))[0][0];
-  let minute = (guards_sleep[id] |> sort(|a, b| { a[1] < b[1] }))[0][0];
+  let minute = guards_sleep[id]
+    |> sort(|a, b| a[1] < b[1])
+    |> first
+    |> first;
   
   id * minute;
 }
@@ -48,13 +61,21 @@ part_one: {
 part_two: {
   let guards_sleep = tally_guards_sleep(input);
 
-  let guards = guards_sleep |> reduce(
-    |acc, v, k| acc + [[k, v |> reduce(|max, [_, t]| if max < t { t } else { max }, 0)]],
-    []
-  );
+  let id = guards_sleep
+    |> reduce(
+      |guards, hours, id| {
+        guards + [[id, hours |> map(get(1)) |> max]];
+      },
+      []
+    )
+    |> sort(|a, b| a[1] < b[1])
+    |> first
+    |> first;
 
-  let id = (guards |> sort(|a, b| a[1] < b[1]))[0][0];
-  let minute = (guards_sleep[id] |> sort(|a, b| { a[1] < b[1] }))[0][0];
+  let minute = guards_sleep[id]
+    |> sort(|a, b| a[1] < b[1])
+    |> first
+    |> first;
   
   id * minute;
 }
