@@ -2,10 +2,7 @@ input: read("aoc2018_day02.input")
 
 part_one: {
   let counter = reduce(
-    |frequencies, value| {
-      let total = if frequencies[value] { frequencies[value] } else { 0 };
-      frequencies + #{value: total + 1};
-    },
+    |frequencies, value| update(value, 0, _ + 1, frequencies),
     #{}
   );
 

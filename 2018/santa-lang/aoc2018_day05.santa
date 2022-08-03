@@ -7,10 +7,10 @@ let reaction_units = |polymer| {
         if polymer[-1] != unit && upper(unit) == upper(if polymer[-1] { polymer[-1] } else { "" }) {
           polymer[0..-1]
         } else {
-          polymer + [unit]
+          polymer + unit
         }
       },
-      []
+      ""
     )
     |> size;
 };
@@ -18,7 +18,7 @@ let reaction_units = |polymer| {
 part_one: reaction_units(input)
 
 part_two: {
-  let unit_types = input |> reduce(|types, unit| types + {lower(unit)}, {});
+  let unit_types = input |> map(lower) |> set;
 
   unit_types
     |> map(

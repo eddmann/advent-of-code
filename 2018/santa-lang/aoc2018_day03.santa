@@ -9,13 +9,13 @@ let parse_claims =
 let compute_squares = |claim|
   (claim["x"]..claim["x"] + claim["width"] - 1)
     |> flat_map(|x| (claim["y"]..claim["y"] + claim["height"] - 1) |> map(|y| [x, y]))
-    |> reduce(|set, square| set + {square}, {});
+    |> set;
 
 let compute_fabric = reduce(
   |fabric, claim| {
     compute_squares(claim)
       |> reduce(
-        |fabric, square| update(square, {}, |v| v + {claim["id"]}, fabric),
+        |fabric, square| update(square, {}, |ids| ids + {claim["id"]}, fabric),
         fabric
       );
   },
