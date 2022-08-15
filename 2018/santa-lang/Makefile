@@ -17,4 +17,4 @@ test:
 
 .PHONY: shell
 shell:
-	@$(DOCKER) -it --entrypoint= $(IMAGE) sh
+	@$(DOCKER) -it -e SANTA_CLI_SESSION_TOKEN --entrypoint= $(IMAGE) sh
