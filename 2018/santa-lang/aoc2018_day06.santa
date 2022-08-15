@@ -1,0 +1,63 @@
+input: read("aoc://2018/6")
+
+let parse_points = lines >> map(split(",") >> map(int));
+
+let distance = |[x1, y1], [x2, y2]| abs(x1 - x2) + abs(y1 - y2);
+
+let calc_boundary = |points| {
+  let [xs, ys] = zip(..points);
+  [min(xs), max(xs), min(ys), max(ys)];
+};
+
+let generate_grid = |points| {
+  let [min_x, max_x, min_y, max_y] = calc_boundary(points);
+  min_x..max_x |> flat_map(|x| min_y..max_y |> map(|y| [x, y]));
+};
+
+part_one: {
+  let points = parse_points(input);
+  let [min_x, max_x, min_y, max_y] = calc_boundary(points);
+
+  let mut totals = #{};
+  let mut infinite = {};
+
+  generate_grid(points)
+    |> each(|[x, y]| {
+      let [first, second] = points
+        |> map(|position| #{position, "distance": distance([x, y], position)})
+        |> sort(|a, b| a["distance"] > b["distance"]);
+
+      if first["distance"] != second["distance"] {
+        totals = update(first["position"], 0, _ + 1, totals);
+
+        if x == min_x || y == min_y || x == max_x || y == max_y {
+          infinite = infinite + {first["position"]};
+        }
+      }
+    });
+
+  list(totals)
+    |> filter(|[position]| !(infinite `contains` position))
+    |> map(|[_, total]| total)
+    |> max;
+}
+
+part_two: {
+  let points = parse_points(input);
+  
+  generate_grid(points)
+    |> map(|position| points |> map(distance(position)) |> reduce(+, 0))
+    |> filter(_ < 10000)
+    |> size;
+}
+
+test: {
+  input: "1, 1
+1, 6
+8, 3
+3, 4
+5, 5
+8, 9"
+  part_one: 17
+  part_two: 72
+}
