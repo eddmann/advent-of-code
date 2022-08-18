@@ -1,4 +1,4 @@
-input: read("aoc2018_day03.input")
+input: read("aoc://2018/3")
 
 let parse_claims =
   lines >> map(|line| {

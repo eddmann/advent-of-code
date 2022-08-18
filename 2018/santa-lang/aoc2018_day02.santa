@@ -1,4 +1,4 @@
-input: read("aoc2018_day02.input")
+input: read("aoc://2018/2")
 
 part_one: {
   let counter = reduce(

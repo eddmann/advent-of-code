@@ -1,4 +1,4 @@
-input: read("aoc2018_day05.input")
+input: read("aoc://2018/5")
 
 let reaction_units = |polymer| {
   polymer

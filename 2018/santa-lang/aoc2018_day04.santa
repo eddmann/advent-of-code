@@ -1,4 +1,4 @@
-input: read("aoc2018_day04.input")
+input: read("aoc://2018/4")
 
 let tally_guards_sleep = |input| {
   input

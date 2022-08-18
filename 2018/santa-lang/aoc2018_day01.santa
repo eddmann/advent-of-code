@@ -1,4 +1,4 @@
-input: read("aoc2018_day01.input")
+input: read("aoc://2018/1")
 
 let parse_deltas = lines >> map(int);
 
