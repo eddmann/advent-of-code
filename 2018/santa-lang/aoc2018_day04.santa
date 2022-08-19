@@ -28,7 +28,7 @@ let tally_guards_sleep = |input| {
           },
           sleep
         );
-        
+
         return [updated_sleep, guard, nil];
       },
       [#{}, nil, nil]
@@ -54,7 +54,7 @@ part_one: {
     |> sort(|a, b| a[1] < b[1])
     |> first
     |> first;
-  
+
   id * minute;
 }
 
@@ -76,7 +76,7 @@ part_two: {
     |> sort(|a, b| a[1] < b[1])
     |> first
     |> first;
-  
+
   id * minute;
 }
 

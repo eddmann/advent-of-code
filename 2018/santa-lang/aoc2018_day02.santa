@@ -6,8 +6,8 @@ part_one: {
     #{}
   );
 
-  input 
-    |> lines 
+  input
+    |> lines
     |> reduce(
       |[twos, threes], id| {
         let frequencies = counter(id);

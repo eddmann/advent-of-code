@@ -1,13 +1,14 @@
 input: read("aoc://2018/7")
 
-let all = |predicate, collection| collection |> filter(predicate) == collection;
 let loop = |fn| each(fn, 0..);
 
 let parse_instructions = lines >> map(|line| [line[5], line[-12]]);
 
+let sort_steps = flat_map(|a| a) >> set >> list >> sort(>);
+
 part_one: {
   let mut dependencies = parse_instructions(input);
-  let mut remaining_steps = dependencies |> flat_map(|a| a) |> set |> list |> sort(>);
+  let mut remaining_steps = sort_steps(dependencies);
   let mut step_order = "";
 
   loop(|| {
@@ -20,7 +21,7 @@ part_one: {
       |> first;
 
     dependencies = dependencies |> filter(|[step]| step != next_step);
-    remaining_steps = remaining_steps |> filter(_ != next_step);
+    remaining_steps = remove_value(next_step, remaining_steps);
     step_order = step_order + next_step;
   });
 
@@ -29,10 +30,10 @@ part_one: {
 
 let step_duration = #{
   "A": 0,  "B": 1,  "C": 2,  "D": 3,  "E": 4,
-  "F": 5,  "G": 6,  "H": 7,  "I": 8,  "J": 9, 
-  "K": 10, "L": 11, "M": 12, "N": 13, "O": 14, 
+  "F": 5,  "G": 6,  "H": 7,  "I": 8,  "J": 9,
+  "K": 10, "L": 11, "M": 12, "N": 13, "O": 14,
   "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19,
-  "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24, 
+  "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24,
   "Z": 25
 };
 
@@ -40,7 +41,7 @@ let time = |step| 60 + step_duration[step];
 
 part_two: {
   let mut dependencies = parse_instructions(input);
-  let mut remaining_steps = dependencies |> flat_map(|a| a) |> set |> list |> sort(>);
+  let mut remaining_steps = sort_steps(dependencies);
 
   let total_workers = 5;
   let mut current_worker_steps = [nil] * total_workers;
@@ -62,7 +63,7 @@ part_two: {
       if remaining_worker_durations[worker] > 0 {
         return _;
       }
-      
+
       dependencies = dependencies |> filter(|[step]| step != current_worker_steps[worker]);
 
       if size(next_steps) == 0 {
@@ -70,7 +71,7 @@ part_two: {
       }
 
       let next_step = first(next_steps);
-      remaining_steps = remaining_steps |> filter(_ != next_step);
+      remaining_steps = remove_value(next_step, remaining_steps);
       current_worker_steps = update(worker, nil, || next_step, current_worker_steps);
       remaining_worker_durations = update(worker, 0, || time(next_step), remaining_worker_durations);
       next_steps = rest(next_steps);

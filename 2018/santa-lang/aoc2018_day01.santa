@@ -16,7 +16,7 @@ part_two: {
   };
 
   let mut seen = {};
-  
+
   parse_deltas(input)
     |> cycle
     |> scan(+, 0)

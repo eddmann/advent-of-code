@@ -30,8 +30,6 @@ part_one: {
 }
 
 part_two: {
-  let all = |predicate, collection| collection |> filter(predicate) == collection;
-
   let claims = parse_claims(input);
   let fabric = compute_fabric(claims);
 

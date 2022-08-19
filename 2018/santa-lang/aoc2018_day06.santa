@@ -44,7 +44,7 @@ part_one: {
 
 part_two: {
   let points = parse_points(input);
-  
+
   generate_grid(points)
     |> map(|position| points |> map(distance(position)) |> reduce(+, 0))
     |> filter(_ < 10000)
