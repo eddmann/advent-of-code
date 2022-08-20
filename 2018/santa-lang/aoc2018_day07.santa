@@ -7,25 +7,29 @@ let parse_instructions = lines >> map(|line| [line[5], line[-12]]);
 let sort_steps = flat_map(|a| a) >> set >> list >> sort(>);
 
 part_one: {
-  let mut dependencies = parse_instructions(input);
-  let mut remaining_steps = sort_steps(dependencies);
-  let mut step_order = "";
-
-  loop(|| {
+  let calc_step_order = |dependencies, remaining_steps, step_order| {
     if size(remaining_steps) == 0 {
-      break;
+      return step_order;
     }
 
     let next_step = remaining_steps
       |> filter(|step| all(|[_, dependent]| step != dependent, dependencies))
       |> first;
 
-    dependencies = dependencies |> filter(|[step]| step != next_step);
-    remaining_steps = remove_value(next_step, remaining_steps);
-    step_order = step_order + next_step;
-  });
+    return calc_step_order(
+      dependencies |> filter(|[step]| step != next_step),
+      remove_value(next_step, remaining_steps),
+      step_order + next_step
+    );
+  };
 
-  step_order;
+  let dependencies = parse_instructions(input);
+
+  calc_step_order(
+    dependencies,
+    sort_steps(dependencies),
+    ""
+  );
 }
 
 let step_duration = #{
