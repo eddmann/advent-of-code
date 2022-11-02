@@ -16,7 +16,7 @@ part_one: {
       |> filter(|step| all(|[_, dependent]| step != dependent, dependencies))
       |> first;
 
-    return calc_step_order(
+    calc_step_order(
       dependencies |> filter(|[step]| step != next_step),
       remove_value(next_step, remaining_steps),
       step_order + next_step
