@@ -1,0 +1,62 @@
+input: read("aoc://2018/9")
+
+let parse_game = |game| {
+  let parts = game |> split(" ");
+  return [parts[0], parts[-2]] |> map(int);
+};
+
+let play_game = |players, max_points| {
+  let scores = reduce_s(
+    |[scores, circle], points| {
+      if (points % 23 != 0) {
+        let rotated = rotate(2, circle);
+        return [scores, rotated + [points]];
+      }
+      
+      let rotated = rotate(-6, circle);
+      [
+        scores |> update(points % players, 0, |score| score + points + first(rotated)),
+        rest(rotated)
+      ];
+    },
+    [#{}, [0]],
+    1..max_points
+  );
+  
+  max(scores);
+};
+
+part_one: {
+  let [players, points] = parse_game(input);
+  play_game(players, points);
+}
+
+part_two: {
+  let [players, points] = parse_game(input);
+  play_game(players, points * 100);
+}
+
+test: {
+  input: "10 players; last marble is worth 1618 points"
+  part_one: 8317
+}
+
+test: {
+  input: "13 players; last marble is worth 7999 points"
+  part_one: 146373
+}
+
+test: {
+  input: "17 players; last marble is worth 1104 points"
+  part_one: 2764
+}
+
+test: {
+  input: "21 players; last marble is worth 6111 points"
+  part_one: 54718
+}
+
+test: {
+  input: "30 players; last marble is worth 5807 points"
+  part_one: 37305
+}
