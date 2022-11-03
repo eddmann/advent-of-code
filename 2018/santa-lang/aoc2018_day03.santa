@@ -13,11 +13,10 @@ let compute_squares = |claim|
 
 let compute_fabric = reduce(
   |fabric, claim| {
-    compute_squares(claim)
-      |> reduce(
-        |fabric, square| update(square, {}, |ids| ids + {claim["id"]}, fabric),
-        fabric
-      );
+    compute_squares(claim) |> reduce(
+      |fabric, square| update(square, 0, _ + 1, fabric),
+      fabric
+    );
   },
   #{}
 );
@@ -25,7 +24,7 @@ let compute_fabric = reduce(
 part_one: {
   parse_claims(input)
     |> compute_fabric
-    |> filter(|square| size(square) > 1)
+    |> filter(_ > 1)
     |> size;
 }
 
@@ -34,7 +33,7 @@ part_two: {
   let fabric = compute_fabric(claims);
 
   claims
-    |> find(|claim| compute_squares(claim) |> all(|square| fabric[square] |> size == 1))
+    |> find(|claim| compute_squares(claim) |> all(|square| fabric[square] == 1))
     |> get("id");
 }
 
