@@ -21,7 +21,11 @@ part_one: {
 }
 
 part_two: {
-  let checksum = |cmp, pair| reduce(|acc, [x, y]| if cmp(x, y) { acc + x } else { acc }, "", zip(..pair));
+  let checksum = |cmp, pair| reduce(
+    |acc, [x, y]| if cmp(x, y) { acc + x } else { acc }, 
+    "", 
+    zip(..pair)
+  );
 
   input
     |> lines
