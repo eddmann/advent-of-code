@@ -20,10 +20,7 @@ part_one: {
       0..children - 1
     );
 
-    return [
-      total + sum(next_rest[0..meta]),
-      next_rest[meta..]
-    ];
+    [total + sum(next_rest[0..meta]), next_rest[meta..]];
   }
 
   parse_license(input)
@@ -52,9 +49,9 @@ part_two: {
       |acc, idx| if get(idx - 1, metadata) { acc + get(idx - 1, metadata) } else { acc },
       0,
       next_rest[0..meta]
-    )
+    );
 
-    return [value, next_rest[meta..]];
+    [value, next_rest[meta..]];
   }
 
   parse_license(input)
