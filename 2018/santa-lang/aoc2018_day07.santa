@@ -1,7 +1,5 @@
 input: read("aoc://2018/7")
 
-let loop = |fn| each(fn, 0..);
-
 let parse_instructions = lines >> map(|line| [line[5], line[-12]]);
 
 let sort_steps = flat_map(|a| a) >> set >> list >> sort(>);
@@ -13,12 +11,12 @@ part_one: {
     }
 
     let next_step = remaining_steps
-      |> filter(|step| all(|[_, dependent]| step != dependent, dependencies))
+      |> filter(|step| dependencies |> all |[_, dependent]| step != dependent)
       |> first;
 
     calc_step_order(
-      dependencies |> filter(|[step]| step != next_step),
-      remove_value(next_step, remaining_steps),
+      dependencies |> filter |[step]| step != next_step,
+      remaining_steps |> filter(_ != next_step),
       step_order + next_step
     );
   };
@@ -32,6 +30,12 @@ part_one: {
   );
 }
 
+let pop! = |list| {
+  let head = first(list);
+  remove!(0, list);
+  head;
+};
+
 let step_duration = #{
   "A": 0,  "B": 1,  "C": 2,  "D": 3,  "E": 4,
   "F": 5,  "G": 6,  "H": 7,  "I": 8,  "J": 9,
@@ -44,47 +48,42 @@ let step_duration = #{
 let time = |step| 60 + step_duration[step];
 
 part_two: {
-  let mut dependencies = parse_instructions(input);
-  let mut remaining_steps = sort_steps(dependencies);
+  let dependencies = parse_instructions(input);
 
   let total_workers = 5;
-  let mut current_worker_steps = [nil] * total_workers;
-  let mut remaining_worker_durations = [0] * total_workers;
+  let remaining_dependencies = mut!(dependencies);
+  let remaining_steps = dependencies |> sort_steps |> mut!;
+  let current_worker_steps = mut!(#{});
+  let remaining_worker_durations = mut!(#{});
 
-  let mut total_duration = 0;
-
-  loop(|| {
-    if size(remaining_steps) == 0 && all(_ == 0, remaining_worker_durations) {
-      break;
+  0.. |> find |duration| {
+    if size(remaining_steps) == 0 && remaining_worker_durations |> all(_ == 0) {
+      return duration;
     }
 
-    let mut next_steps = remaining_steps
-      |> filter(|step| all(|[_, dependent]| step != dependent, dependencies));
+    let next_steps = remaining_steps
+      |> filter(|step| remaining_dependencies |> all |[_, dependent]| step != dependent)
+      |> mut!
 
-    0..total_workers - 1 |> each(|worker| {
-      remaining_worker_durations = update(worker, 0, |time| max([time - 1, 0]), remaining_worker_durations);
+    1..total_workers |> each |worker| {
+      remaining_worker_durations |> update!(worker, 0, |time| max([time - 1, 0]));
 
       if remaining_worker_durations[worker] > 0 {
-        return _;
+        return nil;
       }
 
-      dependencies = dependencies |> filter(|[step]| step != current_worker_steps[worker]);
+      remaining_dependencies |> filter! |[step]| step != current_worker_steps[worker];
 
       if size(next_steps) == 0 {
-        return _;
+        return nil;
       }
 
-      let next_step = first(next_steps);
-      remaining_steps = remove_value(next_step, remaining_steps);
-      current_worker_steps = update(worker, nil, || next_step, current_worker_steps);
-      remaining_worker_durations = update(worker, 0, || time(next_step), remaining_worker_durations);
-      next_steps = rest(next_steps);
-    });
-
-    total_duration = total_duration + 1;
-  });
-
-  total_duration;
+      let next_step = pop!(next_steps);
+      remaining_steps |> filter!(_ != next_step);
+      current_worker_steps |> assoc!(worker, next_step);
+      remaining_worker_durations |> assoc!(worker, time(next_step));
+    }
+  }
 }
 
 test: {
