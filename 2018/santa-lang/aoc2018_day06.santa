@@ -10,31 +10,32 @@ let calc_boundary = |points| {
 };
 
 let generate_grid = |points| {
-  let [min_x, max_x, min_y, max_y] = calc_boundary(points);
-  min_x..max_x |> flat_map(|x| min_y..max_y |> map(|y| [x, y]));
+  let [lx, hx, ly, hy] = calc_boundary(points);
+  lx..hx |> flat_map(|x| ly..hy |> map(|y| [x, y]));
 };
 
 part_one: {
   let points = parse_points(input);
-  let [min_x, max_x, min_y, max_y] = calc_boundary(points);
+  let [lx, hx, ly, hy] = calc_boundary(points);
 
-  let mut totals = #{};
-  let mut infinite = {};
-
-  generate_grid(points)
-    |> each(|[x, y]| {
-      let [first, second] = points
-        |> map(|position| #{position, "distance": distance([x, y], position)})
-        |> sort(|a, b| a["distance"] > b["distance"]);
-
-      if first["distance"] != second["distance"] {
-        totals = update(first["position"], 0, _ + 1, totals);
-
-        if x == min_x || y == min_y || x == max_x || y == max_y {
-          infinite = infinite + {first["position"]};
+  let [totals, infinite] = generate_grid(points)
+    |> reduce(
+      |[totals, infinite], [x, y]| {
+        let [first, second] = points
+          |> map(|position| #{position, "distance": distance([x, y], position)})
+          |> sort(|a, b| a["distance"] > b["distance"]);
+        
+        if first["distance"] == second["distance"] {
+          return [totals, infinite];
         }
-      }
-    });
+
+        return [
+          totals |> update(first["position"], 0, _ + 1),
+          if x == lx || y == ly || x == hx || y == hy { infinite + {first["position"]} } else { infinite }
+        ];
+      },
+      [#{}, {}]
+    )
 
   list(totals)
     |> filter(|[position]| !(infinite `contains` position))
