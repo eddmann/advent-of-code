@@ -16,7 +16,7 @@ let tally_guards_sleep = |input| {
 
         let sleep_range = start..int(action[15..17]) - 1;
 
-        let updated_sleep = update(
+        let updated_sleep = sleep |> update(
           guard,
           #{},
           |guard_sleep| {
@@ -25,8 +25,7 @@ let tally_guards_sleep = |input| {
               guard_sleep,
               sleep_range
             );
-          },
-          sleep
+          }
         );
 
         return [updated_sleep, guard, nil];
@@ -46,14 +45,12 @@ part_one: {
       },
       []
     )
-    |> sort(|a, b| a[1] < b[1])
-    |> first
-    |> first;
+    |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
+    |> |[[id]]| id;
 
   let minute = guards_sleep[id]
-    |> sort(|a, b| a[1] < b[1])
-    |> first
-    |> first;
+    |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
+    |> |[[minute]]| minute;
 
   id * minute;
 }
@@ -68,14 +65,12 @@ part_two: {
       },
       []
     )
-    |> sort(|a, b| a[1] < b[1])
-    |> first
-    |> first;
+    |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
+    |> |[[id]]| id;
 
   let minute = guards_sleep[id]
-    |> sort(|a, b| a[1] < b[1])
-    |> first
-    |> first;
+    |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
+    |> |[[minute]]| minute
 
   id * minute;
 }
