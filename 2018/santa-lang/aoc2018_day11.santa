@@ -1,0 +1,71 @@
+input: read("aoc://2018/11")
+
+// https://en.wikipedia.org/wiki/Summed-area_table
+
+let power_level = |serial_number, x, y| {
+  let rack_id = x + 10;
+  (rack_id * y + serial_number) * rack_id / 100 % 10 - 5;
+};
+
+let build_sum_table = |size, power_level| {
+  let grid = list(0..size+1) |> map(|| mut!([0] * (size+1)));
+
+  1..size |> each |x| {
+    1..size |> each |y| {
+      grid[x] |> assoc!(
+        y,
+        power_level(x, y) + grid[x-1][y] + grid[x][y-1] - grid[x-1][y-1]
+      );
+    }
+  }
+
+  grid |> map(imut);
+};
+
+let size = 300;
+
+part_one: {
+  let serial = int(input);
+  let grid = power_level(serial) |> build_sum_table(size);
+
+  let mut max_total = 0;
+  let mut max_point = [0, 0];
+
+  1..size-2 |> each |x| {
+    1..size-2 |> each |y| {
+      let total = grid[x+2][y+2] - grid[x-1][y+2] - grid[x+2][y-1] + grid[x-1][y-1];
+
+      if total > max_total {
+        max_total = total;
+        max_point = [x, y];
+      }
+    }
+  }
+
+  return "" + max_point[0] + "," + max_point[1];
+}
+
+part_two: {
+  let serial = int(input);
+  let grid = power_level(serial) |> build_sum_table(size);
+
+  let mut max_total = 0;
+  let mut max_point = [0, 0];
+  let mut max_dimension = 0;
+
+  1..300 |> each |dimension| {
+    dimension..300 |> each |x| {
+      dimension..300 |> each |y| {
+        let total = grid[x][y] - grid[x][y-dimension] - grid[x-dimension][y] + grid[x-dimension][y-dimension];
+
+        if total > max_total {
+          max_total = total;
+          max_point = [x-dimension+1, y-dimension+1];
+          max_dimension = dimension;
+        }
+      }
+    }
+  }
+
+  return "" + max_point[0] + "," + max_point[1] + "," + max_dimension;
+}
