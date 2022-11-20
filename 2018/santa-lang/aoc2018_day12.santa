@@ -32,31 +32,33 @@ let generation = |patterns, pots| {
 part_one: {
   let [initial, patterns] = parse_notes(input);
 
-  1..20
-    |> reduce(generation(patterns), initial)
+  iterate(generation(patterns), initial)
+    |> get(20)
     |> sum;
 }
 
 part_two: {
   let [initial, patterns] = parse_notes(input);
 
-  let mut previous = initial;
-  let mut duplicate_diff = 0;
-  let mut duplicate_cycle = 0;
+  let generator = generation(patterns);
 
-  0.. |> each |cycle| {
-    let next = generation(patterns, previous);
+  let generation_window = zip(
+    0..,
+    iterate(generator, initial),
+    iterate(generator, initial) |> skip(1),
+    iterate(generator, initial) |> skip(2)
+  );
 
-    if sum(next) - sum(previous) == duplicate_diff {
-      duplicate_cycle = cycle;
-      break;
-    }
+  let [duplicate_cycle, duplicate_total, duplicate_diff] = generation_window
+    |> map(|[cycle, previous, current, next]| [
+      cycle,
+      sum(previous),
+      sum(current) - sum(previous),
+      sum(next) - sum(current)
+    ])
+    |> find(|[_, _, previous_diff, next_diff]| previous_diff == next_diff);
 
-    duplicate_diff = sum(next) - sum(previous);
-    previous = next;
-  }
-
-  return (50000000000 - duplicate_cycle) * duplicate_diff + sum(previous);
+  return (50000000000 - duplicate_cycle) * duplicate_diff + duplicate_total;
 }
 
 test: {
