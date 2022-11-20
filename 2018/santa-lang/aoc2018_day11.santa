@@ -42,10 +42,13 @@ part_one: {
     }
   }
 
-  return "" + max_point[0] + "," + max_point[1];
+  let [max_x, max_y] = max_point;
+
+  return "" + max_x + "," + max_y;
 }
 
 part_two: {
+  return 0;
   let serial = int(input);
   let grid = power_level(serial) |> build_sum_table(size);
 
@@ -67,5 +70,7 @@ part_two: {
     }
   }
 
-  return "" + max_point[0] + "," + max_point[1] + "," + max_dimension;
+  let [max_x, max_y] = max_point;
+
+  return "" + max_x + "," + max_y + "," + max_dimension;
 }
