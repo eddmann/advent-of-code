@@ -1,0 +1,93 @@
+input: read("aoc://2018/13")
+
+let parse_map = |input| {
+  let parsed_map = zip(0.., lines(input))
+    |> flat_map(|[y, row]| {
+      zip(0.., split("", row))
+        |> filter(|[_, path]| path != " ")
+        |> map(|[x, path]| [[y, x], path])
+      })
+    |> hash;
+
+  let cart_map = parsed_map
+    |> map |path| match path {
+      "^" { "|" },
+      "v" { "|" },
+      "<" { "-" },
+      ">" { "-" },
+      _ { path }
+    };
+
+  let carts = parsed_map
+    |> list
+    |> reduce(
+      |carts, [position, path]| match path {
+        "^" { [..carts, [position, [-1, 0], 0]] },
+        "v" { [..carts, [position, [1, 0], 0]] },
+        "<" { [..carts, [position, [0, -1], 0]] },
+        ">" { [..carts, [position, [0, 1], 0]] },
+        _ { carts }
+      },
+      []
+    );
+
+  return [cart_map, carts];
+}
+
+let tick = |cart_map, carts| {
+  carts
+    |> sort(|[[y1, x1]], [[y2, x2]]| x1 < x2 && y1 < y2)
+    |> map(|[position, direction, intersection]| {
+      let [y, x] = position;
+      let [dy, dx] = direction;
+      let next_position = [y + dy, x + dx];
+
+      match [cart_map[next_position], intersection] {
+        ["\\", _] { [next_position, [dx, dy], intersection] },
+        ["/", _] { [next_position, [-dx, -dy], intersection] },
+        ["+", 0] { [next_position, [-dx, dy], (intersection + 1) % 3] },
+        ["+", 1] { [next_position, direction, (intersection + 1) % 3] },
+        ["+", 2] { [next_position, [dx, -dy], (intersection + 1) % 3] },
+        _ { [next_position, direction, intersection] }
+      };
+    });
+}
+
+part_one: {
+  let [cart_map, carts] = parse_map(input);
+
+  let [[y, x]] = iterate(tick(cart_map), carts)
+    |> map(|carts| {
+      carts |> find |cart| {
+        carts |> any |that| cart != that && cart[0] == that[0];
+      };
+    })
+    |> find(|first_crash| first_crash);
+
+  "" + x + "," + y;
+}
+
+let remove_crashes = |carts| {
+  carts |> filter |cart| {
+    !(carts |> any |that| cart != that && cart[0] == that[0]);
+  };
+};
+
+part_two: {
+  let [cart_map, carts] = parse_map(input);
+
+  let [[[y, x]]] = iterate(tick(cart_map) >> remove_crashes, carts)
+    |> find(|carts| size(carts) == 1);
+
+  return "" + x + "," + y;
+}
+
+test: {
+  input: "/->-\\
+|   |  /----\\
+| /-+--+-\\  |
+| | |  | v  |
+\\-+-/  \\-+--/
+  \\------/   "
+  part_one: "7,3"
+}
