@@ -10,17 +10,10 @@ let parse_points = lines
   >> set;
 
 let move = |points, seconds| {
-  let [lx, hx, ly, hy] = points |> reduce(
-    |[lx, hx, ly, hy], point| [
-      min([lx, point["x"] + point["vx"] * seconds]),
-      max([hx, point["x"] + point["vx"] * seconds]),
-      min([ly, point["y"] + point["vy"] * seconds]),
-      max([hy, point["y"] + point["vy"] * seconds])
-    ],
-    [1000000, -1000000, 1000000, -1000000]
-  );
+  let xs = points |> map(|point| point["x"] + point["vx"] * seconds);
+  let ys = points |> map(|point| point["y"] + point["vy"] * seconds);
 
-  return abs(hx - lx) + abs(hy - ly);
+  max(xs) - min(xs) + max(ys) - min(ys);
 }
 
 let draw = |points, seconds| {
