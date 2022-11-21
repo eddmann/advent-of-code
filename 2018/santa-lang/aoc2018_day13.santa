@@ -79,7 +79,7 @@ part_two: {
   let [[[y, x]]] = iterate(tick(cart_map) >> remove_crashes, carts)
     |> find(|carts| size(carts) == 1);
 
-  return "" + x + "," + y;
+  "" + x + "," + y;
 }
 
 test: {
