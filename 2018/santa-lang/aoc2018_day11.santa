@@ -48,7 +48,6 @@ part_one: {
 }
 
 part_two: {
-  return 0;
   let serial = int(input);
   let grid = power_level(serial) |> build_sum_table(size);
 
