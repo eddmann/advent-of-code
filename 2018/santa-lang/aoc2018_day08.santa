@@ -1,7 +1,6 @@
 input: read("aoc://2018/8")
 
 let parse_license = split(" ") >> map(int);
-let sum = reduce(+, 0);
 
 part_one: {
   let sum_metadata = |license| {

@@ -1,7 +1,5 @@
 input: read("aoc://2018/12")
 
-let sum = reduce(+, 0);
-
 let parse_notes = |input| {
   let [initial, _, ..patterns] = lines(input);
 
