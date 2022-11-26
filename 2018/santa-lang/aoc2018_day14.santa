@@ -1,0 +1,78 @@
+input: read("aoc://2018/14")
+
+let next_score = |[scores, elf_1, elf_2]| {
+  let next = "" + (scores[elf_1] + scores[elf_2])
+    |> reduce(
+      |scores, score| scores |> push(int(score)),
+      scores
+    );
+
+  return [
+    next,
+    (elf_1 + next[elf_1] + 1) % size(next),
+    (elf_2 + next[elf_2] + 1) % size(next)
+  ];
+}
+
+let initial_scores = [3, 7];
+
+part_one: {
+  let after = int(input);
+  let collect = 10;
+
+  let [recipes] = iterate(next_score, [initial_scores, 0, 1])
+    |> find(|[recipes]| size(recipes) > after + collect);
+
+  recipes[after..after+collect] |> reduce(+, "");
+}
+
+part_two: {
+  let sequence = input |> split("") |> map(int);
+
+  let [recipes] = iterate(next_score, [initial_scores, 0, 1])
+    |> find(|[recipes]| {
+      let single_entry = recipes[-(size(sequence)+1)..-1];
+      let double_entry = recipes[-(size(sequence))..];
+
+      single_entry == sequence || double_entry == sequence
+    });
+
+  let single_entry_offset = if recipes[-(size(sequence)+1)..-1] == sequence { 1 } else { 0 };
+
+  size(recipes) - size(sequence) - single_entry_offset;
+}
+
+test: {
+  input: "5"
+  part_one: "0124515891"
+}
+
+test: {
+  input: "18"
+  part_one: "9251071085"
+}
+
+test: {
+  input: "2018"
+  part_one: "5941429882"
+}
+
+test: {
+  input: "51589"
+  part_two: 9
+}
+
+test: {
+  input: "01245"
+  part_two: 5
+}
+
+test: {
+  input: "92510"
+  part_two: 18
+}
+
+test: {
+  input: "59414"
+  part_two: 2018
+}
