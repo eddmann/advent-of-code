@@ -1,0 +1,39 @@
+input: read("aoc://2022/1")
+
+let parse_inventories = |input| {
+  let parse_inventory = lines >> map(int) >> sum;
+
+  input
+    |> split("\n\n")
+    |> map(parse_inventory);
+}
+
+part_one: {
+  parse_inventories(input) |> max
+}
+
+part_two: {
+  parse_inventories(input)
+    |> sort(<)
+    |> take(3)
+    |> sum
+}
+
+test: {
+  input: "1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000"
+  part_one: 24000
+  part_two: 45000
+}

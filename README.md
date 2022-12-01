@@ -7,3 +7,4 @@
 - 2019
 - 2020 - [Clojure](/2020/clojure), [TypeScript](/2020/typescript)
 - 2021 - [C](/2021/c), [Python](/2021/python)
+- 2022 - [santa-lang](/2022/santa-lang)
