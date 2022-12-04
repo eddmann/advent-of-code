@@ -1,0 +1,30 @@
+input: read("aoc://2022/4")
+
+let parse_assignments = lines >> map(split(",") >> map(split("-") >> map(int)));
+
+part_one: {
+  parse_assignments(input)
+    |> filter(|[[x1, y1], [x2, y2]]| {
+      (x1 < x2 + 1 && y1 + 1 > y2) || (x2 < x1 + 1 && y2 + 1 > y1)
+    })
+    |> size;
+}
+
+part_two: {
+  parse_assignments(input)
+    |> filter(|[[x1, y1], [x2, y2]]| {
+      max(x1, x2) < min(y1, y2) + 1
+    })
+    |> size;
+}
+
+test: {
+  input: "2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8"
+  part_one: 2
+  part_two: 4
+}
