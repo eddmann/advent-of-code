@@ -1,0 +1,66 @@
+input: read("aoc://2022/5")
+
+let id = |a| a;
+
+let parse_stacks = |input| {
+  let parse_stack = chunk(4) >> map(find(|ch| ch != " " && ch != "["));
+
+  let stack_lines = input
+    |> split("\n\n")
+    |> first
+    |> lines
+    |> map(parse_stack);
+
+  zip(..stack_lines)
+    |> map(filter(id));
+}
+
+let parse_instructions = |input| {
+  let parse_instruction = regex_match("move (\\d+) from (\\d+) to (\\d+)") >> map(int);
+
+  input
+    |> split("\n\n")
+    |> get(1)
+    |> lines
+    |> map(parse_instruction);
+}
+
+let rearrangement_procedure = |input, crate_transformer| {
+  parse_instructions(input)
+    |> reduce(
+      |stacks, [amount, from, to]| {
+        let crates = stacks[from-1][0..amount] |> crate_transformer;
+
+        stacks
+          |> assoc(from-1, stacks[from-1][amount..])
+          |> assoc(to-1, [..crates, ..stacks[to-1]]);
+      },
+      parse_stacks(input)
+    )
+    |> reduce(
+      |top, stack| top + stack[0],
+      ""
+    );
+}
+
+part_one: {
+  let reverse = |col| match col {
+    [] { [] },
+    [el] { [el] },
+    [el, ..rest] { reverse(rest) + [el] }
+  };
+
+  rearrangement_procedure(input, reverse);
+}
+
+part_two: rearrangement_procedure(input, id)
+
+test: {
+  input: "    [D]     \n[N] [C]     \n[Z] [M] [P] \n 1   2   3  \n
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2"
+  part_one: "CMZ"
+  part_two: "MCD"
+}
