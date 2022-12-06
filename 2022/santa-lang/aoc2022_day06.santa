@@ -1,0 +1,58 @@
+input: read("aoc://2022/6")
+
+let is_marker = |sequence| size(sequence) == size(set(split("", sequence)));
+
+part_one: {
+  4..
+    |> find(|position| is_marker(input[(position - 4)..position]));
+}
+
+part_two: {
+  14..
+    |> find(|position| is_marker(input[(position - 14)..position]));
+}
+
+test: {
+  input: "bvwbjplbgvbhsrlpgdmjqwftvncz"
+  part_one: 5
+}
+
+test: {
+  input: "nppdvjthqldpwncqszvftbrmjlhg"
+  part_one: 6
+}
+
+test: {
+  input: "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
+  part_one: 10
+}
+
+test: {
+  input: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"
+  part_one: 11
+}
+
+test: {
+  input: "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
+  part_two: 19
+}
+
+test: {
+  input: "bvwbjplbgvbhsrlpgdmjqwftvncz"
+  part_two: 23
+}
+
+test: {
+  input: "nppdvjthqldpwncqszvftbrmjlhg"
+  part_two: 23
+}
+
+test: {
+  input: "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
+  part_two: 29
+}
+
+test: {
+  input: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"
+  part_two: 26
+}
