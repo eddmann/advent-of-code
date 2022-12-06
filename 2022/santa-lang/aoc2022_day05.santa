@@ -1,18 +1,16 @@
 input: read("aoc://2022/5")
 
-let id = |a| a;
-
 let parse_stacks = |input| {
-  let parse_stack = chunk(4) >> map(find(|ch| ch != " " && ch != "["));
+  let parse_stack_line = chunk(4) >> map(find(|ch| ch != " " && ch != "["));
 
   let stack_lines = input
     |> split("\n\n")
     |> first
     |> lines
-    |> map(parse_stack);
+    |> map(parse_stack_line);
 
   zip(..stack_lines)
-    |> map(filter(id));
+    |> map(filter(_ != nil));
 }
 
 let parse_instructions = |input| {
@@ -20,16 +18,16 @@ let parse_instructions = |input| {
 
   input
     |> split("\n\n")
-    |> get(1)
+    |> second
     |> lines
     |> map(parse_instruction);
 }
 
-let rearrangement_procedure = |input, crate_transformer| {
+let rearrangement_procedure = |pickup_procedure, input| {
   parse_instructions(input)
     |> reduce(
       |stacks, [amount, from, to]| {
-        let crates = stacks[from-1][0..amount] |> crate_transformer;
+        let crates = stacks[from-1][0..amount] |> pickup_procedure;
 
         stacks
           |> assoc(from-1, stacks[from-1][amount..])
@@ -43,17 +41,9 @@ let rearrangement_procedure = |input, crate_transformer| {
     );
 }
 
-part_one: {
-  let reverse = |col| match col {
-    [] { [] },
-    [el] { [el] },
-    [el, ..rest] { reverse(rest) + [el] }
-  };
+part_one: input |> rearrangement_procedure(reverse)
 
-  rearrangement_procedure(input, reverse);
-}
-
-part_two: rearrangement_procedure(input, id)
+part_two: input |> rearrangement_procedure(id)
 
 test: {
   input: "    [D]     \n[N] [C]     \n[Z] [M] [P] \n 1   2   3  \n
