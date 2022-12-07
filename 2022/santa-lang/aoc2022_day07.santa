@@ -1,0 +1,82 @@
+input: read("aoc://2022/7")
+
+let prefixes = reduce_s(
+  |[prefixes, prefix], key| {
+    [prefixes + [[..prefix, key]], [..prefix, key]];
+  },
+  [[], []]
+);
+
+let calc_directory_sizes = reduce_s(
+  |[dirs, cwd], op| {
+    if (op == "$ cd ..") {
+      return [dirs, cwd[0..-1]];
+    }
+
+    if (op[0..3] == "$ cd") {
+      return [dirs, cwd |> push(op[5..])]
+    }
+
+    let [file_size] = regex_match("(\\d+)", op);
+    if (file_size) {
+      return [
+        prefixes(cwd) |> reduce(
+          |dirs, prefix| dirs |> update(prefix, 0, |total| total + int(file_size)),
+          dirs
+        ),
+        cwd
+      ];
+    }
+
+    return [dirs, cwd];
+  },
+  [#{}, []]
+);
+
+part_one: {
+  input
+    |> lines
+    |> calc_directory_sizes
+    |> filter(_ < 100000)
+    |> sum;
+}
+
+part_two: {
+  let dirs = input
+    |> lines
+    |> calc_directory_sizes;
+
+  let disk_usage = 30000000 - (70000000 - dirs[["/"]]);
+
+  dirs
+    |> filter(_ > disk_usage)
+    |> min;
+}
+
+test: {
+  input: "$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k"
+  part_one: 95437
+  part_two: 24933642
+}
