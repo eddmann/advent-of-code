@@ -7,49 +7,43 @@ let prefixes = reduce_s(
   [[], []]
 );
 
+let parse_commands = lines >> map(split(" "));
+
 let calc_directory_sizes = reduce_s(
-  |[dirs, cwd], op| {
-    if (op == "$ cd ..") {
-      return [dirs, cwd[0..-1]];
-    }
-
-    if (op[0..3] == "$ cd") {
-      return [dirs, cwd |> push(op[5..])]
-    }
-
-    let [file_size] = regex_match("(\\d+)", op);
-    if (file_size) {
-      return [
+  |[dirs, cwd], cmd| match cmd {
+    ["$", "cd", ".."] { [dirs, cwd[0..-1]] },
+    ["$", "cd", dir] { [dirs, cwd |> push(dir)] },
+    [file_size, _] if int(file_size) > 0 {
+      [
         prefixes(cwd) |> reduce(
           |dirs, prefix| dirs |> update(prefix, 0, |total| total + int(file_size)),
           dirs
         ),
         cwd
-      ];
-    }
-
-    return [dirs, cwd];
+      ]
+    },
+    _ { [dirs, cwd] }
   },
   [#{}, []]
 );
 
 part_one: {
-  input
-    |> lines
+  parse_commands(input)
     |> calc_directory_sizes
     |> filter(_ < 100000)
     |> sum;
 }
 
 part_two: {
-  let dirs = input
-    |> lines
+  let dirs = parse_commands(input)
     |> calc_directory_sizes;
 
-  let disk_usage = 30000000 - (70000000 - dirs[["/"]]);
+  let disk_size = 70000000;
+  let update_size = 30000000;
+  let required_space = update_size - (disk_size - dirs[["/"]]);
 
   dirs
-    |> filter(_ > disk_usage)
+    |> filter(_ > required_space)
     |> min;
 }
 
