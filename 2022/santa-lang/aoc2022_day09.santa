@@ -1,16 +1,14 @@
 input: read("aoc://2022/9")
 
-let parse_motions = lines >> map |motion| {
+let parse_motions = lines >> flat_map |motion| {
   let [direction, step] = split(" ", motion);
-  [direction, int(step)];
+  repeat(direction) |> take(step);
 };
 
 let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
 
-let neighbours = -1..1 |> flat_map(|dy| -1..1 |> map(|dx| [dy, dx]));
-
-let is_adjacent = |[y, x], point| {
-  (neighbours |> map(|[dy, dx]| [y + dy, x + dx])) `contains` point;
+let is_adjacent = |[hy, hx], [ty, tx]| {
+  abs(hy - ty) < 2 && abs(hx - tx) < 2;
 }
 
 let next_tail_point = |head, tail| {
@@ -18,30 +16,30 @@ let next_tail_point = |head, tail| {
     return tail;
   }
 
-  let [y1, x1] = head;
-  let [y2, x2] = tail;
+  let [hy, hx] = head;
+  let [ty, tx] = tail;
 
-  if y1 == y2 { // horizontal
-    return [y2, if x1 > x2 { x2 + 1 } else { x2 - 1 }];
+  if hy == ty { // horizontal
+    return [ty, if hx > tx { tx + 1 } else { tx - 1 }];
   }
 
-  if x1 == x2 { // vertical
-    return [if y1 > y2 { y2 + 1 } else { y2 - 1 }, x2];
+  if hx == tx { // vertical
+    return [if hy > ty { ty + 1 } else { ty - 1 }, tx];
   }
 
-  if y1 < y2 && x1 > x2 { // down-right
-    return [y2 - 1, x2 + 1];
+  if hy < ty && hx > tx { // down-right
+    return [ty - 1, tx + 1];
   }
 
-  if y1 < y2 && x1 < x2 { // down-left
-    return [y2 - 1, x2 - 1];
+  if hy < ty && hx < tx { // down-left
+    return [ty - 1, tx - 1];
   }
 
-  if y1 > y2 && x1 > x2 { // top-right
-    return [y2 + 1, x2 + 1];
+  if hy > ty && hx > tx { // top-right
+    return [ty + 1, tx + 1];
   }
 
-  return [y2 + 1, x2 - 1]; // top-left
+  return [ty + 1, tx - 1]; // top-left
 }
 
 let take_step = |knots, [dy, dx]| {
@@ -52,19 +50,13 @@ let take_step = |knots, [dy, dx]| {
   );
 }
 
-let tail_visits = |total_knots, motions| {
-  motions |>
-    reduce_s(
-      |[visits, knots], [direction, step]| {
-        0..step-1 |> reduce(
-          |[visits, knots]| {
-            let next_knots = knots `take_step` directions[direction];
-            [visits + {next_knots[-1]}, next_knots];
-          },
-          [visits, knots]
-        );
-      },
-      [{}, [[0, 0]] * total_knots]
+let tail_visits = |total_knots| {
+  reduce_s(
+    |[visits, knots], [direction, step]| {
+      let next_knots = knots `take_step` directions[direction];
+      [visits + {next_knots[-1]}, next_knots];
+    },
+    [{}, [[0, 0]] * total_knots]
   );
 }
 
