@@ -1,0 +1,83 @@
+input: read("aoc://2022/9")
+
+let scan = |fn, initial, collection| {
+  let mut previous = initial;
+  [initial] + map(
+    |value| { previous = fn(previous, value); },
+    collection
+  );
+}
+
+let signum = |x| match x {
+  0 { 0 }
+  n if n < 0 { -1 }
+  _ { 1 }
+}
+
+let parse_motions = lines >> flat_map |motion| {
+  let [direction, step] = split(" ", motion);
+  repeat(direction) |> take(step);
+}
+
+let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
+
+let knot_head = scan(
+  |[y, x], direction| {
+    let [dy, dx] = directions[direction];
+    [y + dy, x + dx];
+  },
+  [0, 0]
+);
+
+let knot_tail = scan(
+  |[ty, tx], [hy, hx]| {
+    if abs(ty - hy) < 2 && abs(tx - hx) < 2 {
+      [ty, tx];
+    } else {
+      [ty + signum(hy - ty), tx + signum(hx - tx)]
+    }
+  },
+  [0, 0]
+);
+
+let visits = set >> size;
+
+part_one: {
+  parse_motions(input)
+    |> knot_head
+    |> knot_tail
+    |> visits;
+}
+
+part_two: {
+  parse_motions(input)
+    |> knot_head
+    |> iterate(knot_tail)
+    |> get(9)
+    |> visits;
+}
+
+test: {
+  input: "R 4
+U 4
+L 3
+D 1
+R 4
+D 1
+L 5
+R 2"
+  part_one: 13
+  part_two: 1
+}
+
+test: {
+  input: "R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20"
+  part_two: 36
+}
