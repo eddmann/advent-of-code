@@ -1,0 +1,106 @@
+input: read("aoc://2022/9")
+
+let parse_motions = lines >> map |motion| {
+  let [direction, step] = split(" ", motion);
+  [direction, int(step)];
+};
+
+let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
+
+let neighbours = -1..1 |> flat_map(|dy| -1..1 |> map(|dx| [dy, dx]));
+
+let is_adjacent = |[y, x], point| {
+  (neighbours |> map(|[dy, dx]| [y + dy, x + dx])) `contains` point;
+}
+
+let next_tail_point = |head, tail| {
+  if is_adjacent(head, tail) {
+    return tail;
+  }
+
+  let [y1, x1] = head;
+  let [y2, x2] = tail;
+
+  if y1 == y2 { // horizontal
+    return [y2, if x1 > x2 { x2 + 1 } else { x2 - 1 }];
+  }
+
+  if x1 == x2 { // vertical
+    return [if y1 > y2 { y2 + 1 } else { y2 - 1 }, x2];
+  }
+
+  if y1 < y2 && x1 > x2 { // down-right
+    return [y2 - 1, x2 + 1];
+  }
+
+  if y1 < y2 && x1 < x2 { // down-left
+    return [y2 - 1, x2 - 1];
+  }
+
+  if y1 > y2 && x1 > x2 { // top-right
+    return [y2 + 1, x2 + 1];
+  }
+
+  return [y2 + 1, x2 - 1]; // top-left
+}
+
+let take_step = |knots, [dy, dx]| {
+  let [y, x] = knots[0];
+  knots[1..] |> reduce(
+    |knots, knot| knots + [next_tail_point(knots[-1], knot)],
+    [[y + dy, x + dx]]
+  );
+}
+
+let tail_visits = |total_knots, motions| {
+  motions |>
+    reduce_s(
+      |[visits, knots], [direction, step]| {
+        0..step-1 |> reduce(
+          |[visits, knots]| {
+            let next_knots = knots `take_step` directions[direction];
+            [visits + {next_knots[-1]}, next_knots];
+          },
+          [visits, knots]
+        );
+      },
+      [{}, [[0, 0]] * total_knots]
+  );
+}
+
+part_one: {
+  parse_motions(input)
+    |> tail_visits(2)
+    |> size;
+}
+
+part_two: {
+  parse_motions(input)
+    |> tail_visits(10)
+    |> size;
+}
+
+test: {
+  input: "R 4
+U 4
+L 3
+D 1
+R 4
+D 1
+L 5
+R 2"
+  part_one: 13
+  part_two: 1
+}
+
+test: {
+  input: "R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20"
+  part_two: 36
+}
