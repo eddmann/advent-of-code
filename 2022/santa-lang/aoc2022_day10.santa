@@ -1,0 +1,191 @@
+input: read("aoc://2022/10")
+
+let scan = |fn, initial, collection| {
+  let mut previous = initial;
+  [initial] + map(
+    |value| { previous = fn(previous, value); },
+    collection
+  );
+}
+
+let signal = lines >>
+  flat_map(|op| {
+    let [_, v] = split(" ", op);
+    if v { [0, int(v)] } else { [0] };
+  })
+  >> scan(+, 1);
+
+part_one: {
+  let cycles = signal(input);
+
+  range(20, 220, 40)
+    |> map(|cycle| cycle * cycles[cycle-1])
+    |> sum;
+}
+
+part_two: {
+  zip(0.., signal(input))
+    |> reduce(
+      |crt, [position, signal]| {
+        let line_position = position % 40;
+        let new_line = if line_position == 0 { "\n" } else { "" };
+
+        if map(signal + _, -1..1) `contains` line_position {
+          crt + new_line + "#";
+        } else {
+          crt + new_line + " ";
+        }
+      },
+      ""
+    );
+}
+
+test: {
+  input: "addx 15
+addx -11
+addx 6
+addx -3
+addx 5
+addx -1
+addx -8
+addx 13
+addx 4
+noop
+addx -1
+addx 5
+addx -1
+addx 5
+addx -1
+addx 5
+addx -1
+addx 5
+addx -1
+addx -35
+addx 1
+addx 24
+addx -19
+addx 1
+addx 16
+addx -11
+noop
+noop
+addx 21
+addx -15
+noop
+noop
+addx -3
+addx 9
+addx 1
+addx -3
+addx 8
+addx 1
+addx 5
+noop
+noop
+noop
+noop
+noop
+addx -36
+noop
+addx 1
+addx 7
+noop
+noop
+noop
+addx 2
+addx 6
+noop
+noop
+noop
+noop
+noop
+addx 1
+noop
+noop
+addx 7
+addx 1
+noop
+addx -13
+addx 13
+addx 7
+noop
+addx 1
+addx -33
+noop
+noop
+noop
+addx 2
+noop
+noop
+noop
+addx 8
+noop
+addx -1
+addx 2
+addx 1
+noop
+addx 17
+addx -9
+addx 1
+addx 1
+addx -3
+addx 11
+noop
+noop
+addx 1
+noop
+addx 1
+noop
+noop
+addx -13
+addx -19
+addx 1
+addx 3
+addx 26
+addx -30
+addx 12
+addx -1
+addx 3
+addx 1
+noop
+noop
+noop
+addx -9
+addx 18
+addx 1
+addx 2
+noop
+noop
+addx 9
+noop
+noop
+noop
+addx -1
+addx 2
+addx -37
+addx 1
+addx 3
+noop
+addx 15
+addx -21
+addx 22
+addx -6
+addx 1
+noop
+addx 2
+addx 1
+noop
+addx -10
+noop
+noop
+addx 20
+addx 1
+addx 2
+addx 2
+addx -6
+addx -11
+noop
+noop
+noop"
+  part_one: 13140
+}
