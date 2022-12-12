@@ -74,3 +74,9 @@ $ ls
   part_one: 95437
   part_two: 24933642
 }
+
+test: {
+  input: read("aoc://2022/7")
+  part_one: 1501149
+  part_two: 10096985
+}

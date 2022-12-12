@@ -56,3 +56,9 @@ test: {
   input: "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"
   part_two: 26
 }
+
+test: {
+  input: read("aoc://2022/6")
+  part_one: 1848
+  part_two: 2308
+}

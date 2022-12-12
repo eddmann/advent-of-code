@@ -54,3 +54,9 @@ move 1 from 1 to 2"
   part_one: "CMZ"
   part_two: "MCD"
 }
+
+test: {
+  input: read("aoc://2022/5")
+  part_one: "RLFNRTNFB"
+  part_two: "MHQTLJRLB"
+}

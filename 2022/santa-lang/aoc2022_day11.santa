@@ -95,3 +95,9 @@ Monkey 3:
   part_one: 10605
   part_two: 2713310158
 }
+
+test: {
+  input: read("aoc://2022/11")
+  part_one: 119715
+  part_two: 18085004878
+}

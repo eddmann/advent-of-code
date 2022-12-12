@@ -57,3 +57,9 @@ CrZsJsPPZsGzwwsLwLmpwMDw"
   part_one: 157
   part_two: 70
 }
+
+test: {
+  input: read("aoc://2022/3")
+  part_one: 8515
+  part_two: 2434
+}

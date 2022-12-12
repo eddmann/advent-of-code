@@ -37,3 +37,9 @@ test: {
   part_one: 24000
   part_two: 45000
 }
+
+test: {
+  input: read("aoc://2022/1")
+  part_one: 71300
+  part_two: 209691
+}
