@@ -11,28 +11,36 @@ let parse_op = |op| {
 let parse_monkeys = |input| {
   let parse_monkey = |monkey| {
     let [items] = monkey |> regex_match("items: (.+)") |> map(split(",") >> map(int));
-    let [op] = monkey |> regex_match("= old (.+)");
-    let [test] = monkey |> regex_match("by (.+)") |> map(int);
-    let throw = monkey |> regex_match("(\\d+)\\n.+throw to monkey (\\d+)$") |> map(int);
+    let [op] = monkey |> regex_match("= old (.+)") |> map(parse_op);
+    let [divisor] = monkey |> regex_match("by (.+)") |> map(int);
+    let [yes, no] = monkey |> regex_match("(\\d+)\\n.+throw to monkey (\\d+)$") |> map(int);
+    let throw_to = |worry_level| if worry_level % divisor == 0 { yes } else { no };
 
-    #{items, op, test, throw, "activity": 0};
+    #{items, op, divisor, throw_to, "activity": 0};
   };
 
   input |> split("\n\n") |> map(parse_monkey);
 }
 
 let round = |apply_relief, monkeys| {
-  0..size(monkeys)-1 |> fold(monkeys) |monkeys, pos| {
-    let monkey = monkeys[pos];
+  0..size(monkeys)-1 |> fold(monkeys) |monkeys, position| {
+    let monkey = monkeys[position];
 
-    monkey["items"] |> fold(monkeys) |monkeys, item| {
-      let worry_level = item |> parse_op(monkey["op"]) |> apply_relief;
-      let throw_to = monkey["throw"][if worry_level % monkeys[pos]["test"] == 0 { 0 } else { 1 }];
+    monkey["items"]
+      |> fold(monkeys, |monkeys, item| {
+        let worry_level = item |> monkey["op"] |> apply_relief;
 
-      monkeys
-        |> update(throw_to, nil, update("items", [], _ + [worry_level]))
-        |> update(pos, nil, update("activity", 0, _ + 1) >> assoc("items", []));
-    }
+        monkeys |> update(
+          monkey["throw_to"](worry_level),
+          nil,
+          update("items", [], _ + [worry_level])
+        );
+      })
+      |> update(
+        position,
+        nil,
+        update("activity", 0, _ + size(monkey["items"])) >> assoc("items", [])
+      );
   }
 }
 
@@ -47,7 +55,7 @@ part_one: {
 
 part_two: {
   let monkeys = parse_monkeys(input);
-  let manageable_level = monkeys |> map(get("test")) |> reduce(*, 1);
+  let manageable_level = monkeys |> map(get("divisor")) |> reduce(*, 1);
 
   monkeys
     |> iterate(round(_ % manageable_level))
