@@ -1,0 +1,79 @@
+input: read("aoc://2022/12")
+
+let parse_height_map = |input| {
+  zip(0.., lines(input))
+    |> flat_map(|[y, row]| {
+      zip(0.., row) |> map(|[x, elevation]| {
+        [[y, x], elevation]
+      });
+    })
+    |> hash;
+};
+
+let elevation = zip("SabcdefghijklmnopqrstuvwxyzE", 0..) |> hash;
+
+let directions = |height_map, [y, x]| {
+  [[-1, 0], [1, 0], [0, -1], [0, 1]]
+    |> map(|[dy, dx]| [dy + y, dx + x])
+    |> filter(|position| height_map[position])
+};
+
+let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
+  let traverse = |queue, visited| {
+    let [position, steps] = first(queue);
+
+    if height_map[position] == end_elevation {
+      return steps;
+    }
+
+    let next_positions = directions(height_map, position)
+      |> filter(|next_position| {
+        if visited `contains` next_position {
+          return false;
+        }
+
+        let current = height_map[position];
+        let next = height_map[next_position];
+
+        elevation[current] `can_hike` elevation[next] || abs(elevation[current] - elevation[next]) < 2;
+      });
+
+    traverse(
+      rest(queue) + (next_positions |> map(|p| [p, steps + 1])),
+      visited + set(next_positions)
+    );
+  };
+
+  let initial_queue = height_map
+    |> list
+    |> filter(|[_, elevation]| elevation == start_elevation)
+    |> map(|[position]| [position, 0]);
+
+  traverse(initial_queue, {});
+}
+
+part_one: {
+  parse_height_map(input)
+    |> best_signal("S", "E", >);
+}
+
+part_two: {
+  parse_height_map(input)
+    |> best_signal("E", "a", <);
+}
+
+test: {
+  input: "Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi"
+  part_one: 31
+  part_two: 29
+}
+
+test: {
+  input: read("aoc://2022/12")
+  part_one: 484
+  part_two: 478
+}
