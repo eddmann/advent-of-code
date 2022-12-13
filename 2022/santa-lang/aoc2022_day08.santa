@@ -45,19 +45,16 @@ part_two: {
   let directions = grid_directions(grid);
 
   let scenic_score = |tree_height, direction| {
-    direction |> reduce(
-      |score, viewpoint| if grid[viewpoint] < tree_height { score + 1 } else { break(score + 1) },
-      0
-    );
+    direction |> fold(0) |score, viewpoint| {
+      if grid[viewpoint] < tree_height { score + 1 } else { break(score + 1) }
+    }
   };
 
   grid
     |> map(|tree_height, position| {
-      directions(position)
-        |> reduce(
-          |score, direction| score * scenic_score(tree_height, direction),
-          1
-        );
+      directions(position) |> fold(1) |score, direction| {
+        score * scenic_score(tree_height, direction)
+      }
     })
     |> max;
 }

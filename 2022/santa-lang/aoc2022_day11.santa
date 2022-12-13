@@ -55,7 +55,7 @@ part_one: {
 
 part_two: {
   let monkeys = parse_monkeys(input);
-  let manageable_level = monkeys |> map(get("divisor")) |> reduce(*, 1);
+  let manageable_level = monkeys |> map(get("divisor")) |> fold(1, *);
 
   monkeys
     |> iterate(round(_ % manageable_level))

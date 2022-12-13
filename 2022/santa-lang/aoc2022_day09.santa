@@ -44,19 +44,18 @@ let next_tail_point = |head, tail| {
 
 let take_step = |knots, [dy, dx]| {
   let [y, x] = knots[0];
-  knots[1..] |> reduce(
-    |knots, knot| knots + [next_tail_point(knots[-1], knot)],
-    [[y + dy, x + dx]]
-  );
+  knots[1..] |> fold([[y + dy, x + dx]]) |knots, knot| {
+    knots + [next_tail_point(knots[-1], knot)];
+  };
 }
 
 let tail_visits = |total_knots| {
-  reduce_s(
+  fold_s(
+    [{}, [[0, 0]] * total_knots],
     |[visits, knots], [direction, step]| {
       let next_knots = knots `take_step` directions[direction];
       [visits + {next_knots[-1]}, next_knots];
-    },
-    [{}, [[0, 0]] * total_knots]
+    }
   );
 }
 

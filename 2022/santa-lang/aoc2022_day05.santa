@@ -25,19 +25,19 @@ let parse_instructions = |input| {
 
 let rearrangement_procedure = |pickup_procedure, input| {
   parse_instructions(input)
-    |> reduce(
+    |> fold(
+      parse_stacks(input),
       |stacks, [amount, from, to]| {
         let crates = stacks[from-1][0..amount] |> pickup_procedure;
 
         stacks
           |> assoc(from-1, stacks[from-1][amount..])
           |> assoc(to-1, [..crates, ..stacks[to-1]]);
-      },
-      parse_stacks(input)
+      }
     )
-    |> reduce(
-      |top, stack| top + stack[0],
-      ""
+    |> fold(
+      "",
+      |top, stack| top + stack[0]
     );
 }
 

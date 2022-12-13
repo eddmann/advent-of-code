@@ -1,31 +1,24 @@
 input: read("aoc://2022/7")
 
-let prefixes = reduce_s(
-  |[prefixes, prefix], key| {
-    [prefixes + [[..prefix, key]], [..prefix, key]];
-  },
-  [[], []]
-);
+let prefixes = fold_s([[], []]) |[prefixes, prefix], key| {
+  [prefixes + [[..prefix, key]], [..prefix, key]];
+}
 
 let parse_commands = lines >> map(split(" "));
 
-let calc_directory_sizes = reduce_s(
-  |[dirs, cwd], cmd| match cmd {
-    ["$", "cd", ".."] { [dirs, cwd[0..-1]] },
-    ["$", "cd", dir] { [dirs, cwd |> push(dir)] },
-    [file_size, _] if int(file_size) > 0 {
-      [
-        prefixes(cwd) |> reduce(
-          |dirs, prefix| dirs |> update(prefix, 0, |total| total + int(file_size)),
-          dirs
-        ),
-        cwd
-      ]
-    },
-    _ { [dirs, cwd] }
+let calc_directory_sizes = fold_s([#{}, []]) |[dirs, cwd], cmd| match cmd {
+  ["$", "cd", ".."] { [dirs, cwd[0..-1]] },
+  ["$", "cd", dir] { [dirs, cwd |> push(dir)] },
+  [file_size, _] if int(file_size) > 0 {
+    [
+      prefixes(cwd) |> fold(dirs) |dirs, prefix| {
+        dirs |> update(prefix, 0, |total| total + int(file_size))
+      },
+      cwd
+    ]
   },
-  [#{}, []]
-);
+  _ { [dirs, cwd] }
+}
 
 part_one: {
   parse_commands(input)
