@@ -1,0 +1,69 @@
+input: read("aoc://2022/14")
+
+let parse_scan = lines >> map(split(" -> ") >> map(split(",") >> map(int)));
+
+let line_between = |[x1, y1], [x2, y2]| {
+  if y1 == y2 {
+    x1..x2 |> map(|x| [x, y1]) |> list;
+  } else {
+    y1..y2 |> map(|y| [x1, y]) |> list;
+  }
+}
+
+let plot_rock = |scans| {
+  let plot = |scan| {
+    scan[1..]
+      |> fold(
+        [scan[0]],
+        |rock, point| rock + line_between(rock[-1], point)
+      )
+      |> set;
+  }
+
+  scans |> map(plot) |> fold({}, +);
+}
+
+let pour = |point, rock, sand| {
+  let [x, y] = point;
+
+  let next_point = [[0, 1], [-1, 1], [1, 1]]
+    |> map(|[dx, dy]| [x + dx, y + dy])
+    |> find(|point| !(rock `contains` point) && !(sand `contains` point));
+
+  if next_point == nil {
+    return sand + {point};
+  }
+
+  pour(next_point, rock, sand);
+}
+
+let lowest_height = list >> map(|[_, y]| y) >> max;
+
+let top = [500, 0];
+
+part_one: {
+  let rock = parse_scan(input) |> plot_rock;
+  let void = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 1]) |> set;
+
+  iterate(pour(top, rock + void), {})
+    |> find(|sand| lowest_height(sand) == lowest_height(rock))
+    |> size
+    |> _ - 1;
+}
+
+part_two: {
+  let rock = parse_scan(input) |> plot_rock;
+  let floor = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 2]) |> set;
+
+  iterate(pour(top, rock + floor), {})
+    |> find(_ `contains` top)
+    |> size;
+}
+
+test: {
+  input: "498,4 -> 498,6 -> 496,6
+503,4 -> 502,4 -> 502,9 -> 494,9"
+
+  part_one: 24
+  part_two: 93
+}
