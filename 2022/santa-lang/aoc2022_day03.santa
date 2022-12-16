@@ -2,19 +2,9 @@ input: read("aoc://2022/3")
 
 let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..) |> hash;
 
-let intersection = |a, b| {
-  b |> fold({}) |acc, el| {
-    if a `contains` el { acc + {el} } else { acc }
-  }
-}
-
 let parse_groups = lines >> map(split(""));
 
-let common_item = |groups| {
-  fold(groups[0], intersection, groups[1..])
-    |> list
-    |> first;
-}
+let common_item = intersect >> list >> first;
 
 part_one: {
   let compartments = |rucksack| {
