@@ -13,15 +13,7 @@ let parse_stacks = |input| {
     |> map(filter(_ != nil));
 }
 
-let parse_instructions = |input| {
-  let parse_instruction = regex_match("move (\\d+) from (\\d+) to (\\d+)") >> map(int);
-
-  input
-    |> split("\n\n")
-    |> second
-    |> lines
-    |> map(parse_instruction);
-}
+let parse_instructions = split("\n\n") >> second >> lines >> map(ints);
 
 let rearrangement_procedure = |pickup_procedure, input| {
   parse_instructions(input)
