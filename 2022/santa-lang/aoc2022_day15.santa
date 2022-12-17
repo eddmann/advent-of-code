@@ -1,0 +1,80 @@
+input: read("aoc://2022/15")
+
+let parse_row = lines >> first >> int;
+let parse_reports = lines >> rest >> map(ints);
+
+let sensor_ranges = |reports, y| {
+  reports |> fold([]) |ranges, [sx, sy, bx, by]| {
+    let distance = abs(sx - bx) + abs(sy - by);
+    let offset = distance - abs(sy - y);
+
+    if offset > 0 {
+      return ranges + [[sx - offset, sx + offset]];
+    }
+
+    ranges;
+  }
+}
+
+let uncovered_x = |ranges| {
+  let recur = |ranges, max_end| match ranges {
+    [] { nil }
+    [[start, end], _] if start > max_end { start - 1 }
+    [[start, end], ..tail] { recur(tail, max(max_end, end)) }
+  }
+
+  let [[_, initial_end], ..sorted] = ranges |> sort(|[s1], [s2]| s1 > s2);
+
+  recur(sorted, initial_end);
+}
+
+let tuning_frequency = |[x, y]| x * 4000000 + y;
+
+part_one: {
+  let reports = parse_reports(input);
+  let y = parse_row(input);
+
+  let xs = sensor_ranges(reports, y)
+    |> map(|[start, end]| start..end)
+    |> union;
+
+  let beacon_xs = reports
+    |> filter(|[_, _, _, by]| by == y)
+    |> map(|[_, _, bx]| bx)
+    |> set;
+
+  size(xs - beacon_xs);
+}
+
+part_two: {
+  let reports = parse_reports(input);
+
+  parse_row(input)..
+    |> map(|y| {
+      let x = sensor_ranges(reports, y) |> uncovered_x;
+      if x { [x, y] }
+    })
+    |> find(_ != nil)
+    |> tuning_frequency;
+}
+
+test: {
+  input: "10
+Sensor at x=2, y=18: closest beacon is at x=-2, y=15
+Sensor at x=9, y=16: closest beacon is at x=10, y=16
+Sensor at x=13, y=2: closest beacon is at x=15, y=3
+Sensor at x=12, y=14: closest beacon is at x=10, y=16
+Sensor at x=10, y=20: closest beacon is at x=10, y=16
+Sensor at x=14, y=17: closest beacon is at x=10, y=16
+Sensor at x=8, y=7: closest beacon is at x=2, y=10
+Sensor at x=2, y=0: closest beacon is at x=2, y=10
+Sensor at x=0, y=11: closest beacon is at x=2, y=10
+Sensor at x=20, y=14: closest beacon is at x=25, y=17
+Sensor at x=17, y=20: closest beacon is at x=21, y=22
+Sensor at x=16, y=7: closest beacon is at x=15, y=3
+Sensor at x=14, y=3: closest beacon is at x=15, y=3
+Sensor at x=20, y=1: closest beacon is at x=15, y=3"
+
+  part_one: 26
+  part_two: 56000011
+}
