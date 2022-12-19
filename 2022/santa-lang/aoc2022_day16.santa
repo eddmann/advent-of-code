@@ -1,0 +1,106 @@
+input: read("aoc://2022/16")
+
+let parse_valves = |input| {
+  let parse_valve = |line| {
+    let [valve, rate, tunnels] = regex_match("Valve (\\w+) has flow rate=(\\d+); tunnels? leads? to valves? (.+)", line);
+    [valve, #{"flow": int(rate), "tunnels": tunnels |> split(", ")}];
+  }
+
+  input |> lines |> map(parse_valve) |> hash;
+}
+
+let tunnel_distances = |valves, valve| {
+  let step = |queue, visited, distances| {
+    if size(queue) == 0 {
+      return distances;
+    }
+
+    let [distance, valve] = first(queue);
+
+    let [next_valves, next_distances] = valves[valve]["tunnels"]
+      |> fold(
+        [[], distances],
+        |[next_valves, next_distances], neighbor| {
+          if visited `contains` neighbor {
+            return [next_valves, next_distances];
+          }
+
+          return [
+            next_valves + [[distance + 1, neighbor]],
+            next_distances |> assoc(neighbor, if valves[neighbor]["flow"] > 0 { distance + 1 } else { distance })
+          ];
+        }
+      );
+
+    step(
+      rest(queue) + next_valves,
+      visited + set(map(|[_, valve]| valve, next_valves)),
+      next_distances
+    );
+  }
+
+  step([[0, valve]], {valve}, #{valve: 0});
+}
+
+let pressure_gauge = |valves| {
+  let distances = valves |> map(|_, valve| tunnel_distances(valves, valve));
+  let valve_ids = valves |> keys |> zip(_, 0..) |> hash |> map(|idx| 1 `bit_shift_left` idx);
+
+  let gauge = memoize |valve, time, open_valves| {
+    distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
+      if open_valves `bit_and` valve_ids[neighbor] > 0 {
+        return max_pressure;
+      }
+
+      let remaining_time = time - distance - 1;
+
+      if remaining_time < 1 {
+        return max_pressure;
+      }
+
+      let released_pressure = valves[neighbor]["flow"] * remaining_time;
+
+      max(
+        max_pressure,
+        released_pressure + gauge(neighbor, remaining_time, open_valves `bit_or` valve_ids[neighbor])
+      );
+    }
+  }
+}
+
+part_one: {
+  let max_pressure = parse_valves(input) |> pressure_gauge;
+  max_pressure("AA", 30, 0);
+}
+
+part_two: {
+  let valves = parse_valves(input);
+  let max_pressure = pressure_gauge(valves);
+
+  let all_valves_open = (1 `bit_shift_left` size(valves)) - 1;
+  let valve_variations = (all_valves_open + 1) / 2;
+
+  0..valve_variations
+    |> map(|open_valves| {
+      let me = max_pressure("AA", 26, open_valves);
+      let elephant = max_pressure("AA", 26, all_valves_open `bit_xor` open_valves);
+      me + elephant;
+    })
+    |> max;
+}
+
+test: {
+  input: "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+Valve BB has flow rate=13; tunnels lead to valves CC, AA
+Valve CC has flow rate=2; tunnels lead to valves DD, BB
+Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+Valve EE has flow rate=3; tunnels lead to valves FF, DD
+Valve FF has flow rate=0; tunnels lead to valves EE, GG
+Valve GG has flow rate=0; tunnels lead to valves FF, HH
+Valve HH has flow rate=22; tunnel leads to valve GG
+Valve II has flow rate=0; tunnels lead to valves AA, JJ
+Valve JJ has flow rate=21; tunnel leads to valve II"
+
+  part_one: 1651
+  part_two: 1707
+}
