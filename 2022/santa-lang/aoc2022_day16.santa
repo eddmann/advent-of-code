@@ -1,5 +1,7 @@
 input: read("aoc://2022/16")
 
+// TODO: only consider tunnels with flow rate > 0, perform `max_pressure` based on this
+
 let parse_valves = |input| {
   let parse_valve = |line| {
     let [valve, rate, tunnels] = regex_match("Valve (\\w+) has flow rate=(\\d+); tunnels? leads? to valves? (.+)", line);
@@ -27,7 +29,7 @@ let tunnel_distances = |valves, valve| {
 
           return [
             next_valves + [[distance + 1, neighbor]],
-            next_distances |> assoc(neighbor, if valves[neighbor]["flow"] > 0 { distance + 1 } else { distance })
+            if valves[neighbor]["flow"] > 0 { next_distances |> assoc(neighbor, distance + 1) } else { next_distances }
           ];
         }
       );
@@ -44,7 +46,7 @@ let tunnel_distances = |valves, valve| {
 
 let pressure_gauge = |valves| {
   let distances = valves |> map(|_, valve| tunnel_distances(valves, valve));
-  let valve_ids = valves |> keys |> zip(_, 0..) |> hash |> map(|idx| 1 `bit_shift_left` idx);
+  let valve_ids = valves |> keys |> zip(_, 0..) |> hash |> map(|id| 1 `bit_shift_left` id);
 
   let gauge = memoize |valve, time, open_valves| {
     distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
