@@ -23,7 +23,7 @@ let calc_directory_sizes = fold_s([#{}, []]) |[dirs, cwd], cmd| match cmd {
 part_one: {
   parse_commands(input)
     |> calc_directory_sizes
-    |> filter(_ < 100000)
+    |> filter(_ < 100_000)
     |> sum;
 }
 
@@ -31,8 +31,8 @@ part_two: {
   let dirs = parse_commands(input)
     |> calc_directory_sizes;
 
-  let disk_size = 70000000;
-  let update_size = 30000000;
+  let disk_size = 70_000_000;
+  let update_size = 30_000_000;
   let required_space = update_size - (disk_size - dirs[["/"]]);
 
   dirs

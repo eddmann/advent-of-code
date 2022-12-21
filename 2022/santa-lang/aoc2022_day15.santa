@@ -28,7 +28,7 @@ let uncovered_x = |ranges| {
   recur(sorted, initial_end);
 }
 
-let tuning_frequency = |[x, y]| x * 4000000 + y;
+let tuning_frequency = |[x, y]| x * 4_000_000 + y;
 
 part_one: {
   let reports = parse_reports(input);
