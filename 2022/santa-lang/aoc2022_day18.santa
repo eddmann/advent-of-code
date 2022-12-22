@@ -1,0 +1,62 @@
+input: read("aoc://2022/18")
+
+let parse_cubes = lines >> map(ints);
+
+let neighbours = |[x, y, z]| {
+  [[0, 0, 1], [0, 0, -1],
+   [0, 1, 0], [0, -1, 0],
+   [1, 0, 0], [-1, 0, 0]] |> map(|[dx, dy, dz]| [dx + x, dy + y, dz + z]);
+}
+
+part_one: {
+  let cubes = parse_cubes(input);
+  let exposed_sides = neighbours >> filter(cubes `contains` _) >> size >> 6 - _;
+
+  cubes
+    |> map(exposed_sides)
+    |> sum;
+}
+
+part_two: {
+  let cubes = parse_cubes(input);
+  let [xs, ys, zs] = zip(..cubes) |> map(|axis| min(axis)-1..max(axis)+1);
+
+  let surface_area = |queue, seen, total_sides| {
+    if (size(queue) == 0) {
+      return total_sides;
+    }
+
+    let point = first(queue);
+
+    let boundary = neighbours(point) |> filter(|[x, y, z]| xs `contains` x && ys `contains` y && zs `contains` z);
+    let next_points = boundary |> filter(|point| !(cubes `contains` point) && !(seen `contains` point));
+    let boundary_sides = boundary |> filter(cubes `contains` _) |> size;
+
+    surface_area(
+      rest(queue) + next_points,
+      seen + {point} + set(boundary),
+      total_sides + boundary_sides
+    );
+  }
+
+  surface_area([[xs[0], ys[0], zs[0]]], {}, 0);
+}
+
+test: {
+  input: "2,2,2``
+1,2,2
+3,2,2
+2,1,2
+2,3,2
+2,2,1
+2,2,3
+2,2,4
+2,2,6
+1,2,5
+3,2,5
+2,1,5
+2,3,5"
+
+  part_one: 64
+  part_two: 58
+}
