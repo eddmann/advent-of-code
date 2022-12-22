@@ -1,0 +1,82 @@
+input: read("aoc://2022/17")
+
+let parse_rocks = |rocks| {
+  let parse_rock = |rock| {
+    zip(0.., rock |> lines |> reverse) |> flat_map(|[y, row]| {
+      zip(0.., row) |> filter(|[_, el]| el == "#") |> map(|[x]| [y, x])
+    });
+  };
+
+  rocks |> map(parse_rock) |> cycle;
+}
+
+let parse_jet_pattern = split("") >> map(|d| if d == "<" { [0, -1] } else { [0, 1] }) >> cycle;
+
+let move = |rock, [dy, dx]| rock |> map(|[y, x]| [y + dy, x + dx]);
+
+let chamber_height = map(|[y]| y) >> max;
+
+let push_rock = |chamber, direction, rock| {
+  let pushed_rock = rock `move` direction;
+
+  let is_empty_space = size(pushed_rock `intersect` chamber) == 0;
+  let xs = pushed_rock |> map(|[_, x]| x);
+  let is_within_boundary = min(xs) > -1 && max(xs) < 7;
+
+  if is_empty_space && is_within_boundary { pushed_rock } else { rock };
+}
+
+let attempt_rock_fall = |chamber, rock| {
+  let fallen_rock = rock `move` [-1, 0];
+
+  let is_empty_space = size(fallen_rock `intersect` chamber) == 0;
+  let is_above_floor = min(fallen_rock |> map(|[y]| y)) > 0;
+
+  if is_empty_space && is_above_floor { fallen_rock } else { nil }
+}
+
+let falling_rock = |jets, chamber, rock| {
+  let pushed_rock = rock |> push_rock(chamber, first(jets));
+  let fallen_rock = pushed_rock |> attempt_rock_fall(chamber);
+
+  if fallen_rock {
+    falling_rock(rest(jets), chamber, fallen_rock)
+  } else {
+    [rest(jets), chamber + set(pushed_rock)]
+  }
+}
+
+let drop_rock = |[jets, rocks, chamber]| {
+  let current_height = chamber_height(chamber);
+  let start_height = if current_height { current_height + 4 } else { 4 };
+  let next_rock = first(rocks) `move` [start_height, 2];
+
+  let [next_jets, next_chamber] = falling_rock(jets, chamber, next_rock);
+
+  return [next_jets, rest(rocks), next_chamber];
+}
+
+let rock_shapes = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"];
+
+part_one: {
+  let rocks = parse_rocks(rock_shapes);
+  let jets = parse_jet_pattern(input);
+
+  iterate(drop_rock, [jets, rocks, {}])
+    |> get(2022)
+    |> |[_, _, chamber]| chamber
+    |> chamber_height;
+}
+
+// test: {
+//   input: ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+//   part_one: 3068
+// }
+
+let print_chamber = |chamber| {
+  let [ys, xs] = zip(..list(chamber));
+  max(ys)+2..1 |> each |y| {
+    puts((0..6 |> fold("|", |line, x| line + (if chamber `contains` [y, x] { "#" } else { "." }))) + "|")
+  }
+  puts("+-------+");
+}
