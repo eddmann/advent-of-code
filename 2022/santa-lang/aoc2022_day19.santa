@@ -1,0 +1,158 @@
+input: read("aoc://2022/19")
+
+let parse_blueprint = |line| {
+  let [id, ore_robot_ore, clay_robot_ore, obsidian_robot_ore,
+       obsidian_robot_clay, geode_robot_ore, geode_robot_obsidian] = line |> ints;
+  #{
+    id,
+    "ore_robot_cost": #{"ore": ore_robot_ore, "clay": 0, "obsidian": 0},
+    "clay_robot_cost": #{"ore": clay_robot_ore, "clay": 0, "obsidian": 0},
+    "obsidian_robot_cost": #{"ore": obsidian_robot_ore, "clay": obsidian_robot_clay, "obsidian": 0},
+    "geode_robot_cost": #{"ore": geode_robot_ore, "clay": 0, "obsidian": geode_robot_obsidian}
+  };
+};
+
+let parse_blueprints = lines >> map(parse_blueprint);
+
+let estimate_geode_collection = |blueprint, state| {
+  let minutes_remaining = state["minutes_remaining"] - 1;
+  if minutes_remaining == 0 {
+    return state["geodes"];
+  }
+
+  minutes_remaining..0 |> fold_s(
+    [
+      state["geodes"],
+      state["resources"]["obsidian"],
+      state["robots"]["obsidian"]
+    ],
+    |[geodes, obsidian, robots], minutes_remaining| {
+      if blueprint["geode_robot_cost"]["obsidian"] > obsidian {
+        [geodes, obsidian + robots, robots + 1];
+      } else {
+        [
+          geodes + minutes_remaining,
+          obsidian - blueprint["geode_robot_cost"]["obsidian"] + robots,
+          robots
+        ];
+      }
+    }
+  );
+}
+
+let construct_robot = |state, cost| {
+  let minutes_remaining = state["minutes_remaining"] - 1;
+  if minutes_remaining < 1 {
+    return nil;
+  }
+
+  zip(0.., minutes_remaining..1)
+    |> map(|[minutes_passed, minutes_remaining]| {
+      let next_resources = #{
+        "ore": state["resources"]["ore"] + state["robots"]["ore"] * minutes_passed,
+        "clay": state["resources"]["clay"] + state["robots"]["clay"] * minutes_passed,
+        "obsidian": state["resources"]["obsidian"] + state["robots"]["obsidian"] * minutes_passed
+      };
+
+      if (cost["ore"] > next_resources["ore"] ||
+          cost["clay"] > next_resources["clay"] ||
+          cost["obsidian"] > next_resources["obsidian"])
+      {
+        return nil;
+      }
+
+      state
+        |> assoc("minutes_remaining", minutes_remaining)
+        |> assoc("resources", #{
+          "ore": next_resources["ore"] - cost["ore"] + state["robots"]["ore"],
+          "clay": next_resources["clay"] - cost["clay"] + state["robots"]["clay"],
+          "obsidian": next_resources["obsidian"] - cost["obsidian"] + state["robots"]["obsidian"]
+        });
+    })
+    |> find(_ != nil);
+}
+
+let next_robot_states = |blueprint, state| {
+  let max_ore_cost = max(
+    blueprint["ore_robot_cost"]["ore"],
+    blueprint["clay_robot_cost"]["ore"],
+    blueprint["obsidian_robot_cost"]["ore"],
+    blueprint["geode_robot_cost"]["ore"]
+  );
+
+  let mut next_states = [];
+
+  if (state["robots"]["ore"] < max_ore_cost) {
+    let ore_robot_state = construct_robot(state, blueprint["ore_robot_cost"]);
+    if ore_robot_state {
+      next_states = next_states + [ore_robot_state |> update("robots", nil, update("ore", 0, _ + 1))];
+    }
+  }
+
+  if (state["robots"]["clay"] < blueprint["obsidian_robot_cost"]["clay"]) {
+    let clay_robot_state = construct_robot(state, blueprint["clay_robot_cost"]);
+    if clay_robot_state {
+      next_states = next_states + [clay_robot_state |> update("robots", nil, update("clay", 0, _ + 1))];
+    }
+  }
+
+  if (state["robots"]["obsidian"] < blueprint["geode_robot_cost"]["obsidian"] && state["robots"]["clay"] > 0) {
+    let obsidian_robot_state = construct_robot(state, blueprint["obsidian_robot_cost"]);
+    if obsidian_robot_state {
+      next_states = next_states + [obsidian_robot_state |> update("robots", nil, update("obsidian", 0, _ + 1))];
+    }
+  }
+
+  if (state["robots"]["obsidian"] > 0) {
+    let geode_robot_state = construct_robot(state, blueprint["geode_robot_cost"]);
+    if geode_robot_state {
+      next_states = next_states + [geode_robot_state |> update("geodes", 0, _ + geode_robot_state["minutes_remaining"])];
+    }
+  }
+
+  next_states;
+}
+
+let collect_max_geodes = |minutes, blueprint| {
+  let mut max_geodes = 0;
+
+  let recur = |state| {
+    max_geodes = max(max_geodes, state["geodes"]);
+    next_robot_states(blueprint, state)
+      |> filter(|next_state| estimate_geode_collection(blueprint, next_state) > max_geodes)
+      |> each(recur);
+  };
+
+  recur(#{
+    "minutes_remaining": minutes,
+    "geodes": 0,
+    "resources": #{"ore": 0, "clay": 0, "obsidian": 0},
+    "robots": #{"ore": 1, "clay": 0, "obsidian": 0}
+  });
+
+  max_geodes;
+}
+
+part_one: {
+  parse_blueprints(input)
+    |> map(|blueprint| {
+      let max_geodes = collect_max_geodes(24, blueprint);
+      blueprint["id"] * max_geodes;
+    })
+    |> sum;
+}
+
+part_two: {
+  parse_blueprints(input)
+    |> take(3)
+    |> map(collect_max_geodes(32))
+    |> fold(1, *);
+}
+
+test: {
+  input: "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
+Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian."
+
+  part_one: 33
+  part_two: 3472
+}
