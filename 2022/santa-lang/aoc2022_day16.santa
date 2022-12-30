@@ -1,7 +1,5 @@
 input: read("aoc://2022/16")
 
-// TODO: only consider tunnels with flow rate > 0, perform `max_pressure` based on this
-
 let parse_valves = |input| {
   let parse_valve = |line| {
     let [valve, rate, tunnels] = regex_match("Valve (\\w+) has flow rate=(\\d+); tunnels? leads? to valves? (.+)", line);
@@ -44,9 +42,11 @@ let tunnel_distances = |valves, valve| {
   step([[0, valve]], {valve}, #{valve: 0});
 }
 
+let eligble_valves = filter(|scan, valve| scan["flow"] > 0 || valve == "AA");
+
 let pressure_gauge = |valves| {
-  let distances = valves |> map(|_, valve| tunnel_distances(valves, valve));
-  let valve_ids = valves |> keys |> zip(_, 0..) |> hash |> map(|id| 1 `bit_shift_left` id);
+  let distances = eligble_valves(valves) |> map(|_, valve| tunnel_distances(valves, valve));
+  let valve_ids = distances |> keys |> zip(_, 0..) |> hash |> map(|id| 1 `bit_shift_left` id);
 
   let gauge = memoize |valve, time, open_valves| {
     distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
@@ -79,7 +79,7 @@ part_two: {
   let valves = parse_valves(input);
   let max_pressure = pressure_gauge(valves);
 
-  let all_valves_open = (1 `bit_shift_left` size(valves)) - 1;
+  let all_valves_open = (1 `bit_shift_left` size(eligble_valves(valves))) - 1;
   let valve_variations = (all_valves_open + 1) / 2;
 
   0..valve_variations
