@@ -1,9 +1,6 @@
 input: read("aoc://2018/9")
 
-let parse_game = |game| {
-  let parts = game |> split(" ");
-  return [parts[0], parts[-2]] |> map(int);
-};
+let parse_game = ints;
 
 let play_game = |players, max_points| {
   let scores = reduce_s(

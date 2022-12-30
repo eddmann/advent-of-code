@@ -1,6 +1,6 @@
 input: read("aoc://2018/6")
 
-let parse_points = lines >> map(split(",") >> map(int));
+let parse_points = lines >> map(ints);
 
 let distance = |[x1, y1], [x2, y2]| abs(x1 - x2) + abs(y1 - y2);
 

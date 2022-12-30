@@ -2,9 +2,7 @@ input: read("aoc://2018/10")
 
 let parse_points = lines
   >> map(|point| {
-    let [x, y, vx, vy] = point
-      |> regex_match("position=<([0-9+\\s-]+),([0-9+\\s-]+)> velocity=<([0-9+\\s-]+),([0-9+\\s-]+)>")
-      |> map(int);
+    let [x, y, vx, vy] = ints(point);
     #{x, y, vx, vy};
   })
   >> set;
