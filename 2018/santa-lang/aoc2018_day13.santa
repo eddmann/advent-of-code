@@ -20,16 +20,13 @@ let parse_map = |input| {
 
   let carts = parsed_map
     |> list
-    |> reduce(
-      |carts, [position, path]| match path {
-        "^" { [..carts, [position, [-1, 0], 0]] },
-        "v" { [..carts, [position, [1, 0], 0]] },
-        "<" { [..carts, [position, [0, -1], 0]] },
-        ">" { [..carts, [position, [0, 1], 0]] },
-        _ { carts }
-      },
-      []
-    );
+    |> fold([]) |carts, [position, path]| match path {
+      "^" { [..carts, [position, [-1, 0], 0]] },
+      "v" { [..carts, [position, [1, 0], 0]] },
+      "<" { [..carts, [position, [0, -1], 0]] },
+      ">" { [..carts, [position, [0, 1], 0]] },
+      _ { carts }
+    };
 
   return [cart_map, carts];
 }

@@ -3,7 +3,7 @@ input: read("aoc://2018/1")
 let parse_deltas = ints;
 
 part_one: {
-  parse_deltas(input) |> reduce(+, 0);
+  parse_deltas(input) |> sum;
 }
 
 part_two: {

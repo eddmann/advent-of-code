@@ -11,14 +11,14 @@ let compute_squares = |claim|
     |> flat_map(|x| (claim["y"]..claim["y"] + claim["height"] - 1) |> map(|y| [x, y]))
     |> set;
 
-let compute_fabric = reduce(
+let compute_fabric = fold(
+  #{},
   |fabric, claim| {
-    compute_squares(claim) |> reduce(
-      |fabric, square| update_d(square, 0, _ + 1, fabric),
-      fabric
+    compute_squares(claim) |> fold(
+      fabric,
+      |fabric, square| update_d(square, 0, _ + 1, fabric)
     );
-  },
-  #{}
+  }
 );
 
 part_one: {

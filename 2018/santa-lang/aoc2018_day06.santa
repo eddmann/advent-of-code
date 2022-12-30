@@ -19,12 +19,13 @@ part_one: {
   let [lx, hx, ly, hy] = calc_boundary(points);
 
   let [totals, infinite] = generate_grid(points)
-    |> reduce(
+    |> fold(
+      [#{}, {}],
       |[totals, infinite], [x, y]| {
         let [first, second] = points
           |> map(|position| #{position, "distance": distance([x, y], position)})
           |> sort(|a, b| a["distance"] > b["distance"]);
-        
+
         if first["distance"] == second["distance"] {
           return [totals, infinite];
         }
@@ -33,9 +34,8 @@ part_one: {
           totals |> update_d(first["position"], 0, _ + 1),
           if x == lx || y == ly || x == hx || y == hy { infinite + {first["position"]} } else { infinite }
         ];
-      },
-      [#{}, {}]
-    )
+      }
+    );
 
   list(totals)
     |> filter(|[position]| !(infinite `contains` position))
@@ -47,7 +47,7 @@ part_two: {
   let points = parse_points(input);
 
   generate_grid(points)
-    |> map(|position| points |> map(distance(position)) |> reduce(+, 0))
+    |> map(|position| points |> map(distance(position)) |> sum)
     |> filter(_ < 10_000)
     |> size;
 }

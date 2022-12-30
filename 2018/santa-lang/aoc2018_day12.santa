@@ -3,9 +3,9 @@ input: read("aoc://2018/12")
 let parse_notes = |input| {
   let [initial, _, ..patterns] = lines(input);
 
-  let pots = zip(0.., initial[15..]) |> reduce(
-    |initial, [position, pot]| if pot == "#" { initial + {position} } else { initial },
-    {}
+  let pots = zip(0.., initial[15..]) |> fold(
+    {},
+    |initial, [position, pot]| if pot == "#" { initial + {position} } else { initial }
   );
 
   return [
@@ -15,15 +15,15 @@ let parse_notes = |input| {
 }
 
 let generation = |patterns, pots| {
-  min(pots)-2..max(pots)+2 |> reduce(
+  min(pots)-2..max(pots)+2 |> fold(
+    {},
     |next, position| {
       let pattern = -2..2
         |> map(|offset| if pots `contains` (position + offset) { "#" } else { "." })
-        |> reduce(+, "");
+        |> fold("", +);
 
       if patterns[pattern] == "#" { next + {position} } else { next };
-    },
-    {}
+    }
   );
 }
 

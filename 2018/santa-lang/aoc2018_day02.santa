@@ -1,29 +1,29 @@
 input: read("aoc://2018/2")
 
 part_one: {
-  let counter = reduce(
-    |frequencies, value| update_d(value, 0, _ + 1, frequencies),
-    #{}
+  let counter = fold(
+    #{},
+    |frequencies, value| update_d(value, 0, _ + 1, frequencies)
   );
 
   input
     |> lines
-    |> reduce(
+    |> fold(
+      [0, 0],
       |[twos, threes], id| {
         let frequencies = counter(id);
         let two = if frequencies `contains` 2 { 1 } else { 0 };
         let three = if frequencies `contains` 3 { 1 } else { 0 };
         [twos + two, threes + three];
-      },
-      [0, 0]
+      }
     )
     |> |[a, b]| a * b
 }
 
 part_two: {
-  let checksum = |cmp, pair| reduce(
-    |acc, [x, y]| if cmp(x, y) { acc + x } else { acc }, 
-    "", 
+  let checksum = |cmp, pair| fold(
+    "",
+    |acc, [x, y]| if cmp(x, y) { acc + x } else { acc },
     zip(..pair)
   );
 

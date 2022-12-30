@@ -4,7 +4,8 @@ let tally_guards_sleep = |input| {
   input
     |> lines
     |> sort(>)
-    |> reduce_s(
+    |> fold_s(
+      [#{}, nil, nil],
       |[sleep, guard, start], action| {
         if action[25] == "#" {
           return [sleep, int(split(" ", action)[3][1..]), nil];
@@ -20,30 +21,29 @@ let tally_guards_sleep = |input| {
           guard,
           #{},
           |guard_sleep| {
-            reduce(
-              |hours, hour| update_d(hour, 0, _ + 1, hours),
+            fold(
               guard_sleep,
+              |hours, hour| update_d(hour, 0, _ + 1, hours),
               sleep_range
             );
           }
         );
 
         return [updated_sleep, guard, nil];
-      },
-      [#{}, nil, nil]
+      }
     )
-    |> map(reduce(|hours, total, hour| hours + [[hour, total]], []))
+    |> map(fold([], |hours, total, hour| hours + [[hour, total]]))
 };
 
 part_one: {
   let guards_sleep = tally_guards_sleep(input);
 
   let id = guards_sleep
-    |> reduce(
+    |> fold(
+      [],
       |guards, hours, id| {
-        guards + [[id, hours |> reduce(|total, [_, time]| total + time, 0)]];
-      },
-      []
+        guards + [[id, hours |> fold(0, |total, [_, time]| total + time)]];
+      }
     )
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
     |> |[[id]]| id;
@@ -59,11 +59,11 @@ part_two: {
   let guards_sleep = tally_guards_sleep(input);
 
   let id = guards_sleep
-    |> reduce(
+    |> fold(
+      [],
       |guards, hours, id| {
         guards + [[id, hours |> map(get(1)) |> max]];
-      },
-      []
+      }
     )
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
     |> |[[id]]| id;

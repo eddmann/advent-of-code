@@ -27,10 +27,10 @@ let draw = |points, seconds| {
     |> map(|y| {
       let col = min(xs)..max(xs)
         |> map(|x| if (moved_points `contains` [x, y]) { "#" } else { " " })
-        |> reduce(+, "");
+        |> fold("", +);
       col + "\n";
     })
-    |> reduce(+, "");
+    |> fold("", +);
 };
 
 let message_appears = |points, init_seconds| {

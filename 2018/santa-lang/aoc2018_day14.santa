@@ -2,9 +2,9 @@ input: read("aoc://2018/14")
 
 let next_score = |[scores, elf_1, elf_2]| {
   let next = "" + (scores[elf_1] + scores[elf_2])
-    |> reduce(
-      |scores, score| scores |> push(int(score)),
-      scores
+    |> fold(
+      scores,
+      |scores, score| scores |> push(int(score))
     );
 
   return [
@@ -23,7 +23,7 @@ part_one: {
   let [recipes] = iterate(next_score, [initial_scores, 0, 1])
     |> find(|[recipes]| size(recipes) > after + collect);
 
-  recipes[after..after+collect] |> reduce(+, "");
+  recipes[after..after+collect] |> fold("", +);
 }
 
 part_two: {

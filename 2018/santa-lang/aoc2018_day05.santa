@@ -2,15 +2,15 @@ input: read("aoc://2018/5")
 
 let reaction_units = |polymer| {
   polymer
-    |> reduce(
+    |> fold(
+      "",
       |polymer, unit| {
         if polymer[-1] != unit && upper(unit) == upper(if polymer[-1] { polymer[-1] } else { "" }) {
           polymer[0..-1]
         } else {
           polymer + unit
         }
-      },
-      ""
+      }
     )
     |> size;
 };

@@ -10,12 +10,12 @@ part_one: {
       return [sum(rest[0..meta]), rest[meta..]];
     }
 
-    let [total, next_rest] = reduce(
+    let [total, next_rest] = fold(
+      [0, rest],
       |[total, rest]| {
         let [sub_total, next_rest] = sum_metadata(rest);
         return [total + sub_total, next_rest];
       },
-      [0, rest],
       0..children - 1
     );
 
@@ -35,18 +35,18 @@ part_two: {
       return [sum(rest[0..meta]), rest[meta..]];
     }
 
-    let [metadata, next_rest] = reduce(
+    let [metadata, next_rest] = fold(
+      [[], rest],
       |[metadata, rest]| {
         let [sub_metadata, next_rest] = root_value(rest);
         return [[..metadata, sub_metadata], next_rest];
       },
-      [[], rest],
       0..children - 1
     );
 
-    let value = reduce(
-      |acc, idx| if get(idx - 1, metadata) { acc + get(idx - 1, metadata) } else { acc },
+    let value = fold(
       0,
+      |acc, idx| if get(idx - 1, metadata) { acc + get(idx - 1, metadata) } else { acc },
       next_rest[0..meta]
     );
 
