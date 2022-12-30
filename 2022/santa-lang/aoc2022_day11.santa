@@ -32,14 +32,12 @@ let round = |apply_relief, monkeys| {
 
         monkeys |> update(
           monkey["throw_to"](worry_level),
-          nil,
-          update("items", [], _ + [worry_level])
+          update("items", _ + [worry_level])
         );
       })
       |> update(
         position,
-        nil,
-        update("activity", 0, _ + size(monkey["items"])) >> assoc("items", [])
+        update("activity", _ + size(monkey["items"])) >> assoc("items", [])
       );
   }
 }

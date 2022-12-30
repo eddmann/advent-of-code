@@ -16,12 +16,12 @@ let tally_guards_sleep = |input| {
 
         let sleep_range = start..int(action[15..17]) - 1;
 
-        let updated_sleep = sleep |> update(
+        let updated_sleep = sleep |> update_d(
           guard,
           #{},
           |guard_sleep| {
             reduce(
-              |hours, hour| update(hour, 0, _ + 1, hours),
+              |hours, hour| update_d(hour, 0, _ + 1, hours),
               guard_sleep,
               sleep_range
             );

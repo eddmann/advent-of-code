@@ -12,7 +12,7 @@ let calc_directory_sizes = fold_s([#{}, []]) |[dirs, cwd], cmd| match cmd {
   [file_size, _] if int(file_size) > 0 {
     [
       prefixes(cwd) |> fold(dirs) |dirs, prefix| {
-        dirs |> update(prefix, 0, |total| total + int(file_size))
+        dirs |> update_d(prefix, 0, |total| total + int(file_size))
       },
       cwd
     ]

@@ -15,7 +15,7 @@ let play_game = |players, max_points| {
       
       let rotated = rotate(-6, circle);
       [
-        scores |> update(points % players, 0, |score| score + points + first(rotated)),
+        scores |> update_d(points % players, 0, |score| score + points + first(rotated)),
         rest(rotated)
       ];
     },

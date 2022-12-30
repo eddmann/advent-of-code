@@ -14,7 +14,7 @@ let compute_squares = |claim|
 let compute_fabric = reduce(
   |fabric, claim| {
     compute_squares(claim) |> reduce(
-      |fabric, square| update(square, 0, _ + 1, fabric),
+      |fabric, square| update_d(square, 0, _ + 1, fabric),
       fabric
     );
   },

@@ -2,7 +2,7 @@ input: read("aoc://2018/2")
 
 part_one: {
   let counter = reduce(
-    |frequencies, value| update(value, 0, _ + 1, frequencies),
+    |frequencies, value| update_d(value, 0, _ + 1, frequencies),
     #{}
   );
 

@@ -30,7 +30,7 @@ part_one: {
         }
 
         return [
-          totals |> update(first["position"], 0, _ + 1),
+          totals |> update_d(first["position"], 0, _ + 1),
           if x == lx || y == ly || x == hx || y == hy { infinite + {first["position"]} } else { infinite }
         ];
       },
