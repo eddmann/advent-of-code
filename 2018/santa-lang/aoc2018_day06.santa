@@ -48,7 +48,7 @@ part_two: {
 
   generate_grid(points)
     |> map(|position| points |> map(distance(position)) |> reduce(+, 0))
-    |> filter(_ < 10000)
+    |> filter(_ < 10_000)
     |> size;
 }
 
