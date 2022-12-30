@@ -1,0 +1,86 @@
+input: read("aoc://2022/21")
+
+let parse_jobs = lines >> map(split(": ")) >> hash;
+
+let build_expression = |jobs| {
+  let build = |monkey| {
+    match split(" ", jobs[monkey]) {
+      ["humn"] { ["humn"] }
+      [const] { [int(const)] }
+      [lhs, op, rhs] { [build(lhs), op, build(rhs)] }
+    }
+  };
+
+  build("root");
+}
+
+let evaluate = |expression| {
+  match expression {
+    [const] { const }
+    [lhs, "+", rhs] { evaluate(lhs) + evaluate(rhs) }
+    [lhs, "-", rhs] { evaluate(lhs) - evaluate(rhs) }
+    [lhs, "*", rhs] { evaluate(lhs) * evaluate(rhs) }
+    [lhs, "/", rhs] { evaluate(lhs) / evaluate(rhs) }
+  }
+}
+
+let contains_human = |expression| {
+  match expression {
+    [const] { const == "humn" }
+    [lhs, _, rhs] { contains_human(lhs) || contains_human(rhs) }
+  }
+}
+
+let yell = |lhs, rhs| {
+  match lhs {
+    [x, "+", y] if contains_human(x) { yell(x, [rhs, "-", y]) }
+    [x, "+", y] if contains_human(y) { yell(y, [rhs, "-", x]) }
+    [x, "-", y] if contains_human(x) { yell(x, [rhs, "+", y]) }
+    [x, "-", y] if contains_human(y) { yell(y, [x, "-", rhs]) }
+    [x, "*", y] if contains_human(x) { yell(x, [rhs, "/", y]) }
+    [x, "*", y] if contains_human(y) { yell(y, [rhs, "/", x]) }
+    [x, "/", y] if contains_human(x) { yell(x, [rhs, "*", y]) }
+    [x, "/", y] if contains_human(y) { yell(y, [x, "/", rhs]) }
+    _ { evaluate(rhs) }
+  }
+}
+
+part_one: {
+  parse_jobs(input)
+    |> build_expression
+    |> evaluate;
+}
+
+part_two: {
+  parse_jobs(input)
+    |> assoc("humn", "humn")
+    |> build_expression
+    |> |[lhs, _, rhs]| yell(lhs, rhs);
+}
+
+test: {
+  input: "root: pppw + sjmn
+dbpl: 5
+cczh: sllz + lgvd
+zczc: 2
+ptdq: humn - dvpt
+dvpt: 3
+lfqf: 4
+humn: 5
+ljgn: 2
+sjmn: drzm * dbpl
+sllz: 4
+pppw: cczh / lfqf
+lgvd: ljgn * ptdq
+drzm: hmdt - zczc
+hmdt: 32"
+
+  part_one: 152
+  part_two: 301
+}
+
+test: {
+  input: read("aoc://2022/21")
+  part_one: 158661812617812
+  part_two: 3352886133831
+}
