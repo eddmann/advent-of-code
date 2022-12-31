@@ -1,0 +1,106 @@
+> santa-cli aoc2022_day01.santa
+Part 1: 71300 0.20s
+Part 2: 209691 0.13s
+
+> santa-cli aoc2022_day02.santa
+Part 1: 11767 0.68s
+Part 2: 13886 0.33s
+
+> santa-cli aoc2022_day03.santa
+Part 1: 8515 0.57s
+Part 2: 2434 0.22s
+
+> santa-cli aoc2022_day04.santa
+Part 1: 413 0.80s
+Part 2: 806 0.42s
+
+> santa-cli aoc2022_day05.santa
+Part 1: "RLFNRTNFB" 0.50s
+Part 2: "MHQTLJRLB" 0.39s
+
+> santa-cli aoc2022_day06.santa
+Part 1: 1848 0.50s
+Part 2: 2308 0.45s
+
+> santa-cli aoc2022_day07.santa
+Part 1: 1501149 0.114s
+Part 2: 10096985 0.83s
+
+> santa-cli aoc2022_day08.santa
+Part 1: 1719 3.25s
+Part 2: 590824 1.264s
+
+> santa-cli aoc2022_day09.santa
+Part 1: 5907 0.366s
+Part 2: 2303 0.985s
+
+> santa-cli aoc2022_day09_2.santa
+Part 1: 5907 0.273s
+Part 2: 2303 0.670s
+
+> santa-cli aoc2022_day10.santa
+Part 1: 15260 0.9s
+Part 2: "
+###   ##  #  # ####  ##  #    #  #  ##
+#  # #  # #  # #    #  # #    #  # #  #
+#  # #    #### ###  #    #    #  # #
+###  # ## #  # #    # ## #    #  # # ##
+#    #  # #  # #    #  # #    #  # #  #
+#     ### #  # #     ### ####  ##   ###
+ " 0.18s
+
+> santa-cli aoc2022_day11.santa
+Part 1: 119715 0.68s
+Part 2: 18085004878 6.324s
+
+> santa-cli aoc2022_day12.santa
+Part 1: 484 0.828s
+Part 2: 478 0.456s
+
+> santa-cli aoc2022_day13.santa
+Part 1: 5503 0.191s
+Part 2: 20952 1.349s
+
+> santa-cli aoc2022_day14.santa
+Part 1: 638 1.831s
+Part 2: 31722 85.391s
+
+> santa-cli aoc2022_day15.santa
+Part 1: 5147333 9.284s
+Part 2: 13301052065245 1013.91s
+
+> santa-cli aoc2022_day16.santa
+Part 1: 1880 5.434s
+Part 2: 2520 709.471s
+
+> santa-cli aoc2022_day17.santa
+TODO
+
+> santa-cli aoc2022_day18.santa
+Part 1: 3550 7.394s
+Part 2: 2028 94.901s
+
+> santa-cli aoc2022_day19.santa
+Part 1: 1349 4.263s
+Part 2: 21840 2.544s
+
+> santa-cli aoc2022_day20.santa
+Part 1: 3473 28.374s
+Part 2: 7496649006261 317.546s
+
+> santa-cli aoc2022_day21.santa
+Part 1: 158661812617812 0.164s
+Part 2: 3352886133831 0.387s
+
+> santa-cli aoc2022_day22.santa
+TODO
+
+> santa-cli aoc2022_day23.santa
+Part 1: 4218 2.568s
+Part 2: 976 187.924s
+
+> santa-cli aoc2022_day24.santa
+TODO
+
+> santa-cli aoc2022_day25.santa
+Part 1: "2-0==21--=0==2201==2" 0.78s
