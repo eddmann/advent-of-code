@@ -16,23 +16,25 @@ let move = |rock, [dy, dx]| rock |> map(|[y, x]| [y + dy, x + dx]);
 
 let chamber_height = map(|[y]| y) >> max;
 
+let is_empty_space = |chamber, rock| {
+  rock |> find(chamber `contains` _) |> |piece| piece == nil;
+}
+
 let push_rock = |chamber, direction, rock| {
   let pushed_rock = rock `move` direction;
 
-  let is_empty_space = size(pushed_rock `intersect` chamber) == 0;
   let xs = pushed_rock |> map(|[_, x]| x);
   let is_within_boundary = min(xs) > -1 && max(xs) < 7;
 
-  if is_empty_space && is_within_boundary { pushed_rock } else { rock };
+  if is_within_boundary && chamber `is_empty_space` pushed_rock { pushed_rock } else { rock }
 }
 
 let attempt_rock_fall = |chamber, rock| {
   let fallen_rock = rock `move` [-1, 0];
 
-  let is_empty_space = size(fallen_rock `intersect` chamber) == 0;
   let is_above_floor = min(fallen_rock |> map(|[y]| y)) > 0;
 
-  if is_empty_space && is_above_floor { fallen_rock } else { nil }
+  if is_above_floor && chamber `is_empty_space` fallen_rock { fallen_rock } else { nil }
 }
 
 let falling_rock = |jets, chamber, rock| {
@@ -68,10 +70,10 @@ part_one: {
     |> chamber_height;
 }
 
-// test: {
-//   input: ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-//   part_one: 3068
-// }
+test: {
+  input: ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+  part_one: 3068
+}
 
 let print_chamber = |chamber| {
   let [ys, xs] = zip(..list(chamber));
