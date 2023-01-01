@@ -100,7 +100,8 @@ Part 1: 4218 2.568s
 Part 2: 976 187.924s
 
 > santa-cli aoc2022_day24.santa
-TODO
+Part 1: 245 43.281s
+Part 2: 798 78.126s
 
 > santa-cli aoc2022_day25.santa
 Part 1: "2-0==21--=0==2201==2" 0.78s
