@@ -70,15 +70,43 @@ part_one: {
     |> chamber_height;
 }
 
+part_two: {
+  let rocks = parse_rocks(rock_shapes);
+  let jets = parse_jet_pattern(input);
+
+  let mut seen = #{};
+  let [[drops, height], [previous_drops, previous_height]] = zip(0.., iterate(drop_rock, [jets, rocks, {}]))
+    |> map(|[drops, [jets, rocks, chamber]]| {
+      let height = chamber_height(chamber);
+      let chamber_top = chamber |> filter(|[y]| y > height - 20) |> map(|[y, x]| [height - y, x]);
+      let key = [first(jets), first(rocks), chamber_top];
+
+      if seen[key] {
+        return [[drops, height], seen[key]];
+      }
+
+      seen = seen |> assoc(key, [drops, height]);
+      return nil;
+    })
+    |> find(_ != nil);
+
+  let height_offset = height - previous_height;
+  let drop_offset = drops - previous_drops;
+  let remaining_drops = 1_000_000_000_000 - previous_drops;
+  let cycles = remaining_drops / drop_offset;
+  let drops_after_cycles = remaining_drops % drop_offset;
+  let complete_cycles_height = previous_height + height_offset * cycles;
+
+  let partial_cycle_height = iterate(drop_rock, [jets, rocks, {}])
+    |> get(previous_drops + drops_after_cycles)
+    |> |[_, _, chamber]| chamber
+    |> chamber_height;
+
+  return complete_cycles_height + partial_cycle_height - previous_height;
+}
+
 test: {
   input: ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
   part_one: 3068
-}
-
-let print_chamber = |chamber| {
-  let [ys, xs] = zip(..list(chamber));
-  max(ys)+2..1 |> each |y| {
-    puts((0..6 |> fold("|", |line, x| line + (if chamber `contains` [y, x] { "#" } else { "." }))) + "|")
-  }
-  puts("+-------+");
+  part_two: 1514285714288
 }
