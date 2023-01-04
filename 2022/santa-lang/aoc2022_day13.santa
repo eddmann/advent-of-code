@@ -34,7 +34,7 @@ part_two: {
     |> zip(1.., _)
     |> filter(|[idx, packet]| divider_packets `includes` packet)
     |> map(|[idx]| idx)
-    |> fold(1, *);
+    |> reduce(*);
 }
 
 test: {

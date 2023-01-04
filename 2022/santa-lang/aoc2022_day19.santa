@@ -146,7 +146,7 @@ part_two: {
   parse_blueprints(input)
     |> take(3)
     |> map(collect_max_geodes(32))
-    |> fold(1, *);
+    |> reduce(*);
 }
 
 test: {
