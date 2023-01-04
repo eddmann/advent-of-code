@@ -1,22 +1,16 @@
 input: read("aoc://2022/1")
 
-let parse_inventories = |input| {
-  let parse_inventory = lines >> map(int) >> sum;
-
-  input
-    |> split("\n\n")
-    |> map(parse_inventory);
-}
+let parse_inventories = split("\n\n") >> map(ints >> sum);
 
 part_one: {
-  parse_inventories(input) |> max
+  parse_inventories(input) |> max;
 }
 
 part_two: {
   parse_inventories(input)
     |> sort(<)
     |> take(3)
-    |> sum
+    |> sum;
 }
 
 test: {
