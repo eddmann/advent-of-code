@@ -1,37 +1,29 @@
 input: read("aoc://2022/25")
 
-let snafu_to_digit = |snafu| {
-  if snafu == nil { return 0; }
-  if snafu == "-" { return -1; }
-  if snafu == "=" { return -2; }
-  return int(snafu);
-}
-
-let digit_to_snafu = |digit| {
-  if digit == -1 { return "-"; }
-  if digit == -2 { return "="; }
-  return "" + digit;
-}
+let conversion = #{
+  nil: 0,
+  "0": 0, "1": 1, "2": 2, "=": -2, "-": -1,
+   0: "0", 1: "1", 2: "2", -2: "=", -1: "-"
+};
 
 let snafu_sum = |a, b| {
-  let sum_ = |a, b, acc, carry| {
+  let recur = |a, b, acc, carry| {
     if a == "" && b == "" && carry == 0 {
       return acc;
     }
 
-    let place = carry + snafu_to_digit(a[-1]) + snafu_to_digit(b[-1]);
+    let place = carry + conversion[a[-1]] + conversion[b[-1]];
     let next_carry = if place > 2 { 1 } else { if place < -2 { -1 } else { 0 } };
     let digit = ((5 + place + 2) % 5) - 2;
 
-    sum_(a[0..-1], b[0..-1], digit_to_snafu(digit) + acc, next_carry);
+    recur(a[0..-1], b[0..-1], conversion[digit] + acc, next_carry);
   };
 
-  sum_(a, b, "", 0);
+  recur(a, b, "", 0);
 }
 
 part_one: {
-  let snafu = lines(input);
-  snafu[1..] |> fold(snafu[0], snafu_sum);
+  lines(input) |> reduce(snafu_sum);
 }
 
 test: {
