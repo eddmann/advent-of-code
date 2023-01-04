@@ -10,7 +10,7 @@ part_one: {
   let compartments = |rucksack| {
     let length = size(rucksack) / 2;
     [rucksack[0..length], rucksack[length..]];
-  }
+  };
 
   parse_groups(input)
     |> map(compartments >> common_item >> get(_, priorities))
