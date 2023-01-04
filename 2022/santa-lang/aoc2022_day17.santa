@@ -12,7 +12,7 @@ let parse_rocks = |rocks| {
 
 let parse_jet_pattern = split("") >> map(|d| if d == "<" { [0, -1] } else { [0, 1] }) >> cycle;
 
-let move = |rock, [dy, dx]| rock |> map(|[y, x]| [y + dy, x + dx]);
+let move = |rock, direction| rock |> map(_ `vec_add` direction);
 
 let chamber_height = map(|[y]| y) >> max;
 

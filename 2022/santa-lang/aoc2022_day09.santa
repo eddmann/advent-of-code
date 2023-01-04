@@ -42,9 +42,8 @@ let next_tail_point = |head, tail| {
   return [ty + 1, tx - 1]; // top-left
 }
 
-let take_step = |knots, [dy, dx]| {
-  let [y, x] = knots[0];
-  knots[1..] |> fold([[y + dy, x + dx]]) |knots, knot| {
+let take_step = |knots, direction| {
+  knots[1..] |> fold([knots[0] `vec_add` direction]) |knots, knot| {
     knots + [next_tail_point(knots[-1], knot)];
   };
 }

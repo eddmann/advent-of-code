@@ -13,10 +13,9 @@ let parse_motions = lines >> flat_map |motion| {
 
 let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
 
-let knot_head = scan([0, 0]) |[y, x], direction| {
-  let [dy, dx] = directions[direction];
-  [y + dy, x + dx];
-}
+let knot_head = scan([0, 0]) |point, direction| {
+  point `vec_add` directions[direction];
+};
 
 let knot_tail = scan([0, 0]) |[ty, tx], [hy, hx]| {
   if abs(ty - hy) < 2 && abs(tx - hx) < 2 {

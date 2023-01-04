@@ -2,10 +2,10 @@ input: read("aoc://2022/18")
 
 let parse_cubes = lines >> map(ints);
 
-let neighbours = |[x, y, z]| {
+let neighbours = |point| {
   [[0, 0, 1], [0, 0, -1],
    [0, 1, 0], [0, -1, 0],
-   [1, 0, 0], [-1, 0, 0]] |> map(|[dx, dy, dz]| [dx + x, dy + y, dz + z]);
+   [1, 0, 0], [-1, 0, 0]] |> map(point `vec_add` _);
 }
 
 part_one: {

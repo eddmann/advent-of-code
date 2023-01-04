@@ -24,10 +24,8 @@ let plot_rock = |scans| {
 }
 
 let pour = |point, rock, sand| {
-  let [x, y] = point;
-
   let next_point = [[0, 1], [-1, 1], [1, 1]]
-    |> map(|[dx, dy]| [x + dx, y + dy])
+    |> map(point `vec_add` _)
     |> find(|point| rock `excludes` point && sand `excludes` point);
 
   if next_point == nil {

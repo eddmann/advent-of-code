@@ -12,9 +12,9 @@ let parse_height_map = |input| {
 
 let elevation = zip("SabcdefghijklmnopqrstuvwxyzE", 0..) |> hash;
 
-let directions = |height_map, [y, x]| {
+let directions = |height_map, position| {
   [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    |> map(|[dy, dx]| [dy + y, dx + x])
+    |> map(position `vec_add` _)
     |> filter(|position| height_map[position])
 };
 

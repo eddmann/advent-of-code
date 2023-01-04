@@ -60,12 +60,10 @@ let travel = |blizzards, [by, bx], start, end, initial_time| {
 
     if position == end {
       return time;
-    }
-
-    let [y, x] = position;
+    } 
 
     let next_positions = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 0]]
-      |> map(|[dy, dx]| [y + dy, x + dx])
+      |> map(position `vec_add` _)
       |> filter(is_within_bounds)
       |> map(|bounded_position| [time + 1, bounded_position])
       |> filter(|next_position| seen `excludes` next_position)
