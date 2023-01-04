@@ -1,12 +1,12 @@
 input: read("aoc://2022/14")
 
-let parse_scan = lines >> map(split(" -> ") >> map(split(",") >> map(int)));
+let parse_scan = lines >> map(split(" -> ") >> map(ints));
 
 let line_between = |[x1, y1], [x2, y2]| {
   if y1 == y2 {
-    x1..x2 |> map(|x| [x, y1]) |> list;
+    x1..x2 |> map(|x| [x, y1]);
   } else {
-    y1..y2 |> map(|y| [x1, y]) |> list;
+    y1..y2 |> map(|y| [x1, y]);
   }
 }
 
@@ -20,7 +20,7 @@ let plot_rock = |scans| {
       |> set;
   }
 
-  scans |> map(plot) |> fold({}, +);
+  scans |> map(plot) |> reduce(+);
 }
 
 let pour = |point, rock, sand| {

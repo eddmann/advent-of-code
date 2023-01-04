@@ -7,7 +7,7 @@ let pop! = |col| {
 }
 
 let parse_numbers = |decryption_key| {
-  ints >> map(_ * decryption_key) >> zip(0.., _) >> list;
+  ints >> map(_ * decryption_key) >> zip(0.., _);
 }
 
 let find_index_offset = |idx, col| {
