@@ -53,8 +53,8 @@ let move = memoize |[elves, round]| {
   let positions = possible_moves |> fold(#{}, |freq, pos| update_d(pos, 0, _ + 1, freq));
   let moved_elves = possible_moves |> filter(|pos| positions[pos] == 1);
 
-  let from = moved_elves |> keys |> set;
-  let to = moved_elves |> values |> set;
+  let from = keys(moved_elves);
+  let to = values(moved_elves);
 
   return [elves - from + to, round + 1];
 }

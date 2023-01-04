@@ -40,7 +40,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
 
     traverse(
       rest(queue) + (next_positions |> map(|p| [p, steps + 1])),
-      visited + set(next_positions)
+      visited + next_positions
     );
   };
 

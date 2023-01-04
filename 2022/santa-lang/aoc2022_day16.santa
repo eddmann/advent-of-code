@@ -34,7 +34,7 @@ let tunnel_distances = |valves, valve| {
 
     step(
       rest(queue) + next_valves,
-      visited + set(map(|[_, valve]| valve, next_valves)),
+      visited + map(|[_, valve]| valve, next_valves),
       next_distances
     );
   }

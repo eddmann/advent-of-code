@@ -42,7 +42,7 @@ let falling_rock = |jets, chamber, rock| {
   if fallen_rock {
     falling_rock(rest(jets), chamber, fallen_rock)
   } else {
-    [rest(jets), chamber + set(pushed_rock)]
+    [rest(jets), chamber + pushed_rock]
   }
 }
 

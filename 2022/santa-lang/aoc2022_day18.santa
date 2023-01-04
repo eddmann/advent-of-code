@@ -34,7 +34,7 @@ part_two: {
 
     surface_area(
       rest(queue) + next_points,
-      seen + {point} + set(boundary),
+      seen + {point} + boundary,
       total_sides + boundary_sides
     );
   }

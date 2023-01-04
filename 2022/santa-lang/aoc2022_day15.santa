@@ -40,8 +40,7 @@ part_one: {
 
   let beacon_xs = reports
     |> filter(|[_, _, _, by]| by == y)
-    |> map(|[_, _, bx]| bx)
-    |> set;
+    |> map(|[_, _, bx]| bx);
 
   size(xs - beacon_xs);
 }

@@ -73,7 +73,7 @@ let travel = |blizzards, [by, bx], start, end, initial_time| {
 
     recur(
       rest(queue) + next_positions,
-      seen + set(next_positions)
+      seen + next_positions
     );
   };
 

@@ -43,7 +43,7 @@ let top = [500, 0];
 
 part_one: {
   let rock = parse_scan(input) |> plot_rock;
-  let void = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 1]) |> set;
+  let void = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 1]);
 
   iterate(pour(top, rock + void), {})
     |> find(|sand| lowest_height(sand) == lowest_height(rock))
@@ -53,7 +53,7 @@ part_one: {
 
 part_two: {
   let rock = parse_scan(input) |> plot_rock;
-  let floor = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 2]) |> set;
+  let floor = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 2]);
 
   iterate(pour(top, rock + floor), {})
     |> find(_ `includes` top)
