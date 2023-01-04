@@ -33,11 +33,10 @@ part_one: {
   let directions = grid_directions(grid);
 
   grid
-    |> filter(|tree_height, position| {
+    |> count(|tree_height, position| {
       directions(position)
         |> any(all(|viewpoint| grid[viewpoint] < tree_height))
-    })
-    |> size;
+    });
 }
 
 part_two: {

@@ -30,7 +30,7 @@ part_two: {
 
     let boundary = neighbours(point) |> filter(|[x, y, z]| xs `includes` x && ys `includes` y && zs `includes` z);
     let next_points = boundary |> filter(|point| cubes `excludes` point && seen `excludes` point);
-    let boundary_sides = boundary |> filter(cubes `includes` _) |> size;
+    let boundary_sides = boundary |> count(cubes `includes` _);
 
     surface_area(
       rest(queue) + next_points,
