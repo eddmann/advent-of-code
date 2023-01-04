@@ -48,8 +48,7 @@ let blizzard_cycle = memoize |[by, bx], valley| {
 let travel = |blizzards, [by, bx], start, end, initial_time| {
   let is_no_blizzard = |[time, [y, x]]| {
     [[y, x, "<"], [y, x, ">"], [y, x, "^"], [y, x, "v"]]
-      |> find(blizzards[time % size(blizzards)] `includes` _)
-      |> |blizzard| blizzard == nil;
+      |> all(blizzards[time % size(blizzards)] `excludes` _); 
   };
 
   let is_within_bounds = |[y, x]| {

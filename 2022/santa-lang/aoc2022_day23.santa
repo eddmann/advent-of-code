@@ -17,7 +17,7 @@ let neighbours = |[y, x]| {
 }
 
 let possible_move = |elves, round, elf| {
-  if find(elves `includes` _, neighbours(elf)) == nil {
+  if all(elves `excludes` _, neighbours(elf)) {
     return nil;
   }
 
@@ -33,7 +33,7 @@ let possible_move = |elves, round, elf| {
         "E" { {[y-1, x+1], [y, x+1], [y+1, x+1]} }
       };
 
-      find(elves `includes` _, adjacent_neighbours) == nil;
+      all(elves `excludes` _, adjacent_neighbours);
     });
 
   match clear_direction {
