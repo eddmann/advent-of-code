@@ -17,7 +17,7 @@ let move = |rock, [dy, dx]| rock |> map(|[y, x]| [y + dy, x + dx]);
 let chamber_height = map(|[y]| y) >> max;
 
 let is_empty_space = |chamber, rock| {
-  rock |> find(chamber `contains` _) |> |piece| piece == nil;
+  rock |> find(chamber `includes` _) |> |piece| piece == nil;
 }
 
 let push_rock = |chamber, direction, rock| {

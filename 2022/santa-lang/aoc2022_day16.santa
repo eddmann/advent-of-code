@@ -21,7 +21,7 @@ let tunnel_distances = |valves, valve| {
       |> fold(
         [[], distances],
         |[next_valves, next_distances], neighbor| {
-          if visited `contains` neighbor {
+          if visited `includes` neighbor {
             return [next_valves, next_distances];
           }
 

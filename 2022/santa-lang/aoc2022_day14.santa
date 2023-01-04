@@ -28,7 +28,7 @@ let pour = |point, rock, sand| {
 
   let next_point = [[0, 1], [-1, 1], [1, 1]]
     |> map(|[dx, dy]| [x + dx, y + dy])
-    |> find(|point| !(rock `contains` point) && !(sand `contains` point));
+    |> find(|point| rock `excludes` point && sand `excludes` point);
 
   if next_point == nil {
     return sand + {point};
@@ -56,7 +56,7 @@ part_two: {
   let floor = 0..top[0]*2 |> map(|x| [x, lowest_height(rock) + 2]) |> set;
 
   iterate(pour(top, rock + floor), {})
-    |> find(_ `contains` top)
+    |> find(_ `includes` top)
     |> size;
 }
 

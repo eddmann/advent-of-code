@@ -28,7 +28,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
 
     let next_positions = directions(height_map, position)
       |> filter(|next_position| {
-        if visited `contains` next_position {
+        if visited `includes` next_position {
           return false;
         }
 

@@ -10,7 +10,7 @@ let neighbours = |[x, y, z]| {
 
 part_one: {
   let cubes = parse_cubes(input);
-  let exposed_sides = neighbours >> filter(cubes `contains` _) >> size >> 6 - _;
+  let exposed_sides = neighbours >> filter(cubes `includes` _) >> size >> 6 - _;
 
   cubes
     |> map(exposed_sides)
@@ -28,9 +28,9 @@ part_two: {
 
     let point = first(queue);
 
-    let boundary = neighbours(point) |> filter(|[x, y, z]| xs `contains` x && ys `contains` y && zs `contains` z);
-    let next_points = boundary |> filter(|point| !(cubes `contains` point) && !(seen `contains` point));
-    let boundary_sides = boundary |> filter(cubes `contains` _) |> size;
+    let boundary = neighbours(point) |> filter(|[x, y, z]| xs `includes` x && ys `includes` y && zs `includes` z);
+    let next_points = boundary |> filter(|point| cubes `excludes` point && seen `excludes` point);
+    let boundary_sides = boundary |> filter(cubes `includes` _) |> size;
 
     surface_area(
       rest(queue) + next_points,
