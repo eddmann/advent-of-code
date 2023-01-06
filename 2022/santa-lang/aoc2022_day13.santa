@@ -20,7 +20,7 @@ part_one: {
   let packet_pairs = parse_packets(input) |> chunk(2);
 
   zip(1.., packet_pairs)
-    |> filter(|[idx, [l, r]]| !(compare(l, r)))
+    |> filter(|[idx, [l, r]]| !compare(l, r))
     |> map(|[idx]| idx)
     |> sum;
 }
