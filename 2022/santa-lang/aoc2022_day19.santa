@@ -10,7 +10,7 @@ let parse_blueprint = |line| {
     "obsidian_robot_cost": #{"ore": obsidian_robot_ore, "clay": obsidian_robot_clay, "obsidian": 0},
     "geode_robot_cost": #{"ore": geode_robot_ore, "clay": 0, "obsidian": geode_robot_obsidian}
   };
-};
+}
 
 let parse_blueprints = lines >> map(parse_blueprint);
 
@@ -82,30 +82,26 @@ let next_robot_states = |blueprint, state| {
 
   let mut next_states = [];
 
-  if (state["robots"]["ore"] < max_ore_cost) {
-    let ore_robot_state = construct_robot(state, blueprint["ore_robot_cost"]);
-    if ore_robot_state {
+  if state["robots"]["ore"] < max_ore_cost {
+    if let ore_robot_state = construct_robot(state, blueprint["ore_robot_cost"]) {
       next_states = next_states + [ore_robot_state |> update("robots", update("ore", _ + 1))];
     }
   }
 
-  if (state["robots"]["clay"] < blueprint["obsidian_robot_cost"]["clay"]) {
-    let clay_robot_state = construct_robot(state, blueprint["clay_robot_cost"]);
-    if clay_robot_state {
+  if state["robots"]["clay"] < blueprint["obsidian_robot_cost"]["clay"] {
+    if let clay_robot_state = construct_robot(state, blueprint["clay_robot_cost"]) {
       next_states = next_states + [clay_robot_state |> update("robots", update("clay", _ + 1))];
     }
   }
 
-  if (state["robots"]["obsidian"] < blueprint["geode_robot_cost"]["obsidian"] && state["robots"]["clay"] > 0) {
-    let obsidian_robot_state = construct_robot(state, blueprint["obsidian_robot_cost"]);
-    if obsidian_robot_state {
+  if state["robots"]["obsidian"] < blueprint["geode_robot_cost"]["obsidian"] && state["robots"]["clay"] > 0 {
+    if let obsidian_robot_state = construct_robot(state, blueprint["obsidian_robot_cost"]) {
       next_states = next_states + [obsidian_robot_state |> update("robots", update("obsidian", _ + 1))];
     }
   }
 
-  if (state["robots"]["obsidian"] > 0) {
-    let geode_robot_state = construct_robot(state, blueprint["geode_robot_cost"]);
-    if geode_robot_state {
+  if state["robots"]["obsidian"] > 0 {
+    if let geode_robot_state = construct_robot(state, blueprint["geode_robot_cost"]) {
       next_states = next_states + [geode_robot_state |> update("geodes", _ + geode_robot_state["minutes_remaining"])];
     }
   }

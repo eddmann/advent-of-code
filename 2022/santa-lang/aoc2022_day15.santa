@@ -50,8 +50,9 @@ part_two: {
 
   parse_row(input)..
     |> map(|y| {
-      let x = sensor_ranges(reports, y) |> uncovered_x;
-      if x { [x, y] }
+      if let x = sensor_ranges(reports, y) |> uncovered_x {
+        [x, y]
+      }
     })
     |> find(_ != nil)
     |> tuning_frequency;
