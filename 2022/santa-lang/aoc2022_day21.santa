@@ -24,23 +24,23 @@ let evaluate = |expression| {
   }
 }
 
-let contains_human = |expression| {
+let contains_human? = |expression| {
   match expression {
     [const] { const == "humn" }
-    [lhs, _, rhs] { contains_human(lhs) || contains_human(rhs) }
+    [lhs, _, rhs] { contains_human?(lhs) || contains_human?(rhs) }
   }
 }
 
 let yell = |lhs, rhs| {
   match lhs {
-    [x, "+", y] if contains_human(x) { yell(x, [rhs, "-", y]) }
-    [x, "+", y] if contains_human(y) { yell(y, [rhs, "-", x]) }
-    [x, "-", y] if contains_human(x) { yell(x, [rhs, "+", y]) }
-    [x, "-", y] if contains_human(y) { yell(y, [x, "-", rhs]) }
-    [x, "*", y] if contains_human(x) { yell(x, [rhs, "/", y]) }
-    [x, "*", y] if contains_human(y) { yell(y, [rhs, "/", x]) }
-    [x, "/", y] if contains_human(x) { yell(x, [rhs, "*", y]) }
-    [x, "/", y] if contains_human(y) { yell(y, [x, "/", rhs]) }
+    [x, "+", y] if contains_human?(x) { yell(x, [rhs, "-", y]) }
+    [x, "+", y] if contains_human?(y) { yell(y, [rhs, "-", x]) }
+    [x, "-", y] if contains_human?(x) { yell(x, [rhs, "+", y]) }
+    [x, "-", y] if contains_human?(y) { yell(y, [x, "-", rhs]) }
+    [x, "*", y] if contains_human?(x) { yell(x, [rhs, "/", y]) }
+    [x, "*", y] if contains_human?(y) { yell(y, [rhs, "/", x]) }
+    [x, "/", y] if contains_human?(x) { yell(x, [rhs, "*", y]) }
+    [x, "/", y] if contains_human?(y) { yell(y, [x, "/", rhs]) }
     _ { evaluate(rhs) }
   }
 }

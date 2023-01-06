@@ -8,18 +8,18 @@ let parse_height_map = |input| {
       });
     })
     |> hash;
-};
+}
 
 let elevation = zip("SabcdefghijklmnopqrstuvwxyzE", 0..) |> hash;
 
 let directions = |height_map, position| {
   [[-1, 0], [1, 0], [0, -1], [0, 1]]
     |> map(position `vec_add` _)
-    |> filter(|position| height_map[position])
-};
+    |> filter(|position| height_map[position]);
+}
 
 let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
-  let traverse = |queue, visited| {
+  let recur = |queue, visited| {
     let [position, steps] = first(queue);
 
     if height_map[position] == end_elevation {
@@ -28,7 +28,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
 
     let next_positions = directions(height_map, position)
       |> filter(|next_position| {
-        if visited `includes` next_position {
+        if visited `includes?` next_position {
           return false;
         }
 
@@ -38,7 +38,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
         elevation[current] `can_hike` elevation[next] || abs(elevation[current] - elevation[next]) < 2;
       });
 
-    traverse(
+    recur(
       rest(queue) + (next_positions |> map(|p| [p, steps + 1])),
       visited + next_positions
     );
@@ -49,7 +49,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
     |> filter(|[_, elevation]| elevation == start_elevation)
     |> map(|[position]| [position, 0]);
 
-  traverse(initial_queue, {});
+  recur(initial_queue, {});
 }
 
 part_one: {

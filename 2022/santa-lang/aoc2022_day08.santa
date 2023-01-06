@@ -35,7 +35,7 @@ part_one: {
   grid
     |> count(|tree_height, position| {
       directions(position)
-        |> any(all(|viewpoint| grid[viewpoint] < tree_height))
+        |> any?(all?(|viewpoint| grid[viewpoint] < tree_height))
     });
 }
 

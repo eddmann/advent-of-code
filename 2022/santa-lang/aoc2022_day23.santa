@@ -17,7 +17,7 @@ let neighbours = |[y, x]| {
 }
 
 let possible_move = |elves, round, elf| {
-  if all(elves `excludes` _, neighbours(elf)) {
+  if all?(elves `excludes?` _, neighbours(elf)) {
     return nil;
   }
 
@@ -33,7 +33,7 @@ let possible_move = |elves, round, elf| {
         "E" { {[y-1, x+1], [y, x+1], [y+1, x+1]} }
       };
 
-      all(elves `excludes` _, adjacent_neighbours);
+      all?(elves `excludes?` _, adjacent_neighbours);
     });
 
   match clear_direction {
@@ -56,7 +56,7 @@ let move = memoize |[elves, round]| {
   let from = keys(moved_elves);
   let to = values(moved_elves);
 
-  return [elves - from + to, round + 1];
+  [elves - from + to, round + 1];
 }
 
 part_one: {
@@ -67,7 +67,7 @@ part_one: {
   let [[ly, hy], [lx, hx]] = zip(..moved_elves)
     |> map(|coord| [min(coord), max(coord)]);
 
-  return (hx - lx + 1) * (hy - ly + 1) - size(moved_elves);
+  (hx - lx + 1) * (hy - ly + 1) - size(moved_elves);
 }
 
 part_two: {

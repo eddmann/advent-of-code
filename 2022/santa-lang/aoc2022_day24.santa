@@ -15,7 +15,7 @@ let parse_blizzards = |valley| {
   zip(0.., valley)
     |> flat_map(|[y, row]| {
       zip(0.., row)
-        |> filter(|[_, pos]| ["^", "v", "<", ">"] `includes` pos)
+        |> filter(|[_, pos]| ["^", "v", "<", ">"] `includes?` pos)
         |> map(|[x, dir]| [y, x, dir])
     })
     |> set;
@@ -48,10 +48,10 @@ let blizzard_cycle = memoize |[by, bx], valley| {
 let travel = |blizzards, [by, bx], start, end, initial_time| {
   let is_no_blizzard = |[time, [y, x]]| {
     [[y, x, "<"], [y, x, ">"], [y, x, "^"], [y, x, "v"]]
-      |> all(blizzards[time % size(blizzards)] `excludes` _); 
+      |> all?(blizzards[time % size(blizzards)] `excludes?` _); 
   };
 
-  let is_within_bounds = |[y, x]| {
+  let in_bounds? = |[y, x]| {
     start == [y, x] || end == [y, x] || (y > 0 && y < by - 1 && x > 0 && x < bx - 1);
   };
 
@@ -64,9 +64,9 @@ let travel = |blizzards, [by, bx], start, end, initial_time| {
 
     let next_positions = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 0]]
       |> map(position `vec_add` _)
-      |> filter(is_within_bounds)
+      |> filter(in_bounds?)
       |> map(|bounded_position| [time + 1, bounded_position])
-      |> filter(|next_position| seen `excludes` next_position)
+      |> filter(|next_position| seen `excludes?` next_position)
       |> filter(is_no_blizzard);
 
     recur(

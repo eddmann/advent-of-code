@@ -32,7 +32,7 @@ part_two: {
   all_packets
     |> sort(compare)
     |> zip(1.., _)
-    |> filter(|[idx, packet]| divider_packets `includes` packet)
+    |> filter(|[idx, packet]| divider_packets `includes?` packet)
     |> map(|[idx]| idx)
     |> reduce(*);
 }

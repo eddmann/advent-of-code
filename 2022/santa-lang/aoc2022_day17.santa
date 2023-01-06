@@ -16,7 +16,7 @@ let move = |rock, direction| rock |> map(_ `vec_add` direction);
 
 let chamber_height = map(|[y]| y) >> max;
 
-let is_empty_space = |chamber, rock| rock |> all(chamber `excludes` _);
+let empty_space? = |chamber, rock| rock |> all?(chamber `excludes?` _);
 
 let push_rock = |chamber, direction, rock| {
   let pushed_rock = rock `move` direction;
@@ -24,7 +24,7 @@ let push_rock = |chamber, direction, rock| {
   let xs = pushed_rock |> map(|[_, x]| x);
   let is_within_boundary = min(xs) > -1 && max(xs) < 7;
 
-  if is_within_boundary && chamber `is_empty_space` pushed_rock { pushed_rock } else { rock }
+  if is_within_boundary && chamber `empty_space?` pushed_rock { pushed_rock } else { rock }
 }
 
 let attempt_rock_fall = |chamber, rock| {
@@ -32,7 +32,7 @@ let attempt_rock_fall = |chamber, rock| {
 
   let is_above_floor = min(fallen_rock |> map(|[y]| y)) > 0;
 
-  if is_above_floor && chamber `is_empty_space` fallen_rock { fallen_rock } else { nil }
+  if is_above_floor && chamber `empty_space?` fallen_rock { fallen_rock }
 }
 
 let falling_rock = |jets, chamber, rock| {
@@ -53,7 +53,7 @@ let drop_rock = |[jets, rocks, chamber]| {
 
   let [next_jets, next_chamber] = falling_rock(jets, chamber, next_rock);
 
-  return [next_jets, rest(rocks), next_chamber];
+  [next_jets, rest(rocks), next_chamber];
 }
 
 let rock_shapes = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"];
@@ -84,7 +84,7 @@ part_two: {
       }
 
       seen = seen |> assoc(key, [drops, height]);
-      return nil;
+      nil;
     })
     |> find(_ != nil);
 
@@ -100,7 +100,7 @@ part_two: {
     |> |[_, _, chamber]| chamber
     |> chamber_height;
 
-  return complete_cycles_height + partial_cycle_height - previous_height;
+  complete_cycles_height + partial_cycle_height - previous_height;
 }
 
 test: {

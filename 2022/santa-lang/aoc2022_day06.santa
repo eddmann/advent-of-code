@@ -1,15 +1,15 @@
 input: read("aoc://2022/6")
 
-let is_marker = |sequence| size(sequence) == size(set(sequence));
+let is_marker? = |sequence| size(sequence) == size(set(sequence));
 
 part_one: {
   4..
-    |> find(|position| is_marker(input[position - 4..position - 1]));
+    |> find(|position| is_marker?(input[position - 4..position - 1]));
 }
 
 part_two: {
   14..
-    |> find(|position| is_marker(input[position - 14..position - 1]));
+    |> find(|position| is_marker?(input[position - 14..position - 1]));
 }
 
 test: {

@@ -3,16 +3,16 @@ input: read("aoc://2022/9")
 let parse_motions = lines >> flat_map |motion| {
   let [direction, step] = split(" ", motion);
   repeat(direction) |> take(step);
-};
+}
 
 let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
 
-let is_adjacent = |[hy, hx], [ty, tx]| {
-  abs(hy - ty) < 2 && abs(hx - tx) < 2;
+let adjacent? = |[hy, hx], [ty, tx]| {
+  abs(hy - ty) <= 1 && abs(hx - tx) <= 1;
 }
 
 let next_tail_point = |head, tail| {
-  if is_adjacent(head, tail) {
+  if adjacent?(head, tail) {
     return tail;
   }
 

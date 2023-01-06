@@ -20,7 +20,7 @@ part_two: {
     let line_position = position % 40;
     let new_line = if line_position == 0 { "\n" } else { "" };
 
-    if map(signal + _, -1..1) `includes` line_position {
+    if map(signal + _, -1..1) `includes?` line_position {
       crt + new_line + "#";
     } else {
       crt + new_line + " ";

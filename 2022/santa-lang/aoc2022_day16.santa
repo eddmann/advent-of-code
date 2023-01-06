@@ -10,7 +10,7 @@ let parse_valves = |input| {
 }
 
 let tunnel_distances = |valves, valve| {
-  let step = |queue, visited, distances| {
+  let recur = |queue, visited, distances| {
     if size(queue) == 0 {
       return distances;
     }
@@ -21,25 +21,25 @@ let tunnel_distances = |valves, valve| {
       |> fold(
         [[], distances],
         |[next_valves, next_distances], neighbor| {
-          if visited `includes` neighbor {
+          if visited `includes?` neighbor {
             return [next_valves, next_distances];
-          }
+          };
 
-          return [
+          [
             next_valves + [[distance + 1, neighbor]],
             if valves[neighbor]["flow"] > 0 { next_distances |> assoc(neighbor, distance + 1) } else { next_distances }
           ];
         }
       );
 
-    step(
+    recur(
       rest(queue) + next_valves,
       visited + map(|[_, valve]| valve, next_valves),
       next_distances
     );
   }
 
-  step([[0, valve]], {valve}, #{valve: 0});
+  recur([[0, valve]], {valve}, #{valve: 0});
 }
 
 let eligble_valves = filter(|scan, valve| scan["flow"] > 0 || valve == "AA");
@@ -48,7 +48,7 @@ let pressure_gauge = |valves| {
   let distances = eligble_valves(valves) |> map(|_, valve| tunnel_distances(valves, valve));
   let valve_ids = distances |> keys |> zip(_, 0..) |> hash |> map(|id| 1 `bit_shift_left` id);
 
-  let gauge = memoize |valve, time, open_valves| {
+  let recur = memoize |valve, time, open_valves| {
     distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
       if open_valves `bit_and` valve_ids[neighbor] > 0 {
         return max_pressure;
@@ -64,7 +64,7 @@ let pressure_gauge = |valves| {
 
       max(
         max_pressure,
-        released_pressure + gauge(neighbor, remaining_time, open_valves `bit_or` valve_ids[neighbor])
+        released_pressure + recur(neighbor, remaining_time, open_valves `bit_or` valve_ids[neighbor])
       );
     }
   }
