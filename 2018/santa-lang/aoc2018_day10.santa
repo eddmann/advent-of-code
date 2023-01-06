@@ -26,7 +26,7 @@ let draw = |points, seconds| {
   min(ys)..max(ys)
     |> map(|y| {
       let col = min(xs)..max(xs)
-        |> map(|x| if (moved_points `contains` [x, y]) { "#" } else { " " })
+        |> map(|x| if (moved_points `includes?` [x, y]) { "#" } else { " " })
         |> fold("", +);
       col + "\n";
     })

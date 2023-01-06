@@ -12,8 +12,8 @@ part_one: {
       [0, 0],
       |[twos, threes], id| {
         let frequencies = counter(id);
-        let two = if frequencies `contains` 2 { 1 } else { 0 };
-        let three = if frequencies `contains` 3 { 1 } else { 0 };
+        let two = if frequencies `includes?` 2 { 1 } else { 0 };
+        let three = if frequencies `includes?` 3 { 1 } else { 0 };
         [twos + two, threes + three];
       }
     )

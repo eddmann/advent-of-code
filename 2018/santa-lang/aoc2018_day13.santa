@@ -56,7 +56,7 @@ part_one: {
   let [[y, x]] = iterate(tick(cart_map), carts)
     |> map(|carts| {
       carts |> find |cart| {
-        carts |> any |that| cart != that && cart[0] == that[0];
+        carts |> any? |that| cart != that && cart[0] == that[0];
       };
     })
     |> find(|first_crash| first_crash);
@@ -66,7 +66,7 @@ part_one: {
 
 let remove_crashes = |carts| {
   carts |> filter |cart| {
-    !(carts |> any |that| cart != that && cart[0] == that[0]);
+    carts |> all? |that| cart == that || cart[0] != that[0];
   };
 };
 

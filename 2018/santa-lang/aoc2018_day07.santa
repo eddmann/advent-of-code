@@ -11,7 +11,7 @@ part_one: {
     }
 
     let next_step = remaining_steps
-      |> filter(|step| dependencies |> all |[_, dependent]| step != dependent)
+      |> filter(|step| dependencies |> all? |[_, dependent]| step != dependent)
       |> first;
 
     calc_step_order(
@@ -57,12 +57,12 @@ part_two: {
   let remaining_worker_durations = mut!(#{});
 
   0.. |> find |duration| {
-    if size(remaining_steps) == 0 && remaining_worker_durations |> all(_ == 0) {
+    if size(remaining_steps) == 0 && remaining_worker_durations |> all?(_ == 0) {
       return duration;
     }
 
     let next_steps = remaining_steps
-      |> filter(|step| remaining_dependencies |> all |[_, dependent]| step != dependent)
+      |> filter(|step| remaining_dependencies |> all? |[_, dependent]| step != dependent)
       |> mut!
 
     1..total_workers |> each |worker| {

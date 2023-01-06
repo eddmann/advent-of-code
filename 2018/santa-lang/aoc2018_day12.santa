@@ -19,7 +19,7 @@ let generation = |patterns, pots| {
     {},
     |next, position| {
       let pattern = -2..2
-        |> map(|offset| if pots `contains` (position + offset) { "#" } else { "." })
+        |> map(|offset| if pots `includes?` (position + offset) { "#" } else { "." })
         |> fold("", +);
 
       if patterns[pattern] == "#" { next + {position} } else { next };

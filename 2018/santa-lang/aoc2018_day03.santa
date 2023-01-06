@@ -33,7 +33,7 @@ part_two: {
   let fabric = compute_fabric(claims);
 
   claims
-    |> find(|claim| compute_squares(claim) |> all(|square| fabric[square] == 1))
+    |> find(|claim| compute_squares(claim) |> all?(|square| fabric[square] == 1))
     |> get("id");
 }
 

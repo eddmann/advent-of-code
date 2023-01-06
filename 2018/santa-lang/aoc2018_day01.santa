@@ -21,7 +21,7 @@ part_two: {
     |> cycle
     |> scan(+, 0)
     |> find(|frequency| {
-      if seen `contains` frequency {
+      if seen `includes?` frequency {
         return true;
       }
       seen = seen + {frequency};

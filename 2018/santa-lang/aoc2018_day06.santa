@@ -38,7 +38,7 @@ part_one: {
     );
 
   list(totals)
-    |> filter(|[position]| !(infinite `contains` position))
+    |> filter(|[position]| infinite `excludes?` position)
     |> map(|[_, total]| total)
     |> max;
 }
