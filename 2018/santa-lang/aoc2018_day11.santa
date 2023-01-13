@@ -8,18 +8,21 @@ let power_level = |serial_number, x, y| {
 };
 
 let build_sum_table = |size, power_level| {
-  let grid = list(0..size+1) |> map(|| mut!([0] * (size+1)));
+  let mut grid = list(0..size+1) |> map(|| [0] * (size+1));
 
   1..size |> each |x| {
     1..size |> each |y| {
-      grid[x] |> assoc!(
-        y,
-        power_level(x, y) + grid[x-1][y] + grid[x][y-1] - grid[x-1][y-1]
+      grid = grid |> update(
+        x,
+        assoc(
+          y,
+          power_level(x, y) + grid[x-1][y] + grid[x][y-1] - grid[x-1][y-1]
+        )
       );
     }
   }
 
-  grid |> map(imut);
+  grid;
 };
 
 let size = 300;

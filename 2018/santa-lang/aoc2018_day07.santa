@@ -30,20 +30,7 @@ part_one: {
   );
 }
 
-let pop! = |list| {
-  let head = first(list);
-  remove!(0, list);
-  head;
-};
-
-let step_duration = #{
-  "A": 0,  "B": 1,  "C": 2,  "D": 3,  "E": 4,
-  "F": 5,  "G": 6,  "H": 7,  "I": 8,  "J": 9,
-  "K": 10, "L": 11, "M": 12, "N": 13, "O": 14,
-  "P": 15, "Q": 16, "R": 17, "S": 18, "T": 19,
-  "U": 20, "V": 21, "W": 22, "X": 23, "Y": 24,
-  "Z": 25
-};
+let step_duration = zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0..) |> hash;
 
 let time = |step| 60 + step_duration[step];
 
@@ -51,37 +38,40 @@ part_two: {
   let dependencies = parse_instructions(input);
 
   let total_workers = 5;
-  let remaining_dependencies = mut!(dependencies);
-  let remaining_steps = dependencies |> sort_steps |> mut!;
-  let current_worker_steps = mut!(#{});
-  let remaining_worker_durations = mut!(#{});
+  let mut remaining_dependencies = dependencies;
+  let mut remaining_steps = dependencies |> sort_steps;
+  let mut current_worker_steps = #{};
+  let mut remaining_worker_durations = #{};
 
   0.. |> find |duration| {
     if size(remaining_steps) == 0 && remaining_worker_durations |> all?(_ == 0) {
       return duration;
     }
 
-    let next_steps = remaining_steps
-      |> filter(|step| remaining_dependencies |> all? |[_, dependent]| step != dependent)
-      |> mut!
+    let mut next_steps = remaining_steps
+      |> filter(|step| remaining_dependencies |> all? |[_, dependent]| step != dependent);
 
     1..total_workers |> each |worker| {
-      remaining_worker_durations |> update_d!(worker, 0, |time| max(time - 1, 0));
+      remaining_worker_durations = remaining_worker_durations
+        |> update_d(worker, 0, |time| max(time - 1, 0));
 
       if remaining_worker_durations[worker] > 0 {
         return nil;
       }
 
-      remaining_dependencies |> filter! |[step]| step != current_worker_steps[worker];
+      remaining_dependencies = remaining_dependencies
+        |> filter |[step]| step != current_worker_steps[worker];
 
       if size(next_steps) == 0 {
         return nil;
       }
 
-      let next_step = pop!(next_steps);
-      remaining_steps |> filter!(_ != next_step);
-      current_worker_steps |> assoc!(worker, next_step);
-      remaining_worker_durations |> assoc!(worker, time(next_step));
+      let next_step = first(next_steps);
+      next_steps = rest(next_steps);
+
+      remaining_steps = remaining_steps |> filter(_ != next_step);
+      current_worker_steps = current_worker_steps |> assoc(worker, next_step);
+      remaining_worker_durations = remaining_worker_durations |> assoc(worker, time(next_step));
     }
   }
 }
