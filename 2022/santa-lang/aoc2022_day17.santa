@@ -2,12 +2,17 @@ input: read("aoc://2022/17")
 
 let parse_rocks = |rocks| {
   let parse_rock = |rock| {
-    zip(0.., rock |> lines |> reverse) |> flat_map(|[y, row]| {
-      zip(0.., row) |> filter(|[_, el]| el == "#") |> map(|[x]| [y, x])
-    });
+    zip(0.., rock |> lines |> reverse)
+      |> flat_map(|[y, row]| {
+        zip(0.., row)
+          |> filter(|[_, el]| el == "#")
+          |> map(|[x]| [y, x])
+      });
   };
 
-  rocks |> map(parse_rock) |> cycle;
+  rocks
+    |> map(parse_rock)
+    |> cycle;
 }
 
 let parse_jet_pattern = split("") >> map(|d| if d == "<" { [0, -1] } else { [0, 1] }) >> cycle;
@@ -24,7 +29,11 @@ let push_rock = |chamber, direction, rock| {
   let xs = pushed_rock |> map(|[_, x]| x);
   let is_within_boundary = min(xs) > -1 && max(xs) < 7;
 
-  if is_within_boundary && chamber `empty_space?` pushed_rock { pushed_rock } else { rock }
+  if is_within_boundary && chamber `empty_space?` pushed_rock {
+    pushed_rock;
+  } else {
+    rock;
+  }
 }
 
 let attempt_rock_fall = |chamber, rock| {
@@ -32,7 +41,9 @@ let attempt_rock_fall = |chamber, rock| {
 
   let is_above_floor = min(fallen_rock |> map(|[y]| y)) > 0;
 
-  if is_above_floor && chamber `empty_space?` fallen_rock { fallen_rock }
+  if is_above_floor && chamber `empty_space?` fallen_rock {
+    fallen_rock;
+  }
 }
 
 let falling_rock = |jets, chamber, rock| {
@@ -40,9 +51,9 @@ let falling_rock = |jets, chamber, rock| {
   let fallen_rock = pushed_rock |> attempt_rock_fall(chamber);
 
   if fallen_rock {
-    falling_rock(rest(jets), chamber, fallen_rock)
+    falling_rock(rest(jets), chamber, fallen_rock);
   } else {
-    [rest(jets), chamber + pushed_rock]
+    [rest(jets), chamber + pushed_rock];
   }
 }
 

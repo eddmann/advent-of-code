@@ -42,7 +42,7 @@ let estimate_geode_collection = |blueprint, state| {
 
 let construct_robot = |state, cost| {
   let minutes_remaining = state["minutes_remaining"] - 1;
-  if minutes_remaining < 1 {
+  if minutes_remaining == 0 {
     return nil;
   }
 
@@ -151,4 +151,10 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
 
   part_one: 33
   part_two: 3472
+}
+
+test: {
+  input: read("aoc://2022/19")
+  part_one: 1349
+  part_two: 21840
 }

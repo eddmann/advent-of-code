@@ -3,9 +3,8 @@ input: read("aoc://2022/8")
 let parse_grid = |input| {
   zip(0.., lines(input))
     |> flat_map(|[y, row]| {
-      zip(0.., row) |> map(|[x, tree_height]| {
-        [[y, x], int(tree_height)]
-      });
+      zip(0.., row)
+        |> map(|[x, tree_height]| [[y, x], int(tree_height)]);
     })
     |> hash;
 }

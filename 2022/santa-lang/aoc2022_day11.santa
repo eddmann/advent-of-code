@@ -2,8 +2,8 @@ input: read("aoc://2022/11")
 
 let parse_op = |op| {
   match split(" ", op) {
-    ["+", v] { _ + int(v) },
-    ["*", "old"] { |o| o * o },
+    ["+", v] { _ + int(v) }
+    ["*", "old"] { |o| o * o }
     ["*", v] { _ * int(v) }
   };
 }
@@ -19,7 +19,9 @@ let parse_monkeys = |input| {
     #{items, op, divisor, throw_to, "activity": 0};
   };
 
-  input |> split("\n\n") |> map(parse_monkey);
+  input
+    |> split("\n\n")
+    |> map(parse_monkey);
 }
 
 let round = |apply_relief, monkeys| {
@@ -57,7 +59,7 @@ part_two: {
 
   monkeys
     |> iterate(round(_ % manageable_level))
-    |> get(10000)
+    |> get(10_000)
     |> monkey_business;
 }
 

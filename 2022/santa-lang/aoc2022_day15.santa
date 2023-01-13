@@ -9,10 +9,10 @@ let sensor_ranges = |reports, y| {
     let offset = distance - abs(sy - y);
 
     if offset > 0 {
-      return ranges + [[sx - offset, sx + offset]];
+      ranges + [[sx - offset, sx + offset]];
+    } else {
+      ranges;
     }
-
-    ranges;
   }
 }
 
@@ -21,7 +21,7 @@ let uncovered_x = |ranges| {
     [] { nil }
     [[start, end], _] if start > max_end { start - 1 }
     [[start, end], ..tail] { recur(tail, max(max_end, end)) }
-  }
+  };
 
   let [[_, initial_end], ..sorted] = ranges |> sort(|[s1], [s2]| s1 > s2);
 

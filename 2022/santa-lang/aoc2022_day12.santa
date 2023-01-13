@@ -3,9 +3,8 @@ input: read("aoc://2022/12")
 let parse_height_map = |input| {
   zip(0.., lines(input))
     |> flat_map(|[y, row]| {
-      zip(0.., row) |> map(|[x, elevation]| {
-        [[y, x], elevation]
-      });
+      zip(0.., row)
+        |> map(|[x, elevation]| [[y, x], elevation]);
     })
     |> hash;
 }
@@ -18,7 +17,7 @@ let directions = |height_map, position| {
     |> filter(|position| height_map[position]);
 }
 
-let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
+let best_signal = |start_elevation, end_elevation, can_hike?, height_map| {
   let recur = |queue, visited| {
     let [position, steps] = first(queue);
 
@@ -35,7 +34,7 @@ let best_signal = |start_elevation, end_elevation, can_hike, height_map| {
         let current = height_map[position];
         let next = height_map[next_position];
 
-        elevation[current] `can_hike` elevation[next] || abs(elevation[current] - elevation[next]) < 2;
+        elevation[current] `can_hike?` elevation[next] || abs(elevation[current] - elevation[next]) < 2;
       });
 
     recur(

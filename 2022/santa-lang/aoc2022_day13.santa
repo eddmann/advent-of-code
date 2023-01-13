@@ -1,6 +1,6 @@
 input: read("aoc://2022/13")
 
-let parse_packets = lines >> filter(_ != "") >> map(evaluate)
+let parse_packets = lines >> filter(_ != "") >> map(evaluate);
 
 let cmp = |a, b| if a == b { nil } else { a > b }
 

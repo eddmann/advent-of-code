@@ -5,7 +5,7 @@ let parse_elves = |input| {
     |> flat_map(|[y, row]| {
       zip(0.., row)
         |> filter(|[_, el]| el == "#")
-        |> map(|[x]| [y, x])
+        |> map(|[x]| [y, x]);
     })
     |> set;
 }
@@ -29,8 +29,8 @@ let possible_move = |elves, round, elf| {
       let adjacent_neighbours = match direction {
         "N" { {[y-1, x-1], [y-1, x], [y-1, x+1]} }
         "S" { {[y+1, x-1], [y+1, x], [y+1, x+1]} }
-        "W" { {[y-1, x-1], [y, x-1], [y+1, x-1]} }
         "E" { {[y-1, x+1], [y, x+1], [y+1, x+1]} }
+        "W" { {[y-1, x-1], [y, x-1], [y+1, x-1]} }
       };
 
       all?(elves `excludes?` _, adjacent_neighbours);
@@ -39,8 +39,8 @@ let possible_move = |elves, round, elf| {
   match clear_direction {
     "N" { [y-1, x] }
     "S" { [y+1, x] }
-    "W" { [y, x-1] }
     "E" { [y, x+1] }
+    "W" { [y, x-1] }
   };
 }
 

@@ -2,11 +2,14 @@ input: read("aoc://2022/16")
 
 let parse_valves = |input| {
   let parse_valve = |line| {
-    let [valve, rate, tunnels] = regex_match("Valve (\\w+) has flow rate=(\\d+); tunnels? leads? to valves? (.+)", line);
+    let [valve, rate, tunnels] = regex_match("Valve (\\w+) .+ rate=(\\d+); .+ valves? (.+)", line);
     [valve, #{"flow": int(rate), "tunnels": tunnels |> split(", ")}];
-  }
+  };
 
-  input |> lines |> map(parse_valve) |> hash;
+  input
+    |> lines
+    |> map(parse_valve)
+    |> hash;
 }
 
 let tunnel_distances = |valves, valve| {
@@ -37,7 +40,7 @@ let tunnel_distances = |valves, valve| {
       visited + map(|[_, valve]| valve, next_valves),
       next_distances
     );
-  }
+  };
 
   recur([[0, valve]], {valve}, #{valve: 0});
 }

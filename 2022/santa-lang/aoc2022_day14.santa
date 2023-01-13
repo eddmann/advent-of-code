@@ -18,9 +18,11 @@ let plot_rock = |scans| {
         |rock, point| rock + line_between(rock[-1], point)
       )
       |> set;
-  }
+  };
 
-  scans |> map(plot) |> reduce(+);
+  scans
+    |> map(plot)
+    |> reduce(+);
 }
 
 let pour = |point, rock, sand| {

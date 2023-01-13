@@ -3,15 +3,15 @@ input: read("aoc://2022/21")
 let parse_jobs = lines >> map(split(": ")) >> hash;
 
 let build_expression = |jobs| {
-  let build = |monkey| {
+  let recur = |monkey| {
     match split(" ", jobs[monkey]) {
       ["humn"] { ["humn"] }
       [const] { [int(const)] }
-      [lhs, op, rhs] { [build(lhs), op, build(rhs)] }
+      [lhs, op, rhs] { [recur(lhs), op, recur(rhs)] }
     }
   };
 
-  build("root");
+  recur("root");
 }
 
 let evaluate = |expression| {
