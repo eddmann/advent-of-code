@@ -1,0 +1,194 @@
+input: read("aoc://2022/22")
+
+let parse_maze = |input| {
+  let section = input |> split("\n\n") |> first;
+
+  zip(0.., lines(section))
+    |> flat_map(|[y, row]| {
+      zip(0.., row)
+        |> filter(|[_, el]| el != " ")
+        |> map(|[x, el]| [[y, x], el]);
+    })
+    |> hash;
+}
+
+let parse_directions = |input| {
+  input
+    |> split("\n\n")
+    |> second
+    |> regex_match_all("\\d+|L|R")
+    |> map(|el| if el != "L" && el != "R" { int(el) } else { el });
+}
+
+let step_2d = |maze| {
+  let ys = memoize |x| maze |> keys |> filter(|[_, sx]| sx == x) |> map(|[y]| y);
+  let xs = memoize |y| maze |> keys |> filter(|[sy]| sy == y) |> map(|[_, x]| x);
+
+  |facing, [y, x]| {
+    let mut next_position = match facing {
+      "N" { [y - 1, x] }
+      "S" { [y + 1, x] }
+      "E" { [y, x + 1] }
+      "W" { [y, x - 1] }
+    };
+
+    if maze[next_position] == nil {
+      next_position = match facing {
+        "N" { [max(ys(x)), x] }
+        "S" { [min(ys(x)), x] }
+        "E" { [y, min(xs(y))] }
+        "W" { [y, max(xs(y))] }
+      };
+    };
+
+    [facing, next_position];
+  };
+}
+
+let test_step_3d = |facing, [y, x]| {
+  match [facing, [y, x]] {
+    ["N", [0, 8..11]]   { ["S", [3 - (x - 8), 4]] }   // a
+    ["N", [4, 0..3]]    { ["S", [0, 11 - x]] }        // b
+    ["N", [4, 4..7]]    { ["E", [x - 4, 8]] }         // c
+    ["N", [4, 12..15]]  { ["W", [7 - (x - 12), 11]] } // d
+    ["N", _]            { ["N", [y - 1, x]] }
+
+    ["S", [7, 0..3]]    { ["N", [11, 11 - x]] }       // e
+    ["S", [7, 4..7]]    { ["E", [11 - (x - 4), 8]] }  // f
+    ["S", [11, 8..11]]  { ["N", [7, 3 - (x - 8)]] }   // g
+    ["S", [11, 12..15]] { ["E", [7 - (x - 12), 0]] }  // h
+    ["S", _]            { ["S", [y + 1, x]] }
+
+    ["E", [0..3, 11]]   { ["W", [11 - y, 15]] }       // i
+    ["E", [4..7, 11]]   { ["S", [8, 15 - (y - 4)]] }  // j
+    ["E", [8..11, 15]]  { ["W", [3 - (y - 8), 11]] }  // k
+    ["E", _]            { ["E", [y, x + 1]] }
+
+    ["W", [0..3, 8]]    { ["S", [4, y + 4]] }         // l
+    ["W", [4..7, 0]]    { ["N", [11, 15 - (y - 4)]] } // m
+    ["W", [8..11, 8]]   { ["N", [7, 7 - (y - 8)]] }   // n
+    ["W", _]            { ["W", [y, x - 1]] }
+  }
+}
+
+let step_3d = |facing, [y, x]| {
+  match [facing, [y, x]] {
+    ["N", [0, 50..99]]    { ["E", [150 + (x - 50), 0]] }   // a
+    ["N", [0, 100..149]]  { ["N", [199, x - 100]] }        // b
+    ["N", [100, 0..49]]   { ["E", [50 + x, 50]] }          // c
+    ["N", _]              { ["N", [y - 1, x]] }
+
+    ["S", [49, 100..149]] { ["W", [50 + (x - 100), 99]] }  // d
+    ["S", [149, 50..99]]  { ["W", [150 + (x - 50), 49]] }  // e
+    ["S", [199, 0..49]]   { ["S", [0, x + 100]] }          // f
+    ["S", _]              { ["S", [y + 1, x]]}
+
+    ["E", [0..49, 149]]   { ["W", [149 - y, 99]] }         // g
+    ["E", [50..99, 99]]   { ["N", [49, 100 + (y - 50)]] }  // h
+    ["E", [100..149, 99]] { ["W", [49 - (y - 100), 149]] } // i
+    ["E", [150..199, 49]] { ["N", [149, 50 + (y - 150)]]}  // j
+    ["E", _]              { ["E", [y, x + 1]] }
+
+    ["W", [0..49, 50]]    { ["E", [149 - y, 0]] }          // k
+    ["W", [50..99, 50]]   { ["S", [100, y - 50]] }         // l
+    ["W", [100..149, 0]]  { ["E", [49 - (y - 100), 50]] }  // m
+    ["W", [150..199, 0]]  { ["S", [0, 50 + (y - 150)]] }   // n
+    ["W", _]              { ["W", [y, x - 1]]}
+  }
+}
+
+let turn_left = |facing| match facing {
+  "N" { "W" }
+  "S" { "E" }
+  "E" { "N" }
+  "W" { "S" }
+};
+
+let turn_right = |facing| match facing {
+  "N" { "E" }
+  "S" { "W" }
+  "E" { "S" }
+  "W" { "N" }
+};
+
+let follow_path = |stepper, maze, directions| {
+  let walk = |steps, [facing, position]| {
+    if (steps == 0) {
+      return [facing, position];
+    }
+
+    let [next_facing, next_position] = stepper(facing, position);
+
+    if maze[next_position] != "." {
+      return [facing, position];
+    }
+
+    walk(steps - 1, [next_facing, next_position]);
+  };
+
+  let start_x = maze |> keys |> filter(|[y]| y == 0) |> map(|[_, x]| x) |> min;
+  let start = ["E", [0, start_x]];
+
+  directions |> fold(start) |[facing, position], action| {
+    match action {
+      "L" { [turn_left(facing), position] }
+      "R" { [turn_right(facing), position] }
+      steps { walk(steps, [facing, position]) }
+    }
+  };
+}
+
+let password = |[facing, [y, x]]| {
+  let facing_score = match facing {
+    "N" { 3 }
+    "S" { 1 }
+    "E" { 0 }
+    "W" { 2 }
+  };
+
+  1000 * (y + 1) + 4 * (x + 1) + facing_score;
+}
+
+part_one: {
+  let maze = parse_maze(input);
+
+  follow_path(step_2d(maze), maze, parse_directions(input))
+    |> password;
+}
+
+part_two: {
+  let maze = parse_maze(input);
+
+  let xs = maze |> keys |> filter(|[y]| y == 0) |> map(|[_, x]| x);
+  let face_width = max(xs) - min(xs) + 1;
+  let stepper = if face_width == 4 { test_step_3d } else { step_3d };
+
+  follow_path(stepper, maze, parse_directions(input))
+    |> password;
+}
+
+test: {
+  input: "        ...#
+        .#..
+        #...
+        ....
+...#.......#
+........#...
+..#....#....
+..........#.
+        ...#....
+        .....#..
+        .#......
+        ......#.
+
+10R5L5R10L4R5L5"
+
+  part_one: 6032
+  part_two: 5031
+}
+
+test: {
+  input: read("aoc://2022/22")
+  part_one: 136054
+  part_two: 122153
+}
