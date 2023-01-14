@@ -1,7 +1,7 @@
 input: read("aoc://2022/5")
 
 let parse_stacks = |input| {
-  let parse_stack_line = chunk(4) >> map(find(|ch| ch != " " && ch != "["));
+  let parse_stack_line = chunk(4) >> map(find(regex_match("([A-Z])")));
 
   let stack_lines = input
     |> split("\n\n")
