@@ -69,6 +69,26 @@ let drop_rock = |[jets, rocks, chamber]| {
 
 let rock_shapes = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"];
 
+let cycle_detector = || {
+  let mut seen = #{};
+  let mut drops = 0;
+
+  |[jets, rocks, chamber]| {
+    drops = drops + 1;
+
+    let height = chamber_height(chamber);
+    let chamber_top = chamber |> filter(|[y]| y > height - 20) |> map(|[y, x]| [height - y, x]);
+    let key = [first(jets), first(rocks), chamber_top];
+
+    if seen[key] {
+      return [[drops, height], seen[key]];
+    }
+
+    seen = seen |> assoc(key, [drops, height]);
+    nil;
+  };
+}
+
 part_one: {
   let rocks = parse_rocks(rock_shapes);
   let jets = parse_jet_pattern(input);
@@ -83,21 +103,11 @@ part_two: {
   let rocks = parse_rocks(rock_shapes);
   let jets = parse_jet_pattern(input);
 
-  let mut seen = #{};
-  let [[drops, height], [previous_drops, previous_height]] = zip(0.., iterate(drop_rock, [jets, rocks, {}]))
-    |> map(|[drops, [jets, rocks, chamber]]| {
-      let height = chamber_height(chamber);
-      let chamber_top = chamber |> filter(|[y]| y > height - 20) |> map(|[y, x]| [height - y, x]);
-      let key = [first(jets), first(rocks), chamber_top];
+  let cycle_state = iterate(drop_rock, [jets, rocks, {}])
+    |> filter_map(cycle_detector())
+    |> first;
 
-      if seen[key] {
-        return [[drops, height], seen[key]];
-      }
-
-      seen = seen |> assoc(key, [drops, height]);
-      nil;
-    })
-    |> find(_ != nil);
+  let [[drops, height], [previous_drops, previous_height]] = cycle_state;
 
   let height_offset = height - previous_height;
   let drop_offset = drops - previous_drops;
