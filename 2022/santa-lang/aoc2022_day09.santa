@@ -1,5 +1,11 @@
 input: read("aoc://2022/9")
 
+let signum = |x| match x {
+  0 { 0 }
+  n if n < 0 { -1 }
+  _ { 1 }
+}
+
 let parse_motions = lines >> flat_map |motion| {
   let [direction, step] = split(" ", motion);
   repeat(direction) |> take(step);
@@ -7,67 +13,33 @@ let parse_motions = lines >> flat_map |motion| {
 
 let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
 
-let adjacent? = |[hy, hx], [ty, tx]| {
-  abs(hy - ty) <= 1 && abs(hx - tx) <= 1;
+let knot_head = scan([0, 0]) |point, direction| {
+  point `vec_add` directions[direction];
+};
+
+let knot_tail = scan([0, 0]) |[ty, tx], [hy, hx]| {
+  if abs(ty - hy) < 2 && abs(tx - hx) < 2 {
+    [ty, tx];
+  } else {
+    [ty + signum(hy - ty), tx + signum(hx - tx)]
+  }
 }
 
-let next_tail_point = |head, tail| {
-  if adjacent?(head, tail) {
-    return tail;
-  }
-
-  let [hy, hx] = head;
-  let [ty, tx] = tail;
-
-  if hy == ty { // horizontal
-    return [ty, if hx > tx { tx + 1 } else { tx - 1 }];
-  }
-
-  if hx == tx { // vertical
-    return [if hy > ty { ty + 1 } else { ty - 1 }, tx];
-  }
-
-  if hy < ty && hx > tx { // down-right
-    return [ty - 1, tx + 1];
-  }
-
-  if hy < ty && hx < tx { // down-left
-    return [ty - 1, tx - 1];
-  }
-
-  if hy > ty && hx > tx { // top-right
-    return [ty + 1, tx + 1];
-  }
-
-  return [ty + 1, tx - 1]; // top-left
-}
-
-let take_step = |knots, direction| {
-  knots[1..] |> fold([knots[0] `vec_add` direction]) |knots, knot| {
-    knots + [next_tail_point(knots[-1], knot)];
-  };
-}
-
-let tail_visits = |total_knots| {
-  fold_s(
-    [{}, [[0, 0]] * total_knots],
-    |[visits, knots], [direction, step]| {
-      let next_knots = knots `take_step` directions[direction];
-      [visits + {next_knots[-1]}, next_knots];
-    }
-  );
-}
+let visits = set >> size;
 
 part_one: {
   parse_motions(input)
-    |> tail_visits(2)
-    |> size;
+    |> knot_head
+    |> knot_tail
+    |> visits;
 }
 
 part_two: {
   parse_motions(input)
-    |> tail_visits(10)
-    |> size;
+    |> knot_head
+    |> iterate(knot_tail)
+    |> get(9)
+    |> visits;
 }
 
 test: {

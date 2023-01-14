@@ -31,12 +31,12 @@ Part 1: 1719 3.25s
 Part 2: 590824 1.264s
 
 > aoc2022_day09.santa
-Part 1: 5907 0.366s
-Part 2: 2303 0.985s
-
-> aoc2022_day09_2.santa
 Part 1: 5907 0.273s
 Part 2: 2303 0.670s
+
+> aoc2022_day09_2.santa
+Part 1: 5907 0.366s
+Part 2: 2303 0.985s
 
 > aoc2022_day10.santa
 Part 1: 15260 0.9s
