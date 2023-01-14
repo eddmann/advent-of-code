@@ -1,11 +1,9 @@
 input: read("aoc://2022/11")
 
-let parse_op = |op| {
-  match split(" ", op) {
-    ["+", v] { _ + int(v) }
-    ["*", "old"] { |o| o * o }
-    ["*", v] { _ * int(v) }
-  };
+let parse_op = |op| match split(" ", op) {
+  ["+", v] { _ + int(v) }
+  ["*", "old"] { |o| o * o }
+  ["*", v] { _ * int(v) }
 }
 
 let parse_monkeys = |input| {

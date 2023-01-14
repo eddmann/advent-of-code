@@ -4,15 +4,13 @@ let parse_packets = lines >> filter(_ != "") >> map(evaluate);
 
 let cmp = |a, b| if a == b { nil } else { a > b }
 
-let compare = |l, r| {
-  match [type(l), type(r)] {
-    ["List", "Integer"] { compare(l, [r]) }
-    ["Integer", "List"] { compare([l], r) }
-    ["Integer", "Integer"] { l `cmp` r }
-    ["List", "List"] {
-      let check = zip(l, r) |> map(|[a, b]| compare(a, b)) |> find(_ != nil);
-      if check != nil { check } else { size(l) `cmp` size(r) }
-    }
+let compare = |l, r| match [type(l), type(r)] {
+  ["List", "Integer"] { compare(l, [r]) }
+  ["Integer", "List"] { compare([l], r) }
+  ["Integer", "Integer"] { l `cmp` r }
+  ["List", "List"] {
+    let check = zip(l, r) |> map(|[a, b]| compare(a, b)) |> find(_ != nil);
+    if check != nil { check } else { size(l) `cmp` size(r) }
   }
 }
 

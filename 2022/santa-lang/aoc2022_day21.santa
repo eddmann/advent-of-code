@@ -14,35 +14,29 @@ let build_expression = |jobs| {
   recur("root");
 }
 
-let evaluate = |expression| {
-  match expression {
-    [const] { const }
-    [lhs, "+", rhs] { evaluate(lhs) + evaluate(rhs) }
-    [lhs, "-", rhs] { evaluate(lhs) - evaluate(rhs) }
-    [lhs, "*", rhs] { evaluate(lhs) * evaluate(rhs) }
-    [lhs, "/", rhs] { evaluate(lhs) / evaluate(rhs) }
-  }
+let evaluate = |expression| match expression {
+  [const] { const }
+  [lhs, "+", rhs] { evaluate(lhs) + evaluate(rhs) }
+  [lhs, "-", rhs] { evaluate(lhs) - evaluate(rhs) }
+  [lhs, "*", rhs] { evaluate(lhs) * evaluate(rhs) }
+  [lhs, "/", rhs] { evaluate(lhs) / evaluate(rhs) }
 }
 
-let contains_human? = |expression| {
-  match expression {
-    [const] { const == "humn" }
-    [lhs, _, rhs] { contains_human?(lhs) || contains_human?(rhs) }
-  }
+let contains_human? = |expression| match expression {
+  [const] { const == "humn" }
+  [lhs, _, rhs] { contains_human?(lhs) || contains_human?(rhs) }
 }
 
-let yell = |lhs, rhs| {
-  match lhs {
-    [x, "+", y] if contains_human?(x) { yell(x, [rhs, "-", y]) }
-    [x, "+", y] if contains_human?(y) { yell(y, [rhs, "-", x]) }
-    [x, "-", y] if contains_human?(x) { yell(x, [rhs, "+", y]) }
-    [x, "-", y] if contains_human?(y) { yell(y, [x, "-", rhs]) }
-    [x, "*", y] if contains_human?(x) { yell(x, [rhs, "/", y]) }
-    [x, "*", y] if contains_human?(y) { yell(y, [rhs, "/", x]) }
-    [x, "/", y] if contains_human?(x) { yell(x, [rhs, "*", y]) }
-    [x, "/", y] if contains_human?(y) { yell(y, [x, "/", rhs]) }
-    _ { evaluate(rhs) }
-  }
+let yell = |lhs, rhs| match lhs {
+  [x, "+", y] if contains_human?(x) { yell(x, [rhs, "-", y]) }
+  [x, "+", y] if contains_human?(y) { yell(y, [rhs, "-", x]) }
+  [x, "-", y] if contains_human?(x) { yell(x, [rhs, "+", y]) }
+  [x, "-", y] if contains_human?(y) { yell(y, [x, "-", rhs]) }
+  [x, "*", y] if contains_human?(x) { yell(x, [rhs, "/", y]) }
+  [x, "*", y] if contains_human?(y) { yell(y, [rhs, "/", x]) }
+  [x, "/", y] if contains_human?(x) { yell(x, [rhs, "*", y]) }
+  [x, "/", y] if contains_human?(y) { yell(y, [x, "/", rhs]) }
+  _ { evaluate(rhs) }
 }
 
 part_one: {
