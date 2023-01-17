@@ -17,7 +17,7 @@ let play_game = |players, max_points| {
         rest(rotated)
       ];
     },
-    1..max_points
+    1..=max_points
   );
 
   max(scores);
