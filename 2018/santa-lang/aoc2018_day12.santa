@@ -18,7 +18,7 @@ let generation = |patterns, pots| {
   min(pots)-2..max(pots)+2 |> fold(
     {},
     |next, position| {
-      let pattern = -2..2
+      let pattern = -2..=2
         |> map(|offset| if pots `includes?` (position + offset) { "#" } else { "." })
         |> fold("", +);
 

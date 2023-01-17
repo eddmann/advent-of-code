@@ -11,7 +11,7 @@ let calc_boundary = |points| {
 
 let generate_grid = |points| {
   let [lx, hx, ly, hy] = calc_boundary(points);
-  lx..hx |> flat_map(|x| ly..hy |> map(|y| [x, y]));
+  lx..=hx |> flat_map(|x| ly..=hy |> map(|y| [x, y]));
 };
 
 part_one: {
