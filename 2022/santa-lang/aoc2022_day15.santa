@@ -35,7 +35,7 @@ part_one: {
   let y = parse_row(input);
 
   let xs = sensor_ranges(reports, y)
-    |> map(|[start, end]| start..end)
+    |> map(|[start, end]| start..=end)
     |> union;
 
   let beacon_xs = reports

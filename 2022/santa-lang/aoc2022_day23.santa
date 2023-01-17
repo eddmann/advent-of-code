@@ -23,7 +23,7 @@ let possible_move = |elves, round, elf| {
 
   let [y, x] = elf;
 
-  let clear_direction = 0..3
+  let clear_direction = 0..4
     |> map(|idx| "NSWE"[(round + idx) % 4])
     |> find(|direction| {
       let adjacent_neighbours = match direction {

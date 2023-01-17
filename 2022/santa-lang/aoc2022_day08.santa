@@ -19,10 +19,10 @@ let grid_directions = |grid| {
 
     // up, down, left, right
     [
-      max(y-1, ly)..lx |> map(|dy| [dy, x]) |> filter(not_self),
-      min(y+1, hy)..hy |> map(|dy| [dy, x]) |> filter(not_self),
-      max(x-1, lx)..lx |> map(|dx| [y, dx]) |> filter(not_self),
-      min(x+1, hx)..hx |> map(|dx| [y, dx]) |> filter(not_self)
+      max(y-1, ly)..=lx |> map(|dy| [dy, x]) |> filter(not_self),
+      min(y+1, hy)..=hy |> map(|dy| [dy, x]) |> filter(not_self),
+      max(x-1, lx)..=lx |> map(|dx| [y, dx]) |> filter(not_self),
+      min(x+1, hx)..=hx |> map(|dx| [y, dx]) |> filter(not_self)
     ];
   };
 }

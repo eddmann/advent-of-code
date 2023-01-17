@@ -11,7 +11,7 @@ let find_index_offset = |idx, col| {
 }
 
 let mix = |numbers| {
-  0..size(numbers)-1 |> fold(numbers) |mixed, index| {
+  0..size(numbers) |> fold(numbers) |mixed, index| {
     let [number, ..tail] = mixed |> rotate(find_index_offset(index, mixed));
     let shift = number[1] % size(tail);
 

@@ -23,7 +23,7 @@ let parse_monkeys = |input| {
 }
 
 let round = |apply_relief, monkeys| {
-  0..size(monkeys)-1 |> fold(monkeys) |monkeys, position| {
+  0..size(monkeys) |> fold(monkeys) |monkeys, position| {
     let monkey = monkeys[position];
 
     monkey["items"]

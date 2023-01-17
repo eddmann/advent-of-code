@@ -20,7 +20,7 @@ let estimate_geode_collection = |blueprint, state| {
     return state["geodes"];
   }
 
-  minutes_remaining..0 |> fold_s(
+  minutes_remaining..=0 |> fold_s(
     [
       state["geodes"],
       state["resources"]["obsidian"],
@@ -46,7 +46,7 @@ let construct_robot = |state, cost| {
     return nil;
   }
 
-  zip(0.., minutes_remaining..1)
+  zip(0.., minutes_remaining..=1)
     |> map(|[minutes_passed, minutes_remaining]| {
       let next_resources = #{
         "ore": state["resources"]["ore"] + state["robots"]["ore"] * minutes_passed,

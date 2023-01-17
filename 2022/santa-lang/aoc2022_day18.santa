@@ -19,7 +19,7 @@ part_one: {
 
 part_two: {
   let cubes = parse_cubes(input);
-  let [xs, ys, zs] = zip(..cubes) |> map(|axis| min(axis)-1..max(axis)+1);
+  let [xs, ys, zs] = zip(..cubes) |> map(|axis| min(axis)-1..=max(axis)+1);
 
   let surface_area = |queue, seen, total_sides| {
     if (size(queue) == 0) {

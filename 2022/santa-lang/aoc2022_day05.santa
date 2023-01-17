@@ -20,7 +20,7 @@ let rearrangement_procedure = |pickup_procedure, input| {
     |> fold(
       parse_stacks(input),
       |stacks, [amount, from, to]| {
-        let crates = stacks[from-1][0..amount-1] |> pickup_procedure;
+        let crates = stacks[from-1][0..amount] |> pickup_procedure;
 
         stacks
           |> assoc(from-1, stacks[from-1][amount..])
