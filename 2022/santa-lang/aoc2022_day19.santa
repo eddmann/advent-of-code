@@ -47,7 +47,7 @@ let construct_robot = |state, cost| {
   }
 
   zip(0.., minutes_remaining..=1)
-    |> map(|[minutes_passed, minutes_remaining]| {
+    |> find_map(|[minutes_passed, minutes_remaining]| {
       let next_resources = #{
         "ore": state["resources"]["ore"] + state["robots"]["ore"] * minutes_passed,
         "clay": state["resources"]["clay"] + state["robots"]["clay"] * minutes_passed,
@@ -68,8 +68,7 @@ let construct_robot = |state, cost| {
           "clay": next_resources["clay"] - cost["clay"] + state["robots"]["clay"],
           "obsidian": next_resources["obsidian"] - cost["obsidian"] + state["robots"]["obsidian"]
         });
-    })
-    |> find(_ != nil);
+    });
 }
 
 let next_robot_states = |blueprint, state| {

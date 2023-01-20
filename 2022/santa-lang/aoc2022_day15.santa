@@ -49,12 +49,11 @@ part_two: {
   let reports = parse_reports(input);
 
   parse_row(input)..
-    |> map(|y| {
+    |> find_map(|y| {
       if let x = sensor_ranges(reports, y) |> uncovered_x {
         [x, y]
       }
     })
-    |> find(_ != nil)
     |> tuning_frequency;
 }
 
