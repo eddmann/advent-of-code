@@ -14,7 +14,7 @@ part_one: {
       [0, rest],
       |[total, rest]| {
         let [sub_total, next_rest] = sum_metadata(rest);
-        return [total + sub_total, next_rest];
+        [total + sub_total, next_rest];
       },
       0..children
     );
@@ -39,7 +39,7 @@ part_two: {
       [[], rest],
       |[metadata, rest]| {
         let [sub_metadata, next_rest] = root_value(rest);
-        return [[..metadata, sub_metadata], next_rest];
+        [[..metadata, sub_metadata], next_rest];
       },
       0..children
     );

@@ -7,7 +7,7 @@ let next_score = |[scores, elf_1, elf_2]| {
       |scores, score| scores |> push(int(score))
     );
 
-  return [
+  [
     next,
     (elf_1 + next[elf_1] + 1) % size(next),
     (elf_2 + next[elf_2] + 1) % size(next)

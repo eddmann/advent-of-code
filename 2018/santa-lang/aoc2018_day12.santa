@@ -8,10 +8,7 @@ let parse_notes = |input| {
     |initial, [position, pot]| if pot == "#" { initial + {position} } else { initial }
   );
 
-  return [
-    pots,
-    patterns |> map(split(" => ")) |> hash
-  ];
+  [pots, patterns |> map(split(" => ")) |> hash];
 }
 
 let generation = |patterns, pots| {
@@ -56,7 +53,7 @@ part_two: {
     ])
     |> find(|[_, _, previous_diff, next_diff]| previous_diff == next_diff);
 
-  return (50000000000 - duplicate_cycle) * duplicate_diff + duplicate_total;
+  (50_000_000_000 - duplicate_cycle) * duplicate_diff + duplicate_total;
 }
 
 test: {

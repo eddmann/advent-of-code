@@ -29,7 +29,7 @@ let tally_guards_sleep = |input| {
           }
         );
 
-        return [updated_sleep, guard, nil];
+        [updated_sleep, guard, nil];
       }
     )
     |> map(fold([], |hours, total, hour| hours + [[hour, total]]))

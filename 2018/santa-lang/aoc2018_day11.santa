@@ -47,7 +47,7 @@ part_one: {
 
   let [max_x, max_y] = max_point;
 
-  return "" + max_x + "," + max_y;
+  "" + max_x + "," + max_y;
 }
 
 part_two: {
@@ -74,5 +74,5 @@ part_two: {
 
   let [max_x, max_y] = max_point;
 
-  return "" + max_x + "," + max_y + "," + max_dimension;
+  "" + max_x + "," + max_y + "," + max_dimension;
 }
