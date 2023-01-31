@@ -7,8 +7,8 @@ let parse_claims =
   });
 
 let compute_squares = |claim|
-  (claim["x"]..=claim["x"] + claim["width"] - 1)
-    |> flat_map(|x| (claim["y"]..=claim["y"] + claim["height"] - 1) |> map(|y| [x, y]))
+  (claim["x"]..claim["x"] + claim["width"])
+    |> flat_map(|x| (claim["y"]..claim["y"] + claim["height"]) |> map(|y| [x, y]))
     |> set;
 
 let compute_fabric = fold(
