@@ -4,7 +4,7 @@ let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..
 
 let parse_groups = lines >> map(split(""));
 
-let common_item = intersect >> list >> first;
+let common_item = intersection >> list >> first;
 
 part_one: {
   let compartments = |rucksack| {
