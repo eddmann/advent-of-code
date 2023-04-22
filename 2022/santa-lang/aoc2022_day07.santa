@@ -7,7 +7,7 @@ let prefixes = fold_s([[], []]) |[prefixes, prefix], key| {
 let parse_commands = lines >> map(split(" "));
 
 let calc_directory_sizes = fold_s([#{}, []]) |[dirs, cwd], cmd| match cmd {
-  ["$", "cd", ".."] { [dirs, cwd[0..-1]] }
+  ["$", "cd", ".."] { [dirs, cwd[0..size(cwd)-1]] }
   ["$", "cd", dir] { [dirs, cwd |> push(dir)] }
   [file_size, _] if int(file_size) > 0 {
     [
