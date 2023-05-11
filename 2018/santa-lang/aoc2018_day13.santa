@@ -7,7 +7,7 @@ let parse_map = |input| {
         |> filter(|[_, path]| path != " ")
         |> map(|[x, path]| [[y, x], path])
       })
-    |> hash;
+    |> dict;
 
   let cart_map = parsed_map
     |> map |path| match path {

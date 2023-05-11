@@ -8,7 +8,7 @@ let parse_notes = |input| {
     |initial, [position, pot]| if pot == "#" { initial + {position} } else { initial }
   );
 
-  [pots, patterns |> map(split(" => ")) |> hash];
+  [pots, patterns |> map(split(" => ")) |> dict];
 }
 
 let generation = |patterns, pots| {

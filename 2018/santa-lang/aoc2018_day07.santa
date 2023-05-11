@@ -30,7 +30,7 @@ part_one: {
   );
 }
 
-let step_duration = zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0..) |> hash;
+let step_duration = zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0..) |> dict;
 
 let time = |step| 60 + step_duration[step];
 

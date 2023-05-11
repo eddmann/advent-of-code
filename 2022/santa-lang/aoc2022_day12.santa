@@ -6,10 +6,10 @@ let parse_height_map = |input| {
       zip(0.., row)
         |> map(|[x, elevation]| [[y, x], elevation]);
     })
-    |> hash;
+    |> dict;
 }
 
-let elevation = zip("SabcdefghijklmnopqrstuvwxyzE", 0..) |> hash;
+let elevation = zip("SabcdefghijklmnopqrstuvwxyzE", 0..) |> dict;
 
 let directions = |height_map, position| {
   [[-1, 0], [1, 0], [0, -1], [0, 1]]

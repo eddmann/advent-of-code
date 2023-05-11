@@ -1,6 +1,6 @@
 input: read("aoc://2022/21")
 
-let parse_jobs = lines >> map(split(": ")) >> hash;
+let parse_jobs = lines >> map(split(": ")) >> dict;
 
 let build_expression = |jobs| {
   let recur = |monkey| {

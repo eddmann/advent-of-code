@@ -48,7 +48,7 @@ let move = memoize |[elves, round]| {
   let possible_moves = elves
     |> list
     |> map(|elf| [elf, possible_move(elves, round, elf)])
-    |> hash;
+    |> dict;
 
   let positions = possible_moves |> fold(#{}, |freq, pos| update_d(pos, 0, _ + 1, freq));
   let moved_elves = possible_moves |> filter(|pos| positions[pos] == 1);

@@ -9,7 +9,7 @@ let parse_maze = |input| {
         |> filter(|[_, el]| el != " ")
         |> map(|[x, el]| [[y, x], el]);
     })
-    |> hash;
+    |> dict;
 }
 
 let parse_directions = |input| {

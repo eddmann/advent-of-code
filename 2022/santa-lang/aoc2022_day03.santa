@@ -1,6 +1,6 @@
 input: read("aoc://2022/3")
 
-let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..) |> hash;
+let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..) |> dict;
 
 let parse_groups = lines >> map(split(""));
 

@@ -9,7 +9,7 @@ let parse_valves = |input| {
   input
     |> lines
     |> map(parse_valve)
-    |> hash;
+    |> dict;
 }
 
 let tunnel_distances = |valves, valve| {
@@ -49,7 +49,7 @@ let eligble_valves = filter(|scan, valve| scan["flow"] > 0 || valve == "AA");
 
 let pressure_gauge = |valves| {
   let distances = eligble_valves(valves) |> map(|_, valve| tunnel_distances(valves, valve));
-  let valve_ids = distances |> keys |> zip(_, 0..) |> hash |> map(|id| 1 `bit_shift_left` id);
+  let valve_ids = distances |> keys |> zip(_, 0..) |> dict |> map(|id| 1 `bit_shift_left` id);
 
   let recur = memoize |valve, time, open_valves| {
     distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
