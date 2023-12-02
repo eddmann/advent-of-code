@@ -1,0 +1,58 @@
+input: read("aoc://2023/2")
+
+let parse_game = |line| {
+    let [id, sets] = regex_match("Game (\\d+): (.+)", line)
+    let subsets = sets |> split("; ") |> map |set| {
+        let cubes = set |> split(", ") |> map(split(" "))
+        cubes |> fold(#{"green": 0, "blue": 0, "red": 0}) |cubes, [total, colour]| {
+            cubes |> update(colour, || int(total))
+        }
+    };
+    [int(id), subsets]
+}
+
+let parse_games = lines >> map(parse_game)
+
+let max_cubes_required = |[id, subsets]| {
+    let cubes = subsets |> reduce |cubes, set| {
+        cubes
+            |> update("red", |total| max(total, set["red"]))
+            |> update("blue", |total| max(total, set["blue"]))
+            |> update("green", |total| max(total, set["green"]))
+    };
+    return [id, cubes]
+}
+
+part_one: {
+    parse_games(input)
+        |> map(max_cubes_required)
+        |> filter_map(|[id, cubes]| {
+            if (cubes["red"] <= 12 && cubes["green"] <= 13 && cubes["blue"] <= 14) {
+                id
+            }
+        })
+        |> sum
+}
+
+part_two: {
+    let power = second >> values >> fold(1, *)
+    parse_games(input)
+        |> map(max_cubes_required >> power)
+        |> sum
+}
+
+test: {
+    input: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
+    part_one: 8
+    part_two: 2286
+}
+
+test: {
+    input: read("aoc://2023/2")
+    part_one: 3035
+    part_two: 66027
+}
