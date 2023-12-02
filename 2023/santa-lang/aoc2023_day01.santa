@@ -1,37 +1,41 @@
 input: read("aoc://2023/1")
 
-let calibrate = map(|value| {
-  let digits = regex_match_all("\\d", value)
-  int(digits[0] + digits[-1])
-}) >> sum
-
-let to_digits = |value| {
-  let translations = #{
-    "one": "o1e",
-    "two": "t2o",
-    "three": "t3e",
-    "four": "4",
-    "five": "5e",
-    "six": "6",
-    "seven": "7n",
-    "eight": "e8t",
-    "nine": "n9e"
-  }
-
-  translations |> fold(value) |translated, to, from| {
-    translated |> replace(from, to)
-  }
-}
-
 part_one: {
-  input |> lines |> calibrate
+  let calibrate = |value| {
+    let digits = regex_match_all("\\d", value)
+    int(digits[0] + digits[-1])
+  }
+
+  input
+    |> lines
+    |> map(calibrate)
+    |> sum
 }
 
 part_two: {
+  let to_digit = |number| match number {
+    "one" { 1 }
+    "two" { 2 }
+    "three" { 3 }
+    "four" { 4 }
+    "five" { 5 }
+    "six" { 6 }
+    "seven" { 7 }
+    "eight" { 8 }
+    "nine" { 9 }
+    _ { int(number) }
+  }
+
+  let calibrate = |value| {
+    let start = value |> regex_match("(\\d|one|two|three|four|five|six|seven|eight|nine)") |> first
+    let end = value |> reverse |> regex_match("(\\d|enin|thgie|neves|xis|evif|ruof|eerht|owt|eno)") |> first |> reverse
+    to_digit(start) * 10 + to_digit(end)
+  }
+
   input
     |> lines
-    |> map(to_digits)
-    |> calibrate
+    |> map(calibrate)
+    |> sum
 }
 
 test: {
