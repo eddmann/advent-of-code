@@ -1,4 +1,4 @@
-data class RequiredGameCubes(val id: Int, val red: Int, val green: Int, val blue: Int)
+private data class RequiredGameCubes(val id: Int, val red: Int, val green: Int, val blue: Int)
 
 private fun parseRequiredCubesPerGame(input: String) =
     input.lines().map { line ->

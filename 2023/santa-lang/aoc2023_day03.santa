@@ -1,0 +1,82 @@
+input: read("aoc://2023/3")
+
+let parse_candidate_parts = |input| {
+  let mut parts = []
+
+  zip(0.., lines(input)) |> each |[y, row]| {
+    let mut number = ""
+    let mut outline = {}
+
+    zip(0.., (row + ".")) |> each |[x, value]| {
+      if regex_match("([0-9])", value) {
+        if (number == "") {
+          outline = outline + {[y - 1, x - 1], [y, x - 1], [y + 1, x - 1]}
+        }
+        number = number + value
+        outline = outline + {[y - 1, x], [y + 1, x]}
+        return nil
+      }
+
+      if number != "" {
+        outline = outline + {[y - 1, x], [y, x], [y + 1, x]}
+        parts = parts + [[int(number), outline]]
+        number = ""
+        outline = {}
+      }
+    }
+  }
+
+  parts
+}
+
+let parse_symbols = |input, predicate| {
+  zip(0.., lines(input)) |> flat_map |[y, row]| {
+    zip(0.., row) |> filter_map |[x, value]| {
+      if (predicate(value)) { [y, x] }
+    }
+  }
+}
+
+part_one: {
+  let candidates = parse_candidate_parts(input)
+  let symbols = parse_symbols(input, |v| regex_match("([^0-9])", v) && v != ".")
+
+  candidates
+    |> filter_map(|[number, outline]| if outline `intersection` symbols { number })
+    |> sum
+}
+
+part_two: {
+  let candidates = parse_candidate_parts(input)
+  let gears = parse_symbols(input, |v| v == "*")
+
+  gears
+    |> filter_map(|gear| {
+      let parts = candidates |> filter_map |[number, outline]| {
+        if outline `includes?` gear { number }
+      }
+      if size(parts) == 2 { parts[0] * parts[1] }
+    })
+    |> sum
+}
+
+test: {
+  input: "467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598.."
+  part_one: 4361
+  part_two: 467835
+}
+
+test: {
+  input: read("aoc://2023/3")
+  part_one: 536202
+  part_two: 78272573
+}
