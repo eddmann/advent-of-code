@@ -13,3 +13,6 @@ fun <T> List<T>.cycle(): Sequence<T> =
 
 fun String.ints() =
     Regex("(-?[0-9]+)").findAll(this).map { it.value.toInt() }.toList()
+
+fun String.longs() =
+    Regex("(-?[0-9]+)").findAll(this).map { it.value.toLong() }.toList()
