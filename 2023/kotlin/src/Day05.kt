@@ -17,7 +17,7 @@ private data class MapRange(val source: Long, val destination: Long, val length:
         if (value >= source && value < source + length) { destination + value - source } else { null }
 
     fun backwards(value: Long): Long? =
-        if (value >= destination && value < destination + length) { value - destination + source } else { null }
+        if (value >= destination && value < destination + length) { source + value - destination } else { null }
 }
 
 private fun parseAlmanac(input: String): Pair<Seeds, List<Map>> {
