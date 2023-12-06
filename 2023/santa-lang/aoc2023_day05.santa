@@ -1,0 +1,88 @@
+input: read("aoc://2023/5")
+
+let parse_almanac = |input| {
+  let [_, seeds, ..maps] = input |> split(":") |> map(ints);
+  [seeds, maps |> map(chunk(3))]
+}
+
+let translate = |maps, value| {
+  maps |> fold(value) |value, mapping| {
+    let mapped = mapping |> find_map |[dst, src, len]| {
+      if value >= src && value <= src + len {
+        dst + (value - src)
+      }
+    }
+
+    if mapped { mapped } else { value }
+  }
+}
+
+let within = |value, seed_ranges| {
+  seed_ranges |> any? |[start, len]| {
+    value >= start && value <= start + len
+  }
+}
+
+part_one: {
+  let [seeds, mapping] = parse_almanac(input)
+  seeds |> map(translate(mapping)) |> min
+}
+
+part_two: {
+  let [seeds, maps] = parse_almanac(input)
+
+  let seed_ranges = seeds |> chunk(2)
+  let inverted_mapping = maps |> reverse |> map |mapping| {
+    mapping |> map |[dst, src, len]| [src, dst, len]
+  }
+
+  0.. |> find |location| {
+    let seed = translate(inverted_mapping, location)
+    if seed `within` seed_ranges {
+      return location
+    }
+  }
+}
+
+test: {
+  input: "seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4"
+  part_one: 35
+  part_two: 46
+}
+
+test: {
+  input: read("aoc://2023/5")
+  part_one: 836040384
+}
