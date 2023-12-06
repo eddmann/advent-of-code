@@ -1,0 +1,33 @@
+input: read("aoc://2023/6")
+
+let parse_races = lines >> map(ints) >> |l| zip(..l)
+
+let parse_kerned_race = lines >> map(ints >> fold("", +) >> int)
+
+let count_race_wins = |record_time, record_distance| {
+  0..record_time
+    |> count(|distance| distance * (record_time - distance) > record_distance)
+}
+
+part_one: {
+  parse_races(input)
+    |> map(|[time, distance]| count_race_wins(time, distance))
+    |> reduce(*)
+}
+
+part_two: {
+  let [time, distance] = parse_kerned_race(input)
+  count_race_wins(time, distance)
+}
+
+test: {
+  input: "Time:      7  15   30
+Distance:  9  40  200"
+  part_one: 288
+  part_two: 71503
+}
+
+test: {
+  input: read("aoc://2023/6")
+  part_one: 211904
+}
