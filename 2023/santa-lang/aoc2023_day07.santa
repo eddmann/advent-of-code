@@ -1,0 +1,77 @@
+input: read("aoc://2023/7")
+
+let card_ranks = #{"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
+
+let parse_hands = lines >> map(|line| {
+  let [hand, bid] = line |> split(" ");
+  [hand, int(bid)]
+})
+
+let counter = fold(#{}, |frequencies, card| update_d(card, 0, _ + 1, frequencies))
+
+let hand_type_rank = |hand| {
+  let frequencies = counter(hand) |> values |> sort(<)
+
+  match frequencies {
+    [5] { 1 }
+    [4, 1] { 2 }
+    [3, 2] { 3 }
+    [3, 1, 1] { 4 }
+    [2, 2, 1] { 5 }
+    [2, 1, 1, 1] { 6 }
+    _ { 7 }
+  }
+}
+
+let rank = |hand_type_ranker, card_ranks, [hand_a], [hand_b]| {
+  let a_type = hand_type_ranker(hand_a)
+  let b_type = hand_type_ranker(hand_b)
+
+  if (a_type == b_type) {
+    return zip(hand_a, hand_b)
+      |> find_map(|[a, b]| card_ranks[a] - card_ranks[b])
+  }
+
+  b_type - a_type
+}
+
+let wild_jokers = |hand| {
+  let hand_without_jokers = hand |> filter(_ != "J") |> fold("", +)
+
+  let frequencies = hand_without_jokers
+    |> counter
+    |> list
+    |> sort(|[_, a], [_, b]| a < b)
+
+  let most_frequent_card = frequencies |> first
+
+  if most_frequent_card == nil {
+    return hand
+  }
+
+  hand_without_jokers + most_frequent_card[0] * (size(hand) - size(hand_without_jokers))
+}
+
+let winnings = zip(1..) >> map(|[rank, [_, bid]]| rank * bid) >> sum
+
+part_one: {
+  parse_hands(input)
+    |> sort(rank(hand_type_rank, card_ranks))
+    |> winnings
+}
+
+part_two: {
+  parse_hands(input)
+    |> sort(rank(wild_jokers >> hand_type_rank, card_ranks + #{"J": 1}))
+    |> winnings
+}
+
+test: {
+  input: "32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483"
+  part_one: 6440
+  part_two: 5905
+}
