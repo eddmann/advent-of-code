@@ -1,0 +1,75 @@
+input: read("aoc://2023/8")
+
+let gcd = |a, b| if a == 0 { b } else { gcd(b % a, a) }
+let lcm = |a, b| int(a / gcd(a, b)) * b
+
+let parse_instructions_and_map = |input| {
+  let [instructions, raw_mapping] = input |> split("\n\n")
+
+  let mapping = raw_mapping
+    |> lines
+    |> map(|line| {
+      let [position, left, right] = regex_match_all("([A-Z0-9]{3})", line);
+      [position, [left, right]]
+    })
+    |> dict;
+
+  [instructions, mapping]
+}
+
+let count_steps = |instructions, mapping, initial| {
+  zip(1.., instructions |> cycle)
+    |> fold(initial, |position, [steps, instruction]| {
+      let next_position = mapping[position][if instruction == "L" { 0 } else { 1 }]
+
+      if next_position[-1] == "Z" {
+        break steps
+      }
+
+      next_position
+    })
+}
+
+part_one: {
+  let [instructions, mapping] = parse_instructions_and_map(input)
+  count_steps(instructions, mapping, "AAA")
+}
+
+part_two: {
+  let [instructions, mapping] = parse_instructions_and_map(input)
+
+  mapping
+    |> keys
+    |> filter(|position| position[-1] == "A")
+    |> map(count_steps(instructions, mapping))
+    |> reduce(lcm)
+}
+
+test: {
+  input: "LLR
+
+AAA = (BBB, BBB)
+BBB = (AAA, ZZZ)
+ZZZ = (ZZZ, ZZZ)"
+  part_one: 6
+}
+
+test: {
+  input: "LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)"
+  part_two: 6
+}
+
+test: {
+  input: read("aoc://2023/8")
+  part_one: 19637
+  part_two: 8811050362409
+}
