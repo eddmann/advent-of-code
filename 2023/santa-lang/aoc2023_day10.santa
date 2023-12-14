@@ -1,0 +1,189 @@
+input: read("aoc://2023/10")
+
+let pt_add = |[y1, x1], [y2, x2]| [y1 + y2, x1 + x2]
+
+let UP = [-1, 0]
+let DOWN = [1, 0]
+let LEFT = [0, -1]
+let RIGHT = [0, 1]
+
+let parse_sketch = |input| {
+  zip(0.., input |> lines)
+    |> flat_map(|[y, row]| {
+      zip(0.., row) |> map(|[x, el]| [[y, x], el])
+    })
+    |> dict
+}
+
+let find_and_fill_starting_pipe = |sketch| {
+  let start = sketch |> find_map(|el, pos| if el == "S" { pos })
+
+  let up = ["|", "7", "F"] `includes?` sketch[start `pt_add` UP]
+  let down = ["|", "L", "J"] `includes?` sketch[start `pt_add` DOWN]
+  let left = ["-", "L", "F"] `includes?` sketch[start `pt_add` LEFT]
+  let right = ["-", "7", "J"] `includes?` sketch[start `pt_add` RIGHT]
+
+  if up && right { return [sketch |> assoc(start, "L"), start, RIGHT] }
+  if up && left { return [sketch |> assoc(start, "J"), start, LEFT] }
+  if up && down { return [sketch |> assoc(start, "|"), start, UP] }
+  if down && right { return [sketch |> assoc(start, "F"), start, RIGHT] }
+  if down && left { return [sketch |> assoc(start, "7"), start, LEFT] }
+  return [sketch |> assoc(start, "-"), start, RIGHT]
+}
+
+let next_step = |sketch, position, direction| {
+  let next_position = position `pt_add` direction;
+  let next_value = sketch[next_position]
+
+  if next_value == "7" && direction == UP { return [next_position, LEFT] }
+  if next_value == "7" && direction == RIGHT { return [next_position, DOWN] }
+  if next_value == "F" && direction == UP { return [next_position, RIGHT] }
+  if next_value == "F" && direction == LEFT { return [next_position, DOWN] }
+  if next_value == "L" && direction == LEFT { return [next_position, UP] }
+  if next_value == "L" && direction == DOWN { return [next_position, RIGHT] }
+  if next_value == "J" && direction == DOWN { return [next_position, LEFT] }
+  if next_value == "J" && direction == RIGHT { return [next_position, UP] }
+  return [next_position, direction]
+}
+
+let traverse_pipes = |sketch, initial, direction| {
+  let recur = |position, direction, route| {
+    let [next_position, next_direction] = next_step(sketch, position, direction)
+    if next_position == initial {
+      return route + [position]
+    }
+    recur(next_position, next_direction, route + [position])
+  }
+  recur(initial, direction, [initial])
+}
+
+let remove_unconnected_pipes = |sketch| {
+  let [complete_sketch, start, direction] = find_and_fill_starting_pipe(sketch)
+  let route = traverse_pipes(complete_sketch, start, direction)
+
+  complete_sketch
+    |> map(|el, pos| if route `includes?` pos { el } else { "." })
+}
+
+let enlarge_sketch = |sketch| {
+  let translations = #{
+    "|": [".|.", ".|.", ".|."],
+    "F": ["...", ".F-", ".|."],
+    "L": [".|.", ".L-", "..."],
+    "J": [".|.", "-J.", "..."],
+    "7": ["...", "-7.", ".|."],
+    "-": ["...", "---", "..."],
+    ".": ["...", "...", "..."]
+  }
+  let offsets = 0..=2 |> list |> flat_map(|y| 0..=2 |> list |> map(|x| [y, x]))
+
+  sketch |> fold(#{}) |enlarged_sketch, el, [y, x]| {
+    offsets |> fold(enlarged_sketch) |enlarged_sketch, [offset_y, offset_x]| {
+      enlarged_sketch
+        |> assoc([y * 3 + offset_y, x * 3 + offset_x], translations[el][offset_y][offset_x])
+    }
+  }
+}
+
+let flood_fill = |sketch| {
+  let recur = |[item, ..queue], sketch| {
+    if item == nil {
+      return sketch
+    }
+
+    let next_sketch = sketch |> assoc(item, "x")
+    let next_positions = [UP, DOWN, LEFT, RIGHT] |> filter_map |direction| {
+      let next_position = item `pt_add` direction
+      if next_sketch[next_position] == "." && !(queue `includes?` next_position) {
+        return next_position
+      }
+    }
+
+    recur(queue + next_positions, next_sketch)
+  }
+  recur([[0, 0]], sketch)
+}
+
+let shrink_sketch = |enlarged_sketch| {
+  let [max_y, max_x] = zip(..keys(enlarged_sketch)) |> map(max)
+
+  0..=max_y /3 |> fold(#{}) |sketch, y| {
+    0..=max_x / 3 |> fold(sketch) |sketch, x| {
+      sketch |> assoc([y, x], enlarged_sketch[[y * 3 + 1, x * 3 + 1]])
+    }
+  }
+}
+
+let draw_sketch = |sketch| {
+  let [max_y, max_x] = zip(..keys(sketch)) |> map(max)
+
+  "\n" + (0..=max_y |> fold("") |lines, y| {
+    lines + (0..=max_x |> fold("", |line, x| line + sketch[[y, x]])) + "\n"
+  })
+}
+
+part_one: {
+  let sketch = parse_sketch(input)
+  let [complete_sketch, start, direction] = find_and_fill_starting_pipe(sketch)
+
+  size(traverse_pipes(complete_sketch, start, direction)) / 2
+}
+
+part_two: {
+  parse_sketch(input)
+    |> remove_unconnected_pipes
+    |> enlarge_sketch
+    |> flood_fill
+    |> shrink_sketch
+    |> count(_ == ".")
+}
+
+test: {
+  input: "..F7.
+.FJ|.
+SJ.L7
+|F--J
+LJ..."
+  part_one: 8
+}
+
+test: {
+  input: "..........
+.S------7.
+.|F----7|.
+.||....||.
+.||....||.
+.|L-7F-J|.
+.|..||..|.
+.L--JL--J.
+.........."
+  part_two: 4
+}
+
+test: {
+  input: ".F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ..."
+  part_two: 8
+}
+
+test: {
+  input: "FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L"
+  part_two: 10
+}
