@@ -1,0 +1,59 @@
+input: read("aoc://2023/11")
+
+let manhattan_distance = |[y1, x1], [y2, x2]| abs(y1 - y2) + abs(x1 - x2)
+
+let parse_galaxies = |input| {
+  zip(0.., input |> lines)
+    |> flat_map(|[y, row]| {
+      zip(0.., row) |> filter_map(|[x, el]| if el == "#" { [y, x ]})
+    })
+}
+
+let determine_extra_space = |input| {
+  let empty_line = |[coord, line]| if all?(_ == ".", line) { coord }
+  let extra_rows = zip(0.., lines(input)) |> filter_map(empty_line)
+  let extra_cols = zip(0.., zip(..lines(input))) |> filter_map(empty_line);
+
+  [extra_rows, extra_cols]
+}
+
+part_one: {
+  let galaxies = parse_galaxies(input)
+  let [extra_rows, extra_cols] = determine_extra_space(input)
+
+  combinations(2, galaxies)
+    |> map(|[start, end]| {
+      let total_extra_rows = extra_rows |> count(|y| y >= min(start[0], end[0]) && y <= max(start[0], end[0]))
+      let total_extra_cols = extra_cols |> count(|x| x >= min(start[1], end[1]) && x <= max(start[1], end[1]))
+      manhattan_distance(start, end) + total_extra_rows + total_extra_cols
+    })
+    |> sum
+}
+
+part_two: {
+  let galaxies = parse_galaxies(input)
+  let [extra_rows, extra_cols] = determine_extra_space(input)
+
+  combinations(2, galaxies)
+    |> map(|[start, end]| {
+      let total_extra_rows = (extra_rows |> count(|y| y >= min(start[0], end[0]) && y <= max(start[0], end[0]))) * 999_999
+      let total_extra_cols = (extra_cols |> count(|x| x >= min(start[1], end[1]) && x <= max(start[1], end[1]))) * 999_999
+      manhattan_distance(start, end) + total_extra_rows + total_extra_cols
+    })
+    |> sum
+}
+
+test: {
+  input: "...#......
+.......#..
+#.........
+..........
+......#...
+.#........
+.........#
+..........
+.......#..
+#...#....."
+  part_one: 374
+  part_two: 82000210
+}
