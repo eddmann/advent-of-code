@@ -1,0 +1,70 @@
+input: read("aoc://2023/12")
+
+let parse_records = |input| {
+  input
+    |> lines
+    |> map |line| {
+      let [springs, criteria] = line |> split(" ");
+      [springs, ints(criteria)]
+    }
+}
+
+let damaged_spring = |springs, criteria| {
+  let group_size = criteria[0]
+
+  let potential_group = springs[0..group_size]
+    |> fold("", |group, spring| group + if spring == "?" { "#" } else { spring })
+
+  if potential_group != "#" * group_size {
+    return 0
+  }
+
+  if size(springs) == group_size {
+    return int(size(criteria) == 1)
+  }
+
+  if springs[group_size] != "#" {
+    return arrangements(springs[group_size+1..], criteria[1..])
+  }
+
+  return 0
+}
+
+let arrangements = memoize |springs, criteria| {
+  if size(criteria) == 0 {
+    return int(springs |> all?(_ != "#"))
+  }
+
+  if springs == "" {
+    return 0
+  }
+
+  match springs[0] {
+    "#" { damaged_spring(springs, criteria) }
+    "." { arrangements(springs[1..], criteria) }
+    "?" { damaged_spring(springs, criteria) + arrangements(springs[1..], criteria) }
+  }
+}
+
+part_one: {
+  parse_records(input)
+    |> map(|[springs, criteria]| arrangements(springs, criteria))
+    |> sum
+}
+
+part_two: {
+  parse_records(input)
+    |> map(|[springs, criteria]| arrangements((("?" + springs) * 5)[1..], criteria * 5))
+    |> sum
+}
+
+test: {
+  input: "???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1"
+  part_one: 21
+  part_two: 525152
+}
