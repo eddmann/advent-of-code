@@ -1,0 +1,74 @@
+input: read("aoc://2023/14")
+
+let transpose = |xs| zip(..xs) |> map(fold("", +))
+
+let vertical_tilt = |direction, dish| {
+  dish
+    |> transpose
+    |> horizontal_tilt(direction)
+    |> transpose
+}
+
+let horizontal_tilt = |direction, dish| {
+  dish |> map |line| {
+    line
+      |> split("#")
+      |> map(list >> sort(direction) >> fold("", +))
+      |> reduce(|a, b| a + "#" + b)
+  }
+}
+
+let cycle = [
+  vertical_tilt(<),
+  horizontal_tilt(<),
+  vertical_tilt(>),
+  horizontal_tilt(>)
+]
+
+let spin = |dish| cycle |> fold(dish, |dish, tilt| tilt(dish))
+
+let total_load = |dish| {
+  zip(1.., reverse(dish))
+    |> map(|[idx, row]| idx * count(_ == "O", row))
+    |> sum
+}
+
+part_one: {
+  vertical_tilt(<, lines(input))
+    |> total_load
+}
+
+part_two: {
+  let dish = lines(input)
+
+  let mut seen = #{}
+  let position_in_cycle = zip(1.., iterate(spin, dish)) |> find_map(|[idx, dish]| {
+    if seen[dish] {
+      let cycle_start = seen[dish]
+      let cycle_length = idx - cycle_start
+      return cycle_start + (1_000_000_000 - cycle_start) % cycle_length
+    }
+
+    seen = seen |> assoc(dish, idx)
+    return nil
+  })
+
+  0..position_in_cycle
+    |> fold(dish, spin)
+    |> total_load
+}
+
+test: {
+  input: "O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#...."
+  part_one: 136
+  part_two: 64
+}
