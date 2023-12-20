@@ -34,3 +34,8 @@ fun <T> Iterable<T>.combinations(length: Int): Sequence<List<T>> =
             for(j in i+1 until length) indices[j] = indices[j - 1] + 1
         }
     }
+
+typealias Matrix<T> = List<List<T>>
+
+fun <T> Matrix<T>.transpose(): Matrix<T> =
+    (0..<this[0].size).map { x -> this.indices.map { y -> this[y][x] } }

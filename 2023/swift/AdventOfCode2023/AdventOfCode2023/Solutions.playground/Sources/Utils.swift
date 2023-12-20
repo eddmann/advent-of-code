@@ -39,3 +39,19 @@ extension Array {
         }
     }
 }
+
+public func transpose<T>(_ matrix: [[T]]) -> [[T]] {
+    guard !matrix.isEmpty else {
+        return []
+    }
+
+    var ret = Array(repeating: [T](), count: matrix[0].count)
+
+    for row in matrix {
+        for j in 0..<row.count {
+            ret[j].append(row[j])
+        }
+    }
+
+    return ret
+}

@@ -1,0 +1,64 @@
+input: read("aoc://2023/13")
+
+let parse_patterns = split("\n\n") >> map(lines)
+
+let differences = |pattern, y| {
+  zip(y..=1, y+1..=size(pattern))
+    |> map(|[y1, y2]| {
+      1..=size(pattern[0])
+        |> filter(|x| {
+          pattern[y1 - 1][x - 1] != pattern[y2 - 1][x - 1]
+        })
+        |> size
+    })
+    |> sum
+}
+
+let mirror = |permitted_differences, pattern| {
+  1..=size(pattern)
+    |> filter(|y| differences(pattern, y) == permitted_differences)
+    |> first
+    |> |y| if y { y } else { 0 }
+}
+
+let summarise = |permitted_differences, pattern| {
+  mirror(permitted_differences, pattern) * 100 + mirror(permitted_differences, zip(..pattern))
+}
+
+part_one: {
+  parse_patterns(input)
+    |> map(summarise(0))
+    |> sum
+}
+
+part_two: {
+  parse_patterns(input)
+    |> map(summarise(1))
+    |> sum
+}
+
+test: {
+  input: "#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.
+
+#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#"
+  part_one: 405
+  part_two: 400
+}
+
+test: {
+  input: read("aoc://2023/13")
+  part_one: 26957
+  part_two: 42695
+}
