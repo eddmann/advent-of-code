@@ -80,23 +80,18 @@ private fun part2(input: String): Long {
         var combinations = 0L
 
         for (rule in workflow.rules) {
-            when (rule.comparator) {
-                '>' -> {
-                    val trues = (rule.value + 1)..nextRating[rule.category]!!.last
-                    val falses = nextRating[rule.category]!!.first..rule.value
-                    if (!trues.isEmpty()) {
-                        combinations += countCombinations(nextRating.apply { put(rule.category, trues) }, rule.consequence)
-                    }
-                    if (!falses.isEmpty()) nextRating[rule.category] = falses
-                }
-                '<' -> {
-                    val trues = nextRating[rule.category]!!.first..<rule.value
-                    val falses = rule.value..nextRating[rule.category]!!.last
-                    if (!trues.isEmpty()) {
-                        combinations += countCombinations(nextRating.apply { put(rule.category, trues) }, rule.consequence)
-                    }
-                    if (!falses.isEmpty()) nextRating[rule.category] = falses
-                }
+            val (trues, falses) = when (rule.comparator) {
+                '>' -> (rule.value + 1)..nextRating[rule.category]!!.last to nextRating[rule.category]!!.first..rule.value
+                '<' -> nextRating[rule.category]!!.first..<rule.value to rule.value..nextRating[rule.category]!!.last
+                else -> throw RuntimeException()
+            }
+
+            if (!trues.isEmpty()) {
+                combinations += countCombinations(nextRating.apply { put(rule.category, trues) }, rule.consequence)
+            }
+
+            if (!falses.isEmpty()) {
+                nextRating[rule.category] = falses
             }
         }
 
