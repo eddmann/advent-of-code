@@ -41,9 +41,6 @@ private fun part1(input: String): Int {
 }
 
 private fun part2(input: String): Long {
-    fun gcd(a: Long, b: Long): Long = if (b == 0L) a else gcd(b, a % b)
-    fun lcm(a: Long, b: Long): Long = a / gcd(a, b) * b
-
     val (instructions, map) = parseInstructionsAndMap(input)
 
     return map
