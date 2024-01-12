@@ -1,9 +1,9 @@
-enum class Instruction { LEFT, RIGHT }
+private enum class Instruction { LEFT, RIGHT }
 
-typealias Position = String
-typealias Mapping = Map<Position, Direction>
+private typealias Position = String
+private typealias Mapping = Map<Position, MapDirection>
 
-data class Direction(val left: Position, val right: Position)
+private data class MapDirection(val left: Position, val right: Position)
 
 private fun parseInstructionsAndMap(input: String): Pair<List<Instruction>, Mapping> {
     val parts = input.split("\n\n")
@@ -15,7 +15,7 @@ private fun parseInstructionsAndMap(input: String): Pair<List<Instruction>, Mapp
         .lines()
         .associate { line ->
             val (position, left, right) = Regex("([A-Z0-9]{3}).*([A-Z0-9]{3}).*([A-Z0-9]{3})").find(line)!!.destructured
-            Pair(position, Direction(left, right))
+            Pair(position, MapDirection(left, right))
         }
 
     return Pair(instructions, map)
