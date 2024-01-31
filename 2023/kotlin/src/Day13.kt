@@ -1,5 +1,7 @@
 private fun parsePatterns(input: String) =
-    input.split("\n\n").map { pattern -> pattern.lines().map { it.toList() } }
+    input.split("\n\n").map {
+        pattern -> pattern.lines().map { it.toList() }
+    }
 
 private fun differences(pattern: Matrix<Char>, y: Int) =
     (y downTo 1).zip(y+1..pattern.size).sumOf { (y1, y2) ->

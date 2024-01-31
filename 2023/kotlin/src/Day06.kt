@@ -11,7 +11,7 @@ private fun part1(input: String): Int {
 }
 
 private fun part2(input: String): Int {
-    val timeAndDistance = input.lines().map { it.replace(" ", "").longs()[0] }
+    val timeAndDistance = input.lines().map { it.replace(" ", "").longs().first() }
 
     return countRaceWins(timeAndDistance[0], timeAndDistance[1])
 }

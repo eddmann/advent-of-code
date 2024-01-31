@@ -10,13 +10,12 @@ private fun damagedSpring(springs: String, criteria: List<Int>): Long {
     val groupSize = criteria.first()
 
     val potentialGroup = springs.take(groupSize).replace('?', '#')
-
     if (potentialGroup != "#".repeat(groupSize)) {
         return 0
     }
 
     if (springs.length == groupSize) {
-        return if (criteria.size == 1) { 1 } else { 0 }
+        return if (criteria.size == 1) 1 else 0
     }
 
     if (springs[groupSize] != '#') {
@@ -29,14 +28,14 @@ private fun damagedSpring(springs: String, criteria: List<Int>): Long {
 private val cache = mutableMapOf<Pair<String, List<Int>>, Long>()
 
 private fun arrangements(springs: String, criteria: List<Int>): Long {
-    val result = cache[Pair(springs, criteria)]
+    val result = cache[springs to criteria]
 
     if (result != null) {
         return result
     }
 
     if (criteria.isEmpty()) {
-        return if (springs.all { it != '#' }) { 1 } else { 0 }
+        return if (springs.all { it != '#' }) 1 else 0
     }
 
     if (springs.isEmpty()) {
@@ -46,11 +45,10 @@ private fun arrangements(springs: String, criteria: List<Int>): Long {
     val value = when (springs[0]) {
         '#' -> damagedSpring(springs, criteria)
         '.' -> arrangements(springs.drop(1), criteria)
-        '?' -> damagedSpring(springs, criteria) + arrangements(springs.drop(1), criteria)
-        else -> throw RuntimeException()
+        else -> damagedSpring(springs, criteria) + arrangements(springs.drop(1), criteria)
     }
 
-    cache[Pair(springs, criteria)] = value
+    cache[springs to criteria] = value
 
     return value
 }

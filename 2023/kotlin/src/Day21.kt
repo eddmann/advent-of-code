@@ -1,44 +1,32 @@
-private enum class StepDirection {
-    UP, DOWN, LEFT, RIGHT
-}
-
-private data class StepPoint(val y: Int, val x: Int) {
-    fun step(direction: StepDirection) = when (direction) {
-        StepDirection.UP -> StepPoint(y - 1, x)
-        StepDirection.DOWN -> StepPoint(y + 1, x)
-        StepDirection.LEFT -> StepPoint(y, x - 1)
-        StepDirection.RIGHT -> StepPoint(y, x + 1)
-    }
-
-    fun neighbours() =
-        listOf(StepDirection.UP, StepDirection.DOWN, StepDirection.LEFT, StepDirection.RIGHT).map { step(it) }
-}
-
-private data class Garden(val size: Int, val plots: Set<StepPoint>, val start: StepPoint) {
+private data class Garden(val totalSize: Int, val plots: Set<Point>, val start: Point) {
     fun totalPlotsLandedOnAfterSteps(steps: Int): Long {
         var landedOn = setOf(start)
 
         repeat(steps) {
-            landedOn = landedOn.flatMap { plot ->
-                plot.neighbours().mapNotNull { nextPlot ->
-                    if (StepPoint(nextPlot.y.mod(size), nextPlot.x.mod(size)) in plots) nextPlot else null
+            landedOn = buildSet {
+                landedOn.forEach { plot ->
+                    plot.cardinalNeighbors().forEach { nextPlot ->
+                        if (Point(nextPlot.x.mod(totalSize), nextPlot.y.mod(totalSize)) in plots) add(nextPlot)
+                    }
                 }
-            }.toSet()
+            }
         }
 
         return landedOn.size.toLong()
     }
 
     companion object {
-        fun from(input: String): Garden {
+        fun of(input: String): Garden {
             val size = input.lines().size
-            var start = StepPoint(0, 0)
-            val plots = input.lines().flatMapIndexed { y, row ->
-                row.mapIndexedNotNull { x, el ->
-                    if (el == 'S') start = StepPoint(y, x)
-                    if (el != '#') { StepPoint(y, x) } else { null }
+            var start = Point.ORIGIN
+            val plots = buildSet {
+                input.lines().forEachIndexed { y, row ->
+                    row.forEachIndexed { x, value ->
+                        if (value == 'S') start = Point(x, y)
+                        if (value != '#') add(Point(x, y))
+                    }
                 }
-            }.toSet()
+            }
 
             return Garden(size, plots, start)
         }
@@ -46,10 +34,10 @@ private data class Garden(val size: Int, val plots: Set<StepPoint>, val start: S
 }
 
 private fun part1(input: String) =
-    Garden.from(input).totalPlotsLandedOnAfterSteps(64)
+    Garden.of(input).totalPlotsLandedOnAfterSteps(64)
 
 private fun part2(input: String): Long {
-    val garden = Garden.from(input)
+    val garden = Garden.of(input)
 
     val target = (26_501_365 - 65) / 131;
     val ys = listOf(

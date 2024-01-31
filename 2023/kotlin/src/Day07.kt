@@ -1,8 +1,8 @@
-enum class HandType {
+private enum class HandType {
     HIGH_CARD, ONE_PAIR, TWO_PAIR, THREE_OF_A_KIND, FULL_HOUSE, FOUR_OF_A_KIND, FIVE_OF_A_KIND
 }
 
-open class Hand(val cards: String, open val bid: Int): Comparable<Hand> {
+private open class Hand(val cards: String, open val bid: Int): Comparable<Hand> {
     protected open val type: HandType
         get() {
             val frequencies = cards.groupingBy { it }.eachCount().values.sortedDescending()
@@ -38,7 +38,7 @@ open class Hand(val cards: String, open val bid: Int): Comparable<Hand> {
     }
 
     companion object {
-        fun parse(line: String): Hand {
+        fun of(line: String): Hand {
             val parts = line.split(" ")
             return Hand(parts.first(), parts.last().toInt())
         }
@@ -71,7 +71,7 @@ private class WildJokerHand(cards: String, bid: Int): Hand(cards, bid) {
     override val cardRanks = "J23456789TQKA"
 
     companion object {
-        fun parse(line: String): WildJokerHand {
+        fun of(line: String): WildJokerHand {
             val parts = line.split(" ")
             return WildJokerHand(parts.first(), parts.last().toInt())
         }
@@ -81,7 +81,7 @@ private class WildJokerHand(cards: String, bid: Int): Hand(cards, bid) {
 private fun part1(input: String) =
     input
         .lines()
-        .map { Hand.parse(it) }
+        .map { Hand.of(it) }
         .sorted()
         .mapIndexed { rank, hand -> (rank + 1) * hand.bid }
         .sum()
@@ -89,7 +89,7 @@ private fun part1(input: String) =
 private fun part2(input: String) =
     input
         .lines()
-        .map { WildJokerHand.parse(it) }
+        .map { WildJokerHand.of(it) }
         .sorted()
         .mapIndexed { rank, hand -> (rank + 1) * hand.bid }
         .sum()

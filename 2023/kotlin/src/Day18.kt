@@ -1,7 +1,6 @@
 import kotlin.math.abs
 
-private enum class DigDirection { UP, DOWN, LEFT, RIGHT }
-private data class DigStep(val direction: DigDirection, val count: Int)
+private data class DigStep(val direction: Point, val count: Int)
 
 // Shoelace formula + Circumference + Initial Square
 private fun area(steps: List<DigStep>): Long {
@@ -10,10 +9,10 @@ private fun area(steps: List<DigStep>): Long {
 
     for (step in steps) {
         val (y, x) = when (step.direction) {
-            DigDirection.UP -> py - step.count to px
-            DigDirection.DOWN -> py + step.count to px
-            DigDirection.LEFT -> py to px - step.count
-            DigDirection.RIGHT -> py to px + step.count
+            Point.UP -> py - step.count to px
+            Point.DOWN -> py + step.count to px
+            Point.LEFT -> py to px - step.count
+            else -> py to px + step.count
         }
 
         area += 1L * (py + y) * (px - x) + step.count
@@ -29,10 +28,10 @@ private fun part1(input: String): Long {
         val parts = line.split(" ")
 
         val direction = when (parts[0]) {
-            "U" -> DigDirection.UP
-            "D" -> DigDirection.DOWN
-            "L" -> DigDirection.LEFT
-            else -> DigDirection.RIGHT
+            "U" -> Point.UP
+            "D" -> Point.DOWN
+            "L" -> Point.LEFT
+            else -> Point.RIGHT
         }
         val count = parts[1].toInt()
 
@@ -47,10 +46,10 @@ private fun part2(input: String): Long {
         val (distanceHex, directionNo) = Regex("\\(#(.{5})(.)\\)").find(line)!!.destructured
 
         val direction = when (directionNo) {
-            "0" -> DigDirection.RIGHT
-            "1" -> DigDirection.DOWN
-            "2" -> DigDirection.LEFT
-            else -> DigDirection.UP
+            "0" -> Point.RIGHT
+            "1" -> Point.DOWN
+            "2" -> Point.LEFT
+            else -> Point.UP
         }
         val count = distanceHex.toInt(16)
 

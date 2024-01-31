@@ -26,7 +26,7 @@ private fun parseWorkflowsAndRatings(input: String): Pair<Workflows, List<Rating
         mapOf('x' to categories[0], 'm' to categories[1], 'a' to categories[2], 's' to categories[3])
     }
 
-    return Pair(workflows, ratings)
+    return workflows to ratings
 }
 
 private fun part1(input: String): Int {
@@ -57,11 +57,7 @@ private fun part1(input: String): Int {
     }
 
     return ratings.sumOf { rating ->
-        if (isAccepted(rating, "in")) {
-            rating.values.sum()
-        } else {
-            0
-        }
+        if (isAccepted(rating, "in")) rating.values.sum() else 0
     }
 }
 
@@ -82,8 +78,7 @@ private fun part2(input: String): Long {
         for (rule in workflow.rules) {
             val (trues, falses) = when (rule.comparator) {
                 '>' -> (rule.value + 1)..nextRating[rule.category]!!.last to nextRating[rule.category]!!.first..rule.value
-                '<' -> nextRating[rule.category]!!.first..<rule.value to rule.value..nextRating[rule.category]!!.last
-                else -> throw RuntimeException()
+                else -> nextRating[rule.category]!!.first..<rule.value to rule.value..nextRating[rule.category]!!.last
             }
 
             if (!trues.isEmpty()) {

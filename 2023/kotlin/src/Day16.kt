@@ -1,22 +1,6 @@
-private enum class GridDirection { UP, DOWN, LEFT, RIGHT }
-
-private data class GridPoint(val y: Int, val x: Int) {
-    fun go(direction: GridDirection) = when (direction) {
-        GridDirection.UP -> GridPoint(y - 1, x)
-        GridDirection.DOWN -> GridPoint(y + 1, x)
-        GridDirection.LEFT -> GridPoint(y, x - 1)
-        GridDirection.RIGHT -> GridPoint(y, x + 1)
-    }
-}
-
-private fun parseGrid(input: String) =
-    input.lines().flatMapIndexed { y, row ->
-        row.mapIndexed { x, el -> GridPoint(y, x) to el }
-    }.associate { x -> x }
-
-private fun energize(grid: Map<GridPoint, Char>, initialPosition: GridPoint, initialDirection: GridDirection): Int {
+private fun energize(grid: Map<Point, Char>, initialPosition: Point, initialDirection: Point): Int {
     val queue = mutableListOf(Pair(initialPosition, initialDirection))
-    val energized = mutableSetOf<Pair<GridPoint, GridDirection>>()
+    val energized = mutableSetOf<Pair<Point, Point>>()
 
     while (queue.isNotEmpty()) {
         val state = queue.removeFirst()
@@ -30,45 +14,45 @@ private fun energize(grid: Map<GridPoint, Char>, initialPosition: GridPoint, ini
 
         when (grid[position]) {
             '.' -> {
-                queue.add(Pair(position.go(direction), direction))
+                queue.add(position.go(direction) to direction)
             }
             '/' -> {
                 val nextDirection = when (direction) {
-                    GridDirection.UP -> GridDirection.RIGHT
-                    GridDirection.DOWN -> GridDirection.LEFT
-                    GridDirection.LEFT -> GridDirection.DOWN
-                    GridDirection.RIGHT -> GridDirection.UP
+                    Point.UP -> Point.RIGHT
+                    Point.DOWN -> Point.LEFT
+                    Point.LEFT -> Point.DOWN
+                    else -> Point.UP
                 }
-                queue.add(Pair(position.go(nextDirection), nextDirection))
+                queue.add(position.go(nextDirection) to nextDirection)
             }
             '\\' -> {
                 val nextDirection = when (direction) {
-                    GridDirection.UP -> GridDirection.LEFT
-                    GridDirection.DOWN -> GridDirection.RIGHT
-                    GridDirection.LEFT -> GridDirection.UP
-                    GridDirection.RIGHT -> GridDirection.DOWN
+                    Point.UP -> Point.LEFT
+                    Point.DOWN -> Point.RIGHT
+                    Point.LEFT -> Point.UP
+                    else -> Point.DOWN
                 }
-                queue.add(Pair(position.go(nextDirection), nextDirection))
+                queue.add(position.go(nextDirection) to nextDirection)
             }
             '-' -> {
                 when (direction) {
-                    GridDirection.LEFT, GridDirection.RIGHT -> {
-                        queue.add(Pair(position.go(direction), direction))
+                    Point.LEFT, Point.RIGHT -> {
+                        queue.add(position.go(direction) to direction)
                     }
-                    GridDirection.UP, GridDirection.DOWN -> {
-                        queue.add(Pair(position.go(GridDirection.LEFT), GridDirection.LEFT))
-                        queue.add(Pair(position.go(GridDirection.RIGHT), GridDirection.RIGHT))
+                    Point.UP, Point.DOWN -> {
+                        queue.add(position.go(Point.LEFT) to Point.LEFT)
+                        queue.add(position.go(Point.RIGHT) to Point.RIGHT)
                     }
                 }
             }
             '|' -> {
                 when (direction) {
-                    GridDirection.UP, GridDirection.DOWN -> {
-                        queue.add(Pair(position.go(direction), direction))
+                    Point.UP, Point.DOWN -> {
+                        queue.add(position.go(direction) to direction)
                     }
-                    GridDirection.LEFT, GridDirection.RIGHT -> {
-                        queue.add(Pair(position.go(GridDirection.UP), GridDirection.UP))
-                        queue.add(Pair(position.go(GridDirection.DOWN), GridDirection.DOWN))
+                    Point.LEFT, Point.RIGHT -> {
+                        queue.add(position.go(Point.UP) to Point.UP)
+                        queue.add(position.go(Point.DOWN) to Point.DOWN)
                     }
                 }
             }
@@ -79,24 +63,24 @@ private fun energize(grid: Map<GridPoint, Char>, initialPosition: GridPoint, ini
 }
 
 private fun part1(input: String) =
-    energize(parseGrid(input), GridPoint(0, 0), GridDirection.RIGHT)
+    energize(Point.mapOf(input), Point.ORIGIN, Point.RIGHT)
 
 private fun part2(input: String): Int {
-    val grid = parseGrid(input)
+    val grid = Point.mapOf(input)
 
     val maxY = grid.keys.maxOf { it.y }
     val maxX = grid.keys.maxOf { it.x }
 
     val ys = (0..maxY).flatMap { y ->
         listOf(
-            energize(grid, GridPoint(y, maxX), GridDirection.LEFT),
-            energize(grid, GridPoint(y, 0), GridDirection.RIGHT)
+            energize(grid, Point(maxX, y), Point.LEFT),
+            energize(grid, Point(0, y), Point.RIGHT)
         )
     }
     val xs = (0..maxX).flatMap { x ->
         listOf(
-            energize(grid, GridPoint(maxY, x), GridDirection.UP),
-            energize(grid, GridPoint(0, x), GridDirection.DOWN)
+            energize(grid, Point(x, maxY), Point.UP),
+            energize(grid, Point(x, 0), Point.DOWN)
         )
     }
 

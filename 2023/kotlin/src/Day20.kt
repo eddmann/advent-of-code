@@ -6,7 +6,7 @@ private abstract class Module(open val id: Id, open val incoming: List<Id>, open
     abstract fun handle(pulse: Pulse): List<Pulse>
 
     companion object {
-        fun build(input: String): Pair<Broadcast, Map<String, Module>> {
+        fun of(input: String): Pair<Broadcast, Map<String, Module>> {
             val mappings = input.lines().map {
                 val (id, outgoing) = it.split(" -> ")
                 id to outgoing.split(", ")
@@ -19,12 +19,11 @@ private abstract class Module(open val id: Id, open val incoming: List<Id>, open
                 val type = typeAndId.first()
                 val id = typeAndId.drop(1)
 
-                val incoming = mappings.mapNotNull { if (it.second.contains(id)) { it.first.drop(1) } else { null } }
+                val incoming = mappings.mapNotNull { if (it.second.contains(id)) it.first.drop(1) else null }
 
                 val module = when (type) {
                     '%' -> FlipFlop(id, incoming, outgoing)
-                    '&' -> Conjunction(id, incoming, outgoing)
-                    else -> throw RuntimeException()
+                    else -> Conjunction(id, incoming, outgoing)
                 }
 
                 id to module
@@ -59,7 +58,7 @@ private data class Broadcast(val outgoing: List<String>) {
 }
 
 private fun part1(input: String): Long {
-    val (broadcaster, modules) = Module.build(input)
+    val (broadcaster, modules) = Module.of(input)
 
     var lowPulses = 0L
     var highPulses = 0L
@@ -80,13 +79,13 @@ private fun part1(input: String): Long {
 }
 
 private fun part2(input: String): Long {
-    val (broadcaster, modules) = Module.build(input)
+    val (broadcaster, modules) = Module.of(input)
 
     var presses = 0L
     val queue = ArrayDeque<Pulse>()
 
     val lastModuleId = modules.values.first { it.outgoing.contains("rx") }.id
-    val connectionsToLastModule = modules.values.mapNotNull { if (it.outgoing.contains(lastModuleId)) { it.id } else { null } }
+    val connectionsToLastModule = modules.values.mapNotNull { if (it.outgoing.contains(lastModuleId)) it.id else null }
     val pressesToHighPulse = connectionsToLastModule.associateWith { 0L }.toMutableMap()
 
     while (pressesToHighPulse.any { it.value == 0L }) {

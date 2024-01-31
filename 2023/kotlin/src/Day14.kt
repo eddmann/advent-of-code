@@ -31,6 +31,7 @@ private fun cycle(initialDish: Dish) =
 private fun part1(input: String): Int {
     val dish = parseDish(input)
     val titledNorth = tilt(dish.transpose()).transpose()
+
     return totalLoad(titledNorth)
 }
 
@@ -53,7 +54,7 @@ private fun part2(input: String): Int {
         history += dish
     }
 
-    return 0
+    throw RuntimeException()
 }
 
 fun main() {

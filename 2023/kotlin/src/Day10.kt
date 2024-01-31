@@ -1,60 +1,43 @@
-private typealias Sketch = Map<Square, Char>
+private typealias Sketch = Map<Point, Char>
 
-private enum class Direction { UP, DOWN, LEFT, RIGHT }
-
-private data class Square(val y: Int, val x: Int) {
-    fun go(direction: Direction) = when (direction) {
-        Direction.UP -> Square(y - 1, x)
-        Direction.DOWN -> Square(y + 1, x)
-        Direction.LEFT -> Square(y, x - 1)
-        Direction.RIGHT -> Square(y, x + 1)
-    }
+private data class Location(val position: Point, val direction: Point) {
+    fun withDirection(nextDirection: Point) = Location(position, nextDirection)
+    fun step(): Location = Location(position go direction, direction)
 }
-
-private data class Location(val position: Square, val direction: Direction) {
-    fun withDirection(nextDirection: Direction) = Location(position, nextDirection)
-    fun step(): Location = Location(position.go(direction), direction)
-}
-
-private fun parseSketch(input: String) =
-    input.lines().flatMapIndexed { y, row ->
-        row.mapIndexed { x, el -> Pair(Square(y, x), el) }
-    }.associate { x -> x }
-
 
 private fun findAndFillStartingPipe(sketch: Sketch): Pair<Sketch, Location> {
     val start = sketch.entries.find { it.value == 'S' }!!.key
 
-    val up = listOf('|', '7', 'F').contains(sketch[start.go(Direction.UP)])
-    val down = listOf('|', 'L', 'J').contains(sketch[start.go(Direction.DOWN)])
-    val left = listOf('-', 'L', 'F').contains(sketch[start.go(Direction.LEFT)])
-    val right = listOf('-', '7', 'J').contains(sketch[start.go(Direction.RIGHT)])
+    val up = sketch[start go Point.UP] in listOf('|', '7', 'F')
+    val down = sketch[start go Point.DOWN] in listOf('|', 'L', 'J')
+    val left = sketch[start go Point.LEFT] in listOf('-', 'L', 'F')
+    val right = sketch[start go Point.RIGHT] in listOf('-', '7', 'J')
 
-    if (up && right) return Pair(sketch + (start to 'L'), Location(start, Direction.RIGHT))
-    if (up && left) return Pair(sketch + (start to 'J'), Location(start, Direction.LEFT))
-    if (up && down) return Pair(sketch + (start to '|'), Location(start, Direction.UP))
-    if (down && right) return Pair(sketch + (start to 'F'), Location(start, Direction.RIGHT))
-    if (down && left) return Pair(sketch + (start to '7'), Location(start, Direction.LEFT))
-    return Pair(sketch + (start to '-'), Location(start, Direction.RIGHT))
+    if (up && right) return Pair(sketch + (start to 'L'), Location(start, Point.RIGHT))
+    if (up && left) return Pair(sketch + (start to 'J'), Location(start, Point.LEFT))
+    if (up && down) return Pair(sketch + (start to '|'), Location(start, Point.UP))
+    if (down && right) return Pair(sketch + (start to 'F'), Location(start, Point.RIGHT))
+    if (down && left) return Pair(sketch + (start to '7'), Location(start, Point.LEFT))
+    return Pair(sketch + (start to '-'), Location(start, Point.RIGHT))
 }
 
 private fun nextStep(sketch: Sketch, location: Location): Location {
     val nextLocation = location.step()
     val nextValue = sketch[nextLocation.position]!!
 
-    if (nextValue == '7' && location.direction == Direction.UP) return nextLocation.withDirection(Direction.LEFT)
-    if (nextValue == '7' && location.direction == Direction.RIGHT) return nextLocation.withDirection(Direction.DOWN)
-    if (nextValue == 'F' && location.direction == Direction.UP) return nextLocation.withDirection(Direction.RIGHT)
-    if (nextValue == 'F' && location.direction == Direction.LEFT) return nextLocation.withDirection(Direction.DOWN)
-    if (nextValue == 'L' && location.direction == Direction.LEFT) return nextLocation.withDirection(Direction.UP)
-    if (nextValue == 'L' && location.direction == Direction.DOWN) return nextLocation.withDirection(Direction.RIGHT)
-    if (nextValue == 'J' && location.direction == Direction.DOWN) return nextLocation.withDirection(Direction.LEFT)
-    if (nextValue == 'J' && location.direction == Direction.RIGHT) return nextLocation.withDirection(Direction.UP)
+    if (nextValue == '7' && location.direction == Point.UP) return nextLocation.withDirection(Point.LEFT)
+    if (nextValue == '7' && location.direction == Point.RIGHT) return nextLocation.withDirection(Point.DOWN)
+    if (nextValue == 'F' && location.direction == Point.UP) return nextLocation.withDirection(Point.RIGHT)
+    if (nextValue == 'F' && location.direction == Point.LEFT) return nextLocation.withDirection(Point.DOWN)
+    if (nextValue == 'L' && location.direction == Point.LEFT) return nextLocation.withDirection(Point.UP)
+    if (nextValue == 'L' && location.direction == Point.DOWN) return nextLocation.withDirection(Point.RIGHT)
+    if (nextValue == 'J' && location.direction == Point.DOWN) return nextLocation.withDirection(Point.LEFT)
+    if (nextValue == 'J' && location.direction == Point.RIGHT) return nextLocation.withDirection(Point.UP)
     return nextLocation
 }
 
-private fun traversePipes(sketch: Sketch, initial: Location): List<Square> {
-    tailrec fun recur(location: Location, route: List<Square>): List<Square> {
+private fun traversePipes(sketch: Sketch, initial: Location): List<Point> {
+    tailrec fun recur(location: Location, route: List<Point>): List<Point> {
         val nextLocation = nextStep(sketch, location)
         if (nextLocation == initial) {
             return route + location.position
@@ -88,12 +71,12 @@ private fun enlargeSketch(sketch: Sketch): Sketch {
         '-' to "...---...",
         '.' to ".........",
     )
-    val enlargedSketch = mutableMapOf<Square, Char>()
+    val enlargedSketch = mutableMapOf<Point, Char>()
 
     sketch.forEach { entry ->
         (0..<3).forEach { offsetY ->
             (0..<3).forEach { offsetX ->
-                val square = Square(entry.key.y * 3 + offsetY, entry.key.x * 3 + offsetX)
+                val square = Point(entry.key.y * 3 + offsetY, entry.key.x * 3 + offsetX)
                 enlargedSketch[square] = translations[entry.value]!![offsetY * 3 + offsetX]
             }
         }
@@ -104,15 +87,14 @@ private fun enlargeSketch(sketch: Sketch): Sketch {
 
 private fun floodFill(sketch: Sketch): Sketch {
     val floodedSketch = sketch.toMutableMap()
-    val queue = ArrayDeque(listOf(Square(0, 0)))
+    val queue = ArrayDeque(listOf(Point.ORIGIN))
 
     while (queue.isNotEmpty()) {
         val current = queue.removeFirst()
 
         floodedSketch[current] = 'x'
 
-        listOf(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT).forEach { direction ->
-            val nextSquare = current.go(direction)
+        current.cardinalNeighbors().forEach { nextSquare ->
             if (floodedSketch.getOrDefault(nextSquare, ' ') == '.' && !queue.contains(nextSquare)) {
                 queue.add(nextSquare)
             }
@@ -126,11 +108,11 @@ private fun shrinkSketch(enlargedSketch: Sketch): Sketch {
     val maxX = enlargedSketch.keys.map { it.x }.max()
     val maxY = enlargedSketch.keys.map { it.y }.max()
 
-    val sketch = mutableMapOf<Square, Char>()
+    val sketch = mutableMapOf<Point, Char>()
 
     (0..maxY / 3).forEach { y ->
         (0..maxX / 3).forEach { x ->
-            sketch[Square(y, x)] = enlargedSketch[Square(y * 3 + 1, x * 3 + 1)]!!
+            sketch[Point(y, x)] = enlargedSketch[Point(y * 3 + 1, x * 3 + 1)]!!
         }
     }
 
@@ -138,14 +120,14 @@ private fun shrinkSketch(enlargedSketch: Sketch): Sketch {
 }
 
 private fun part1(input: String): Int {
-    val sketch = parseSketch(input)
+    val sketch = Point.mapOf(input)
     val (completeSketch, start) = findAndFillStartingPipe(sketch)
 
     return traversePipes(completeSketch, start).size / 2
 }
 
 private fun part2(input: String) =
-    parseSketch(input)
+    Point.mapOf(input)
         .let(::removeUnconnectedPipes)
         .let(::enlargeSketch)
         .let(::floodFill)

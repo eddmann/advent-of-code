@@ -4,45 +4,42 @@ import kotlin.math.min
 private infix fun IntRange.intersects(other: IntRange) =
     first <= other.last && last >= other.first
 
-private data class Point3D(val y: Int, val x: Int, val z: Int) {
-    companion object {
-        fun from(input: String): Point3D {
-            val coordinates = input.ints()
-            return Point3D(coordinates[1], coordinates[0], coordinates[2])
-        }
-    }
-}
-
 private data class Brick(val start: Point3D, val end: Point3D) {
     val volume =
-        (start.y..end.y).flatMap { y ->
-            (start.x..end.x).flatMap { x ->
-                (start.z..end.z).map { z -> Point3D(y, x, z) }
+        buildSet {
+            (start.x..end.x).forEach { x ->
+                (start.y..end.y).forEach { y ->
+                    (start.z..end.z).forEach { z ->
+                        add(Point3D(x, y, z))
+                    }
+                }
             }
-        }.toSet()
+        }
 
     private val top = max(start.z, end.z)
 
     val bottom = min(start.z, end.z)
 
     fun drop() =
-        Brick(Point3D(start.y, start.x, start.z - 1), Point3D(end.y, end.x, end.z - 1))
+        Brick(Point3D(start.x, start.y, start.z - 1), Point3D(end.x, end.y, end.z - 1))
 
     fun isDirectlyBelow(brick: Brick) = top + 1 == brick.bottom
 
     fun isSupportedBy(brick: Brick) =
-        brick.isDirectlyBelow(this) && (start.x..end.x).intersects(brick.start.x..brick.end.x) && (start.y..end.y).intersects(brick.start.y..brick.end.y)
+        brick.isDirectlyBelow(this)
+            && (start.x..end.x).intersects(brick.start.x..brick.end.x)
+            && (start.y..end.y).intersects(brick.start.y..brick.end.y)
 
     companion object {
-        fun from(input: String): Brick {
+        fun of(input: String): Brick {
             val (start, end) = input.split("~")
-            return Brick(Point3D.from(start), Point3D.from(end))
+            return Brick(Point3D.of(start), Point3D.of(end))
         }
     }
 }
 
 private fun parseBricks(input: String) =
-    input.lines().map { Brick.from(it) }
+    input.lines().map { Brick.of(it) }
 
 private fun drop(bricks: List<Brick>): List<Brick> {
     val settled = mutableListOf<Brick>()

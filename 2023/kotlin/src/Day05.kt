@@ -14,10 +14,12 @@ private data class SeedRange(val start: Long, val length: Long) {
 
 private data class MapRange(val source: Long, val destination: Long, val length: Long) {
     fun forwards(value: Long): Long? =
-        if (value >= source && value < source + length) { destination + value - source } else { null }
+        if (value >= source && value < source + length) destination + value - source
+        else null
 
     fun backwards(value: Long): Long? =
-        if (value >= destination && value < destination + length) { source + value - destination } else { null }
+        if (value >= destination && value < destination + length) source + value - destination
+        else null
 }
 
 private fun parseAlmanac(input: String): Pair<Seeds, List<Map>> {
@@ -28,7 +30,7 @@ private fun parseAlmanac(input: String): Pair<Seeds, List<Map>> {
         map.longs().chunked(3).map { MapRange(it[1], it[0], it[2]) }
     }
 
-    return Pair(seeds, maps)
+    return seeds to maps
 }
 
 private fun toLocation(maps: List<Map>, seed: Long): Long =

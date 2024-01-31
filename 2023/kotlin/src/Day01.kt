@@ -3,7 +3,8 @@ private fun calibrate(values: List<String>) = values.sumOf { value ->
     "${digits.first()}${digits.last()}".toInt()
 }
 
-private fun part1(input: String): Int = calibrate(input.lines())
+private fun part1(input: String): Int =
+    calibrate(input.lines())
 
 private fun part2(input: String): Int {
     val translations = mapOf(

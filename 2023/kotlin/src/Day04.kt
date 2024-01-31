@@ -1,6 +1,6 @@
 import kotlin.math.pow
 
-infix fun Int.`**`(exponent: Int): Int = toDouble().pow(exponent).toInt()
+private infix fun Int.`**`(exponent: Int): Int = toDouble().pow(exponent).toInt()
 
 private data class Card(val id: Int, val numbers: Set<Int>, val winners: Set<Int>)
 

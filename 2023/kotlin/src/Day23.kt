@@ -1,41 +1,17 @@
-private enum class HikeDirection {
-    UP, DOWN, LEFT, RIGHT
-}
+private fun parseMap(input: String) =
+    Point.mapOf(input) { it != '#' }
 
-private data class HikePath(val y: Int, val x: Int) {
-    fun step(direction: HikeDirection) = when (direction) {
-        HikeDirection.UP -> HikePath(y - 1, x)
-        HikeDirection.DOWN -> HikePath(y + 1, x)
-        HikeDirection.LEFT -> HikePath(y, x - 1)
-        HikeDirection.RIGHT -> HikePath(y, x + 1)
-    }
+private fun locateStartAndEndPath(map: Map<Point, Char>) =
+    Point(map.minOf { it.key.x }, map.minOf { it.key.y }) to Point(map.maxOf { it.key.x }, map.maxOf { it.key.y })
 
-    fun neighbours() =
-        listOf(HikeDirection.UP, HikeDirection.DOWN, HikeDirection.LEFT, HikeDirection.RIGHT).map { step(it) }
-}
-
-private typealias HikeMap = Map<HikePath, Char>
-
-private fun parseMap(input: String): HikeMap =
+private fun compressToJunctions(map: Map<Point, Char>, start: Point, end: Point, directionsForPath: (Char) -> List<Point>) =
     buildMap {
-        input.lines().forEachIndexed { y, row ->
-            row.forEachIndexed { x, el ->
-                if (el != '#') set(HikePath(y, x), el)
-            }
-        }
-    }
-
-private fun locateStartAndEndPath(map: HikeMap) =
-    HikePath(map.minOf { it.key.y }, map.minOf { it.key.x }) to HikePath(map.maxOf { it.key.y }, map.maxOf { it.key.x })
-
-private fun compressToJunctions(map: HikeMap, start: HikePath, end: HikePath, directionsForPath: (Char) -> List<HikeDirection>) =
-    buildMap {
-        val junctions = setOf(start, end) + map.keys.filter { path -> path.neighbours().count { it in map } > 2 }
+        val junctions = setOf(start, end) + map.keys.filter { path -> path.cardinalNeighbors().count { it in map } > 2 }
 
         for (junction in junctions) {
-            val neighbours = mutableMapOf<HikePath, Int>()
+            val neighbours = mutableMapOf<Point, Int>()
 
-            val stack = ArrayDeque(junction.neighbours().map { it to 1 })
+            val stack = ArrayDeque(junction.cardinalNeighbors().map { it to 1 })
             val seen = mutableSetOf(junction)
 
             while (stack.isNotEmpty()) {
@@ -49,18 +25,18 @@ private fun compressToJunctions(map: HikeMap, start: HikePath, end: HikePath, di
                     continue
                 }
 
-                stack.addAll(directionsForPath(map[path]!!).map { path.step(it) to steps + 1 })
+                stack.addAll(directionsForPath(map[path]!!).map { path.go(it) to steps + 1 })
             }
 
             set(junction, neighbours.toMap())
         }
     }
 
-private fun hike(paths: Map<HikePath, Map<HikePath, Int>>, start: HikePath, end: HikePath): Int {
-    val seen = mutableSetOf<HikePath>()
+private fun hike(paths: Map<Point, Map<Point, Int>>, start: Point, end: Point): Int {
+    val seen = mutableSetOf<Point>()
     var maxSteps = 0
 
-    fun recur(path: HikePath, steps: Int) {
+    fun recur(path: Point, steps: Int) {
         if (path == end) {
             maxSteps = maxOf(maxSteps, steps)
             return
@@ -87,11 +63,11 @@ private fun part1(input: String): Int {
     val (start, end) = locateStartAndEndPath(map)
     val paths = compressToJunctions(map, start, end) {
         when (it) {
-            '^' -> listOf(HikeDirection.UP)
-            'v' -> listOf(HikeDirection.DOWN)
-            '<' -> listOf(HikeDirection.LEFT)
-            '>' -> listOf(HikeDirection.RIGHT)
-            else -> listOf(HikeDirection.UP, HikeDirection.DOWN, HikeDirection.LEFT, HikeDirection.RIGHT)
+            '^' -> listOf(Point.UP)
+            'v' -> listOf(Point.DOWN)
+            '<' -> listOf(Point.LEFT)
+            '>' -> listOf(Point.RIGHT)
+            else -> listOf(Point.UP, Point.DOWN, Point.LEFT, Point.RIGHT)
         }
     }
 
@@ -102,7 +78,7 @@ private fun part2(input: String): Int {
     val map = parseMap(input)
     val (start, end) = locateStartAndEndPath(map)
     val paths = compressToJunctions(map, start, end) {
-        listOf(HikeDirection.UP, HikeDirection.DOWN, HikeDirection.LEFT, HikeDirection.RIGHT)
+        listOf(Point.UP, Point.DOWN, Point.LEFT, Point.RIGHT)
     }
 
     return hike(paths, start, end)

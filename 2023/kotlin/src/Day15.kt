@@ -1,4 +1,4 @@
-typealias Lens = Pair<String, Int>
+private typealias Lens = Pair<String, Int>
 
 private fun hash(step: String) =
     step.fold(0) { acc, chr -> ((acc + chr.code) * 17) % 256 }
@@ -25,9 +25,9 @@ private fun part2(input: String): Int {
         val existing = box.indexOfFirst { it.first == label }
 
         if (existing == -1) {
-            box.add(Pair(label, value))
+            box.add(label to value)
         } else {
-            box[existing] = Pair(label, value)
+            box[existing] = label to value
         }
     }
 

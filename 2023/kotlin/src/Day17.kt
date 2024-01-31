@@ -1,49 +1,20 @@
 import java.util.PriorityQueue
 
-private enum class CrucibleDirection {
-    UP, DOWN, LEFT, RIGHT;
-
-    fun rotateLeft() = when (this) {
-        UP -> LEFT
-        DOWN -> RIGHT
-        LEFT -> DOWN
-        RIGHT -> UP
-    }
-
-    fun rotateRight() = when (this) {
-        UP -> RIGHT
-        DOWN -> LEFT
-        LEFT -> UP
-        RIGHT -> DOWN
-    }
-}
-
-private data class CruciblePoint(val y: Int, val x: Int) {
-    fun step(direction: CrucibleDirection) = when (direction) {
-        CrucibleDirection.UP -> CruciblePoint(y - 1, x)
-        CrucibleDirection.DOWN -> CruciblePoint(y + 1, x)
-        CrucibleDirection.LEFT -> CruciblePoint(y, x - 1)
-        CrucibleDirection.RIGHT -> CruciblePoint(y, x + 1)
-    }
-}
-
-private data class Crucible(val position: CruciblePoint, val direction: CrucibleDirection, val forwards: Int, val heatLoss: Int) {
+private data class Crucible(val position: Point, val direction: Point, val forwards: Int, val heatLoss: Int) {
     val state = CrucibleState(position, direction, forwards)
 }
 
-private data class CrucibleState(val position: CruciblePoint, val direction: CrucibleDirection, val forwards: Int)
+private data class CrucibleState(val position: Point, val direction: Point, val forwards: Int)
 
 private fun parseCity(input: String) =
-    input.lines().flatMapIndexed { y, row ->
-        row.mapIndexed { x, el -> CruciblePoint(y, x) to el.digitToInt() }
-    }.associate { x -> x }
+    Point.mapOf(input).mapValues { it.value.digitToInt() }
 
-private fun simulate(city: Map<CruciblePoint, Int>, forwardsLimit: Int, rotateLimit: Int): Int {
-    val goal = CruciblePoint(city.keys.maxOf { it.y }, city.keys.maxOf { it.x })
+private fun simulate(city: Map<Point, Int>, forwardsLimit: Int, rotateLimit: Int): Int {
+    val goal = Point(city.keys.maxOf { it.y }, city.keys.maxOf { it.x })
 
     val queue = PriorityQueue<Crucible> { a, b -> a.heatLoss - b.heatLoss }
-    queue.add(Crucible(CruciblePoint(0, 0), CrucibleDirection.RIGHT, 0, 0))
-    queue.add(Crucible(CruciblePoint(0, 0), CrucibleDirection.DOWN, 0, 0))
+    queue.add(Crucible(Point.ORIGIN, Point.RIGHT, 0, 0))
+    queue.add(Crucible(Point.ORIGIN, Point.DOWN, 0, 0))
     val seen = mutableSetOf<CrucibleState>()
 
     while (queue.isNotEmpty()) {
@@ -59,7 +30,7 @@ private fun simulate(city: Map<CruciblePoint, Int>, forwardsLimit: Int, rotateLi
 
         seen.add(crucible.state)
 
-        val forwards = crucible.position.step(crucible.direction)
+        val forwards = crucible.position go crucible.direction
         if (city[forwards] != null && crucible.forwards < forwardsLimit) {
             queue.add(Crucible(forwards, crucible.direction, crucible.forwards + 1, crucible.heatLoss + city[forwards]!!))
         }
@@ -68,14 +39,14 @@ private fun simulate(city: Map<CruciblePoint, Int>, forwardsLimit: Int, rotateLi
             continue
         }
 
-        val left = crucible.position.step(crucible.direction.rotateLeft())
+        val left = crucible.position go crucible.direction.rotate(-90)
         if (city[left] != null) {
-            queue.add(Crucible(left, crucible.direction.rotateLeft(), 1, crucible.heatLoss + city[left]!!))
+            queue.add(Crucible(left, crucible.direction.rotate(-90), 1, crucible.heatLoss + city[left]!!))
         }
 
-        val right = crucible.position.step(crucible.direction.rotateRight())
+        val right = crucible.position go crucible.direction.rotate(90)
         if (city[right] != null) {
-            queue.add(Crucible(right, crucible.direction.rotateRight(), 1, crucible.heatLoss + city[right]!!))
+            queue.add(Crucible(right, crucible.direction.rotate(90), 1, crucible.heatLoss + city[right]!!))
         }
     }
 
