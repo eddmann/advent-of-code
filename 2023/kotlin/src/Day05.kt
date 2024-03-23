@@ -1,3 +1,9 @@
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
+import kotlin.time.measureTime
+
 private typealias Seeds = List<Long>
 private typealias Map = List<MapRange>
 
@@ -6,9 +12,8 @@ private data class SeedRange(val start: Long, val length: Long) {
         value >= start && value < start + length
 
     companion object {
-        fun fromSeeds(seeds: Seeds): List<SeedRange> {
-            return seeds.chunked(2).map { SeedRange(it[0], it[1]) }
-        }
+        fun fromSeeds(seeds: Seeds): List<SeedRange> =
+            seeds.chunked(2).map { SeedRange(it[0], it[1]) }
     }
 }
 
@@ -38,7 +43,7 @@ private fun toLocation(maps: List<Map>, seed: Long): Long =
         for (range in map) {
             range.forwards(value)?.let { return@fold it }
         }
-        return@fold value
+        value
     }
 
 private fun toSeed(maps: List<Map>, location: Long): Long =
@@ -46,12 +51,12 @@ private fun toSeed(maps: List<Map>, location: Long): Long =
         for (range in map) {
             range.backwards(value)?.let { return@foldRight it }
         }
-        return@foldRight value
+        value
     }
 
 private fun part1(input: String): Long {
     val (seeds, mappings) = parseAlmanac(input)
-    return seeds.map { toLocation(mappings, it) }.min()
+    return seeds.minOf { toLocation(mappings, it) }
 }
 
 private fun part2(input: String): Long {
@@ -68,8 +73,54 @@ private fun part2(input: String): Long {
     }
 }
 
+private fun part2Coroutines(input: String): Long {
+    val (seeds, mappings) = parseAlmanac(input)
+    val seedRanges = buildList {
+        SeedRange.fromSeeds(seeds).forEach { range ->
+            val end = range.start + range.length
+            var current = range.start
+            while (current + 50_000_000 < end) {
+                add(current..current + 50_000_000)
+                current += 50_000_000
+            }
+            add(current..end)
+        }
+    }
+
+    return runBlocking(Dispatchers.Default) {
+        seedRanges.map { range ->
+            async {
+                range.minOf { toLocation(mappings, it) }
+            }
+        }.awaitAll().min()
+    }
+}
+
+private fun part2ParallelStream(input: String): Long {
+    val (seeds, mappings) = parseAlmanac(input)
+    val seedRanges = buildList {
+        SeedRange.fromSeeds(seeds).forEach { range ->
+            val end = range.start + range.length
+            var current = range.start
+            while (current + 50_000_000 < end) {
+                add(current..current + 50_000_000)
+                current += 50_000_000
+            }
+            add(current..end)
+        }
+    }
+
+    return seedRanges
+        .parallelStream()
+        .map { range -> range.minOf { toLocation(mappings, it) } }
+        .min(Long::compareTo)
+        .get()
+}
+
 fun main() {
     val input = readInput("Day05")
     part1(input).println()
-    part2(input).println()
+    measureTime { part2(input).println() }.println() // 1.874070296s
+    measureTime { part2Coroutines(input).println() }.println() // 1m 18.822712617s
+    measureTime { part2ParallelStream(input).println() }.println() // 1m 14.793719775s
 }
