@@ -1,17 +1,23 @@
-// TODO: sealed-classes for results, DSL markers
-
 @DslMarker
-annotation class SantaLangMarker
+annotation class SantaLangDslMarker
 
-@SantaLangMarker
-class InputProvider(val resolver: () -> String) {
-    val input by lazy { resolver().trimIndent() }
+@SantaLangDslMarker
+class NullProvider // used for Context scope
+
+@SantaLangDslMarker
+class InputProvider(private val resolver: InputResolver) {
+    val input by lazy {
+        resolver.invoke(NullProvider()).trimIndent()
+    }
 }
+
+typealias InputResolver = NullProvider.() -> String
 
 typealias Part = InputProvider.() -> Any
 
-typealias PartTest = () -> Any
+typealias PartTest = NullProvider.() -> Any
 
+@SantaLangDslMarker
 class TestProvider {
     private var input: InputProvider = InputProvider { "" }
 
@@ -19,7 +25,7 @@ class TestProvider {
 
     private var partTwoTest: PartTest? = null
 
-    fun input(resolver: () -> String) {
+    fun input(resolver: InputResolver) {
         input = InputProvider(resolver)
     }
 
@@ -34,10 +40,10 @@ class TestProvider {
     fun execute(partOne: Part?, partTwo: Part?) {
         if (partOne != null && partOneTest != null) {
             try {
-                val result = partOne.invoke(input)
-                val expected = partOneTest!!().toString()
+                val result = partOne.invoke(input).toString()
+                val expected = partOneTest!!.invoke(NullProvider()).toString()
 
-                if (result.toString() == expected) {
+                if (result == expected) {
                     println("Part 1: $result \u001B[32m✔\u001B[0m")
                 } else {
                     println("Part 1: $result \u001B[31m✘ (Expected: $expected)\u001B[0m")
@@ -50,10 +56,10 @@ class TestProvider {
 
         if (partTwo != null && partTwoTest != null) {
             try {
-                val result = partTwo.invoke(input)
-                val expected = partTwoTest!!().toString()
+                val result = partTwo.invoke(input).toString()
+                val expected = partTwoTest!!.invoke(NullProvider()).toString()
 
-                if (result.toString() == expected) {
+                if (result == expected) {
                     println("Part 2: $result \u001B[32m✔\u001B[0m")
                 } else {
                     println("Part 2: $result \u001B[31m✘ (Expected: $expected)\u001B[0m")
@@ -66,7 +72,7 @@ class TestProvider {
     }
 }
 
-@SantaLangMarker
+@SantaLangDslMarker
 class Solution {
     private var input: InputProvider = InputProvider { "" }
 
@@ -76,7 +82,7 @@ class Solution {
 
     private var partTwo: Part? = null
 
-    fun input(resolver: () -> String) {
+    fun input(resolver: InputResolver) {
         input = InputProvider(resolver)
     }
 
