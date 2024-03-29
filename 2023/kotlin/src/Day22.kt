@@ -4,7 +4,7 @@ import kotlin.math.min
 private infix fun IntRange.intersects(other: IntRange) =
     first <= other.last && last >= other.first
 
-private data class Brick(val start: Point3D, val end: Point3D) {
+private data class Brick(val start: Point3D<Int>, val end: Point3D<Int>) {
     val volume =
         buildSet {
             (start.x..end.x).forEach { x ->
@@ -33,7 +33,7 @@ private data class Brick(val start: Point3D, val end: Point3D) {
     companion object {
         fun of(input: String): Brick {
             val (start, end) = input.split("~")
-            return Brick(Point3D.of(start), Point3D.of(end))
+            return Brick(Point3D.ofInt(start), Point3D.ofInt(end))
         }
     }
 }
@@ -63,7 +63,7 @@ private fun drop(bricks: List<Brick>): List<Brick> {
     return settled
 }
 
-private fun Set<Point3D>.canDrop(brick: Brick): Boolean =
+private fun Set<Point3D<Int>>.canDrop(brick: Brick): Boolean =
     subtract(brick.volume).intersect(brick.drop().volume).isEmpty()
 
 private fun canRemove(bricks: List<Brick>, index: Int): Boolean {

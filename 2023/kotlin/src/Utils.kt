@@ -106,10 +106,8 @@ data class Point(val x: Int, val y: Int) {
         val SOUTH_WEST = SOUTH + WEST
         val SOUTH_EAST = SOUTH + EAST
 
-        fun of(input: String): Point {
-            val (x, y) = input.split(',', '-', ' ').map { it.trim().toInt() }
-            return Point(x, y)
-        }
+        fun of(input: String) =
+            input.ints().let { (x, y) -> Point(x, y) }
 
         fun setOf(input: String, predicate: (Char) -> Boolean = { true }) =
             buildSet {
@@ -131,11 +129,12 @@ data class Point(val x: Int, val y: Int) {
     }
 }
 
-data class Point3D(val x: Int, val y: Int, val z: Int) {
+data class Point3D<T: Number>(val x: T, val y: T, val z: T) {
     companion object {
-        fun of(input: String): Point3D {
-            val (x, y, z) = input.split(',', '-', ' ').map { it.trim().toInt() }
-            return Point3D(x, y, z)
-        }
+        fun ofInt(input: String) =
+            input.ints().let { (x, y, z) -> Point3D(x, y, z) }
+
+        fun ofLong(input: String) =
+            input.longs().let { (x, y, z) -> Point3D(x, y, z) }
     }
 }
