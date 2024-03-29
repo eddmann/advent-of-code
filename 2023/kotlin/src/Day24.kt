@@ -37,7 +37,7 @@ private fun part1(input: String): Int {
 
     return hailstones
         .combinations(2)
-        .mapNotNull { it[0].intersection(it[1]) }
+        .mapNotNull { (h1, h2) -> h1.intersection(h2) }
         .count { (x, y) -> x in range && y in range }
 }
 
