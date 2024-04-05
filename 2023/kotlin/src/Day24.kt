@@ -59,10 +59,12 @@ private fun part2(input: String): Long {
          * y + vy * t == hailstone.position.y + hailstone.velocity.y * t
          * z + vz * t == hailstone.position.z + hailstone.velocity.z * t
          */
-        val t = ctx.mkIntConst("t$idx")
-        solver.add(ctx.mkEq(ctx.mkAdd(x, ctx.mkMul(vx, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.x), ctx.mkMul(ctx.mkReal(hailstone.velocity.x), t))))
-        solver.add(ctx.mkEq(ctx.mkAdd(y, ctx.mkMul(vy, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.y), ctx.mkMul(ctx.mkReal(hailstone.velocity.y), t))))
-        solver.add(ctx.mkEq(ctx.mkAdd(z, ctx.mkMul(vz, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.z), ctx.mkMul(ctx.mkReal(hailstone.velocity.z), t))))
+        val t = ctx.mkRealConst("t$idx")
+        solver.add(
+            ctx.mkEq(ctx.mkAdd(x, ctx.mkMul(vx, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.x), ctx.mkMul(ctx.mkReal(hailstone.velocity.x), t))),
+            ctx.mkEq(ctx.mkAdd(y, ctx.mkMul(vy, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.y), ctx.mkMul(ctx.mkReal(hailstone.velocity.y), t))),
+            ctx.mkEq(ctx.mkAdd(z, ctx.mkMul(vz, t)), ctx.mkAdd(ctx.mkReal(hailstone.position.z), ctx.mkMul(ctx.mkReal(hailstone.velocity.z), t)))
+        )
     }
 
     if (solver.check() != Status.SATISFIABLE) {
