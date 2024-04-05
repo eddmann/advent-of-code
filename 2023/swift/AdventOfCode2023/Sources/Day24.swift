@@ -1,3 +1,5 @@
+import SwiftZ3
+
 struct Day24: AdventDay {
   var input: String
 
@@ -63,8 +65,36 @@ struct Day24: AdventDay {
 
   // Thank you https://www.reddit.com/r/adventofcode/comments/18pnycy/comment/kepl4p8/
   func part2() -> Any {
-    // let hailstones = input.lines().map { Hailstone.from($0) }
+    let hailstones = input.lines().map { Hailstone.from($0) }
 
-    return 0
+    let ctx = Z3Context()
+    let solver = ctx.makeSolver()
+
+    let x: Z3Real = ctx.makeConstant(name: "x")
+    let y: Z3Real = ctx.makeConstant(name: "y")
+    let z: Z3Real = ctx.makeConstant(name: "z")
+    let vx: Z3Real = ctx.makeConstant(name: "vx")
+    let vy: Z3Real = ctx.makeConstant(name: "vy")
+    let vz: Z3Real = ctx.makeConstant(name: "vz")
+
+    for (idx, hailstone) in hailstones[0...2].enumerated() {
+      let t: Z3Real = ctx.makeConstant(name: "t\(idx)")
+      let h_px = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.position.x)))
+      let h_py = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.position.y)))
+      let h_pz = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.position.z)))
+      let h_vx = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.velocity.x)))
+      let h_vy = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.velocity.y)))
+      let h_vz = ctx.makeIntToReal(ctx.makeInteger64(Int64(hailstone.velocity.z)))
+
+      solver.assert((x + vx * t) == (h_px + h_vx * t))
+      solver.assert((y + vy * t) == (h_py + h_vy * t))
+      solver.assert((z + vz * t) == (h_pz + h_vz * t))
+    }
+
+    if solver.check() != .satisfiable {
+      fatalError("Failed to solve equation")
+    }
+
+    return solver.getModel()!.eval(x + (y + z))!.numeralDouble
   }
 }
