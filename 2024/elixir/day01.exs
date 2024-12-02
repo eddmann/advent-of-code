@@ -16,14 +16,13 @@ defmodule Day01 do
     |> Enum.sum()
   end
 
-  def parse_input(input) do
+  defp parse_input(input) do
     input
     |> String.split("\n")
     |> Enum.map(fn line ->
       String.split(line) |> Enum.map(&String.to_integer/1)
     end)
-    |> Enum.zip()
-    |> Enum.map(&Tuple.to_list/1)
+    |> Enum.zip_with(& &1)
   end
 end
 
