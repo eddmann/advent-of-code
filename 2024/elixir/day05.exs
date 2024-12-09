@@ -13,8 +13,7 @@ defmodule Day05 do
 
     updates
     |> Enum.filter(&(correct_order(rules, &1) != &1))
-    |> Enum.map(&(correct_order(rules, &1)))
-    |> Enum.map(&middle_value/1)
+    |> Enum.map(&middle_value(correct_order(rules, &1)))
     |> Enum.sum()
   end
 
@@ -40,7 +39,7 @@ defmodule Day05 do
     graph = :digraph.new
 
     for [before, after_] <- rules,
-        Enum.member?(update, before) and Enum.member?(update, after_)
+        before in update and after_ in update
     do
       :digraph.add_vertex(graph, before)
       :digraph.add_vertex(graph, after_)
