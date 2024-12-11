@@ -10,9 +10,7 @@ defmodule Day06 do
     lab = parse_lab(input)
     start = start_position(lab)
 
-    for {position, char} <- lab, char == ?. do
-      position
-    end
+    patrol_path(lab, start)
     |> Enum.map(&patrol_path(Map.put(lab, &1, ?#), start))
     |> Enum.count(&(&1== :cycle))
   end
@@ -21,9 +19,7 @@ defmodule Day06 do
     lab = parse_lab(input)
     start = start_position(lab)
 
-    for {position, char} <- lab, char == ?. do
-      position
-    end
+    patrol_path(lab, start)
     |> Task.async_stream(&patrol_path(Map.put(lab, &1, ?#), start))
     |> Enum.count(fn {:ok, path} -> path == :cycle end)
   end
@@ -63,4 +59,5 @@ end
 
 input = File.read!("day06.txt")
 IO.puts(Day06.part1(input))
+IO.puts(Day06.part2_sync(input))
 IO.puts(Day06.part2_async(input))
