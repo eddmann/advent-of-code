@@ -1,3 +1,5 @@
+Code.require_file("./aoc.exs")
+
 defmodule Day05 do
   def part1(input) do
     [rules, updates] = parse_rules_and_updates(input)
@@ -17,16 +19,10 @@ defmodule Day05 do
     |> Enum.sum()
   end
 
-  defp ints(input) do
-    Regex.scan(~r/-?\d+/, input)
-    |> List.flatten()
-    |> Enum.map(&String.to_integer/1)
-  end
-
   defp parse_rules_and_updates(input) do
     String.split(input, "\n\n")
     |> Enum.map(fn section ->
-      String.split(section, "\n") |> Enum.map(&ints/1)
+      String.split(section, "\n") |> Enum.map(&AoC.ints/1)
     end)
   end
 

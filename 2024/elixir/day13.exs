@@ -1,3 +1,5 @@
+Code.require_file("./aoc.exs")
+
 defmodule Day13 do
   def part1(input) do
     input
@@ -28,13 +30,7 @@ defmodule Day13 do
   defp parse_machines(input) do
     input
     |> String.split("\n\n")
-    |> Enum.map(&ints/1)
-  end
-
-  defp ints(input) do
-    Regex.scan(~r/-?\d+/, input)
-    |> List.flatten()
-    |> Enum.map(&String.to_integer/1)
+    |> Enum.map(&AoC.ints/1)
   end
 end
 

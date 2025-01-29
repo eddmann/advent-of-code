@@ -1,3 +1,4 @@
+Code.require_file("./aoc.exs")
 Mix.install([
   {:memoize, "~> 1.4"}
 ])
@@ -7,14 +8,14 @@ defmodule Day11 do
 
   def part1(input) do
     input
-    |> ints()
+    |> AoC.ints()
     |> Enum.map(&count(&1, 25))
     |> Enum.sum()
   end
 
   def part2(input) do
     input
-    |> ints()
+    |> AoC.ints()
     |> Enum.map(&count(&1, 75))
     |> Enum.sum()
   end
@@ -30,12 +31,6 @@ defmodule Day11 do
     else
       count(stone * 2024, blinks - 1)
     end
-  end
-
-  defp ints(input) do
-    Regex.scan(~r/-?\d+/, input)
-    |> List.flatten()
-    |> Enum.map(&String.to_integer/1)
   end
 end
 

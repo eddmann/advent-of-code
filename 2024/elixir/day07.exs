@@ -1,3 +1,5 @@
+Code.require_file("./aoc.exs")
+
 defmodule Day07 do
   def part1(input) do
     equations = parse_equations(input)
@@ -36,15 +38,9 @@ defmodule Day07 do
 
   defp parse_equations(input) do
     for line <- String.split(input, "\n") do
-      [test_value | numbers] = ints(line)
+      [test_value | numbers] = AoC.ints(line)
       {test_value, numbers}
     end
-  end
-
-  defp ints(input) do
-    Regex.scan(~r/-?\d+/, input)
-    |> List.flatten()
-    |> Enum.map(&String.to_integer/1)
   end
 end
 
