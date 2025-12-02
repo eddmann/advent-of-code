@@ -54,3 +54,10 @@ test: {
   part_one: 3
   part_two: 1623178306
 }
+
+@slow
+test: {
+  input: read("aoc://2022/20")
+  part_one: 3473
+  part_two: 7496649006261
+}

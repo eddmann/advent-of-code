@@ -8,7 +8,7 @@ let sensor_ranges = |reports, y| {
     let distance = abs(sx - bx) + abs(sy - by);
     let offset = distance - abs(sy - y);
 
-    if offset > 0 {
+    if offset >= 0 {
       ranges + [[sx - offset, sx + offset]];
     } else {
       ranges;
@@ -16,16 +16,21 @@ let sensor_ranges = |reports, y| {
   }
 }
 
-let uncovered_x = |ranges| {
+let uncovered_x = |ranges, max_bound| {
+  let sorted = ranges |> sort(|[s1], [s2]| s1 > s2);
+
   let recur = |ranges, max_end| match ranges {
+    [] if max_end < max_bound { max_end + 1 }
     [] { nil }
-    [[start, end], _] if start > max_end { start - 1 }
+    [[start, end], ..tail] if start > max_end + 1 { max_end + 1 }
     [[start, end], ..tail] { recur(tail, max(max_end, end)) }
   };
 
-  let [[_, initial_end], ..sorted] = ranges |> sort(|[s1], [s2]| s1 > s2);
-
-  recur(sorted, initial_end);
+  match sorted {
+    [] { 0 }
+    [[start, _], ..rest] if start > 0 { 0 }
+    [[_, end], ..tail] { recur(tail, end) }
+  }
 }
 
 let tuning_frequency = |[x, y]| x * 4_000_000 + y;
@@ -47,10 +52,11 @@ part_one: {
 
 part_two: {
   let reports = parse_reports(input);
+  let max_bound = parse_row(input) * 2;
 
-  parse_row(input)..
+  0..=max_bound
     |> find_map(|y| {
-      if let x = sensor_ranges(reports, y) |> uncovered_x {
+      if let x = uncovered_x(sensor_ranges(reports, y), max_bound) {
         [x, y]
       }
     })
@@ -76,4 +82,11 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3"
 
   part_one: 26
   part_two: 56000011
+}
+
+@slow
+test: {
+  input: read("aoc://2022/15")
+  part_one: 5147333
+  part_two: 13734006908372
 }

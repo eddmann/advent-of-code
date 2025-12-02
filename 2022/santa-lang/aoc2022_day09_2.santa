@@ -2,7 +2,7 @@ input: read("aoc://2022/9")
 
 let parse_motions = lines >> flat_map |motion| {
   let [direction, step] = split(" ", motion);
-  repeat(direction) |> take(step);
+  repeat(direction) |> take(int(step));
 }
 
 let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};

@@ -109,3 +109,10 @@ Valve JJ has flow rate=21; tunnel leads to valve II"
   part_one: 1651
   part_two: 1707
 }
+
+@slow
+test: {
+  input: read("aoc://2022/16")
+  part_one: 1880
+  part_two: 2520
+}
