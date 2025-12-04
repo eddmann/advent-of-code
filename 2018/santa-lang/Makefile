@@ -1,5 +1,5 @@
 IMAGE = ghcr.io/eddmann/santa-lang-cli:latest
-DOCKER = docker run --rm -v $(PWD):/aoc -w /aoc
+DOCKER = docker run --rm -v $(PWD):/aoc
 
 .PHONY: test
 test:
