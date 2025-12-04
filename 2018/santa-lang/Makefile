@@ -1,4 +1,4 @@
-IMAGE = ghcr.io/eddmann/santa-lang-ts:cli-latest
+IMAGE = ghcr.io/eddmann/santa-lang-cli:latest
 DOCKER = docker run --rm -v $(PWD):/aoc -w /aoc
 
 .PHONY: test
