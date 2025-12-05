@@ -1,0 +1,73 @@
+input: read("aoc://2025/4")
+
+let parse_grid = |input| {
+  zip(0.., lines(input))
+    |> flat_map(|[y, row]| {
+      zip(0.., row) |> map(|[x, val]| [[y, x], val])
+    })
+    |> dict
+};
+
+let neighbors = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
+let count_adjacent_rolls = |grid, [y, x]| {
+  neighbors
+    |> map(|[dy, dx]| grid[[y + dy, x + dx]])
+    |> filter(_ == "@")
+    |> size
+};
+
+let is_accessible? = |grid, pos| {
+  grid[pos] == "@" && count_adjacent_rolls(grid, pos) < 4
+};
+
+let find_accessible = |grid| {
+  grid |> keys |> filter(is_accessible?(grid, _))
+};
+
+let remove_all_accessible = |grid| {
+  let accessible = find_accessible(grid);
+  let removed = size(accessible);
+  if removed == 0 {
+    [grid, 0]
+  } else {
+    let new_grid = accessible |> fold(grid) |g, pos| { g |> assoc(pos, ".") };
+    let [final_grid, more_removed] = remove_all_accessible(new_grid);
+    [final_grid, removed + more_removed]
+  }
+};
+
+part_one: {
+  input
+    |> parse_grid
+    |> find_accessible
+    |> size
+}
+
+part_two: {
+  input
+    |> parse_grid
+    |> remove_all_accessible
+    |> second
+}
+
+test: {
+  input: "..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@."
+  part_one: 13
+  part_two: 43
+}
+
+test: {
+  input: read("aoc://2025/4")
+  part_one: 1437
+  part_two: 8765
+}
