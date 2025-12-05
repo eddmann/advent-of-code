@@ -1,0 +1,58 @@
+input: read("aoc://2025/1")
+
+let parse_rotation = |line| {
+  let dir = line[0];
+  let dist = int(line[1..]);
+  if dir == "L" { -dist } else { dist }
+};
+
+let parse_rotations = lines >> map(parse_rotation);
+
+let rotate = |pos, delta| ((pos + delta) % 100 + 100) % 100;
+
+let count_zeros = |pos, delta| {
+  if delta >= 0 { (pos + delta) / 100 }
+  else if pos == 0 { -delta / 100 }
+  else if -delta >= pos { (-delta - pos) / 100 + 1 }
+  else { 0 }
+};
+
+let solve = |count_fn| {
+  fold([50, 0]) |[pos, count], rotation| {
+    let new_pos = rotate(pos, rotation);
+    [new_pos, count + count_fn(pos, rotation, new_pos)]
+  } >> second;
+}
+
+part_one: {
+  input
+    |> parse_rotations
+    |> solve(|_, _, new_pos| if new_pos == 0 { 1 } else { 0 })
+}
+
+part_two: {
+  input
+    |> parse_rotations
+    |> solve(|pos, rotation, _| count_zeros(pos, rotation))
+}
+
+test: {
+  input: "L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82"
+  part_one: 3
+  part_two: 6
+}
+
+test: {
+  input: read("aoc://2025/1")
+  part_one: 1026
+  part_two: 5923
+}
