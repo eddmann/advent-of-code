@@ -1,0 +1,48 @@
+input: read("aoc://2025/2")
+
+let is_doubled? = |n| {
+  let s = "" + n;
+  let len = size(s);
+  len % 2 == 0 && s[0..len/2] == s[len/2..len]
+};
+
+let is_repeated? = |n| {
+  let s = "" + n;
+  let len = size(s);
+  1..(len/2 + 1)
+    |> filter(|d| len % d == 0)
+    |> any?(|d| {
+      let pattern = s[0..d];
+      0..(len/d) |> all?(|i| s[i*d..(i+1)*d] == pattern)
+    })
+};
+
+let parse_ranges = split(",") >> map(|r| {
+  r |> split("-") |> map(int);
+});
+
+let solve = |pred?| flat_map(|[a, b]| a..=b |> filter(pred?) |> list) >> sum;
+
+part_one: {
+  input 
+    |> parse_ranges 
+    |> solve(is_doubled?)
+}
+
+part_two: {
+  input 
+    |> parse_ranges 
+    |> solve(is_repeated?)
+}
+
+test: {
+  input: "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
+  part_one: 1227775554
+  part_two: 4174379265
+}
+
+test: {
+  input: read("aoc://2025/2")
+  part_one: 29818212493
+  part_two: 37432260594
+}
