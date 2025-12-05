@@ -4,8 +4,8 @@ let parse_banks = lines >> map(split("") >> map(int));
 
 let max_k_joltage = |bank, k| {
   let n = size(bank);
-  // Greedy: for each position, pick largest digit that leaves enough remaining
   
+  // Greedy: for each position, pick largest digit that leaves enough remaining
   0..k 
     |> fold([[], 0]) |[digits, start], pos| {
       let end = n - k + pos;
@@ -28,9 +28,9 @@ part_one: {
 
 part_two: {
   input 
-  |> parse_banks 
-  |> map(max_k_joltage(_, 12)) 
-  |> sum
+    |> parse_banks 
+    |> map(max_k_joltage(_, 12)) 
+    |> sum
 }
 
 test: {
