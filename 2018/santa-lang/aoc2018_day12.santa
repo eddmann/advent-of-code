@@ -75,3 +75,9 @@ test: {
 ####. => #"
   part_one: 325
 }
+
+test: {
+  input: read("aoc://2018/12")
+  part_one: 1696
+  part_two: 1799999999458
+}

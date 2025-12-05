@@ -51,7 +51,7 @@ part_two: {
     let mut next_steps = remaining_steps
       |> filter(|step| remaining_dependencies |> all? |[_, dependent]| step != dependent);
 
-    1..total_workers |> each |worker| {
+    1..=total_workers |> each |worker| {
       remaining_worker_durations = remaining_worker_durations
         |> update_d(worker, 0, |time| max(time - 1, 0));
 
@@ -86,4 +86,10 @@ Step D must be finished before step E can begin.
 Step F must be finished before step E can begin."
   part_one: "CABDFE"
   part_two: 253
+}
+
+test: {
+  input: read("aoc://2018/7")
+  part_one: "CFGHAEMNBPRDISVWQUZJYTKLOX"
+  part_two: 828
 }

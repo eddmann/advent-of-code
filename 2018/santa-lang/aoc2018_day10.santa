@@ -1,57 +1,86 @@
 input: read("aoc://2018/10")
 
-let parse_points = lines
-  >> map(|point| {
-    let [x, y, vx, vy] = ints(point);
-    #{x, y, vx, vy};
-  })
-  >> set;
+let parse_points = lines >> map(|point| {
+  let [x, y, vx, vy] = ints(point);
+  #{x, y, vx, vy};
+});
 
-let move = |points, seconds| {
-  let xs = points |> map(|point| point["x"] + point["vx"] * seconds);
-  let ys = points |> map(|point| point["y"] + point["vy"] * seconds);
-
+let bounding_size = |points, seconds| {
+  let xs = points |> map(|p| p["x"] + p["vx"] * seconds);
+  let ys = points |> map(|p| p["y"] + p["vy"] * seconds);
   max(xs) - min(xs) + max(ys) - min(ys);
-}
+};
 
 let draw = |points, seconds| {
   let moved_points = points
-    |> map(|point| [
-      point["x"] + point["vx"] * seconds,
-      point["y"] + point["vy"] * seconds
-    ]);
+    |> map(|p| [p["x"] + p["vx"] * seconds, p["y"] + p["vy"] * seconds])
+    |> set;
 
   let [xs, ys] = zip(..list(moved_points));
 
-  min(ys)..max(ys)
+  min(ys)..=max(ys)
     |> map(|y| {
-      let col = min(xs)..max(xs)
-        |> map(|x| if (moved_points `includes?` [x, y]) { "#" } else { " " })
-        |> fold("", +);
-      col + "\n";
+      min(xs)..=max(xs)
+        |> map(|x| if moved_points `includes?` [x, y] { "#" } else { " " })
+        |> fold("", +)
     })
-    |> fold("", +);
+    |> fold("", |acc, row| acc + row + "\n");
 };
 
-let message_appears = |points, init_seconds| {
-  let init_seconds = 10600;
-  let move_points = move(points);
-
-  let [seconds] = zip(init_seconds.., init_seconds+1..)
-    |> find(|[curr, next]| move_points(curr) < move_points(next));
-
-  seconds;
-}
+let find_message_time = |points| {
+  let size_at = bounding_size(points);
+  0.. |> find(|t| size_at(t) < size_at(t + 1));
+};
 
 part_one: {
   let points = parse_points(input);
 
   points
-    |> message_appears
+    |> find_message_time
     |> draw(points);
 }
 
 part_two: {
-  parse_points(input)
-    |> message_appears
+  parse_points(input) 
+    |> find_message_time;
+}
+
+test: {
+  input: "position=< 9,  1> velocity=< 0,  2>
+position=< 7,  0> velocity=<-1,  0>
+position=< 3, -2> velocity=<-1,  1>
+position=< 6, 10> velocity=<-2, -1>
+position=< 2, -4> velocity=< 2,  2>
+position=<-6, 10> velocity=< 2, -2>
+position=< 1,  8> velocity=< 1, -1>
+position=< 1,  7> velocity=< 1,  0>
+position=<-3, 11> velocity=< 1, -2>
+position=< 7,  6> velocity=<-1, -1>
+position=<-2,  3> velocity=< 1,  0>
+position=<-4,  3> velocity=< 2,  0>
+position=<10, -3> velocity=<-1,  1>
+position=< 5, 11> velocity=< 1, -2>
+position=< 4,  7> velocity=< 0, -1>
+position=< 8, -2> velocity=< 0,  1>
+position=<15,  0> velocity=<-2,  0>
+position=< 1,  6> velocity=< 1,  0>
+position=< 8,  9> velocity=< 0, -1>
+position=< 3,  3> velocity=<-1,  1>
+position=< 0,  5> velocity=< 0, -1>
+position=<-2,  2> velocity=< 2,  0>
+position=< 5, -2> velocity=< 1,  2>
+position=< 1,  4> velocity=< 2,  1>
+position=<-2,  7> velocity=< 2, -2>
+position=< 3,  6> velocity=<-1, -1>
+position=< 5,  0> velocity=< 1,  0>
+position=<-6,  0> velocity=< 2,  0>
+position=< 5,  9> velocity=< 1, -2>
+position=<14,  7> velocity=<-2,  0>
+position=<-3,  6> velocity=< 2, -1>"
+  part_two: 3
+}
+
+test: {
+  input: read("aoc://2018/10")
+  part_two: 10605
 }

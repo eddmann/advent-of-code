@@ -11,7 +11,7 @@ part_one: {
     |> fold(
       [0, 0],
       |[twos, threes], id| {
-        let frequencies = counter(id);
+        let frequencies = counter(id) |> values;
         let two = if frequencies `includes?` 2 { 1 } else { 0 };
         let three = if frequencies `includes?` 3 { 1 } else { 0 };
         [twos + two, threes + three];
@@ -42,4 +42,10 @@ test: {
 test: {
   input: "abcde\nfghij\nklmno\npqrst\nfguij\naxcye\nwvxyz"
   part_two: "fgij"
+}
+
+test: {
+  input: read("aoc://2018/2")
+  part_one: 6474
+  part_two: "mxhwoglxgeauywfkztndcvjqr"
 }

@@ -76,3 +76,10 @@ test: {
   input: "59414"
   part_two: 2018
 }
+
+@slow
+test: {
+  input: read("aoc://2018/14")
+  part_one: "6107101544"
+  part_two: 20291131
+}

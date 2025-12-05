@@ -88,3 +88,10 @@ test: {
   \\------/   "
   part_one: "7,3"
 }
+
+@slow
+test: {
+  input: read("aoc://2018/13")
+  part_one: "119,41"
+  part_two: "45,136"
+}

@@ -57,3 +57,10 @@ test: {
   input: "30 players; last marble is worth 5807 points"
   part_one: 37305
 }
+
+@slow
+test: {
+  input: read("aoc://2018/9")
+  part_one: 425688
+  part_two: 3526561003
+}

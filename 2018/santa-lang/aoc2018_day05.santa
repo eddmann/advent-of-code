@@ -37,3 +37,10 @@ test: {
   part_one: 10
   part_two: 4
 }
+
+@slow
+test: {
+  input: read("aoc://2018/5")
+  part_one: 10132
+  part_two: 4572
+}

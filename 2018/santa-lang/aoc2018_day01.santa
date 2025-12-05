@@ -58,3 +58,9 @@ test: {
   input: "+7\n+7\n-2\n-7\n-4"
   part_two: 14
 }
+
+test: {
+  input: read("aoc://2018/1")
+  part_one: 474
+  part_two: 137041
+}

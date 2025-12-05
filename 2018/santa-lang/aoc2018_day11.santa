@@ -76,3 +76,20 @@ part_two: {
 
   "" + max_x + "," + max_y + "," + max_dimension;
 }
+
+test: {
+  input: "18"
+  part_one: "33,45"
+}
+
+test: {
+  input: "42"
+  part_one: "21,61"
+}
+
+@slow
+test: {
+  input: read("aoc://2018/11")
+  part_one: "235,87"
+  part_two: "234,272,18"
+}
