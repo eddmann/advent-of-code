@@ -3,9 +3,10 @@ DOCKER = docker run --rm -v $(PWD):/aoc
 
 .PHONY: test
 test:
+	@docker pull -q $(IMAGE)
 	@EXIT_CODE=0; \
 	for s in *.santa; do \
-		echo -e "\n--\n$$s\n--\n"; \
+		printf '\n═══ %s ═══\n\n' "$$s"; \
 		$(DOCKER) $(IMAGE) --test /aoc/$$s; \
 		if [ "$$?" != "0" ]; then \
 			EXIT_CODE=1; \
