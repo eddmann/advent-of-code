@@ -10,11 +10,11 @@ let parse_rotations = lines >> map(parse_rotation);
 
 let rotate = |pos, delta| ((pos + delta) % 100 + 100) % 100;
 
-let count_zeros = |pos, delta| {
-  if delta >= 0 { (pos + delta) / 100 }
-  else if pos == 0 { -delta / 100 }
-  else if -delta >= pos { (-delta - pos) / 100 + 1 }
-  else { 0 }
+let count_zeros = |pos, delta| match [pos, delta] {
+  [_, d] if d >= 0 { (pos + d) / 100 }
+  [0, d] { -d / 100 }
+  [p, d] if -d >= p { (-d - p) / 100 + 1 }
+  _ { 0 }
 };
 
 let solve = |count_fn| {
