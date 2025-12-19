@@ -4,75 +4,65 @@ let tally_guards_sleep = |input| {
   input
     |> lines
     |> sort(>)
-    |> fold_s(
-      [#{}, nil, nil],
-      |[sleep, guard, start], action| {
-        if action[25] == "#" {
-          return [sleep, int(split(" ", action)[3][1..]), nil];
-        }
-
-        if action[25] == "a" {
-          return [sleep, guard, int(action[15..17])];
-        }
-
-        let sleep_range = start..int(action[15..17]);
-
-        let updated_sleep = sleep |> update_d(
-          guard,
-          #{},
-          |guard_sleep| {
-            fold(
-              guard_sleep,
-              |hours, hour| update_d(hour, 0, _ + 1, hours),
-              sleep_range
-            );
-          }
-        );
-
-        [updated_sleep, guard, nil];
+    |> fold_s([#{}, nil, nil]) |[sleep, guard, start], action| {
+      if action[25] == "#" {
+        return [sleep, int(split(" ", action)[3][1..]), nil]
       }
-    )
+
+      if action[25] == "a" {
+        return [sleep, guard, int(action[15..17])]
+      }
+
+      let sleep_range = start..int(action[15..17])
+
+      let updated_sleep = sleep |> update_d(guard, #{}) |guard_sleep| {
+        fold(guard_sleep, |hours, hour| update_d(hour, 0, _ + 1, hours), sleep_range)
+      };
+
+      [updated_sleep, guard, nil]
+    }
     |> map(fold([], |hours, total, hour| hours + [[hour, total]]))
-};
+}
 
 part_one: {
-  let guards_sleep = tally_guards_sleep(input);
+  let guards_sleep = tally_guards_sleep(input)
 
   let id = guards_sleep
-    |> fold(
-      [],
-      |guards, hours, id| {
-        guards + [[id, hours |> fold(0, |total, [_, time]| total + time)]];
-      }
-    )
+    |> fold([]) |guards, hours, id| {
+      guards + [[id, hours |> fold(0, |total, [_, time]| total + time)]]
+    }
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
-    |> |[[id]]| id;
+    |> |[[id]]| id
 
   let minute = guards_sleep[id]
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
     |> |[[minute]]| minute;
 
-  id * minute;
+  id * minute
 }
 
 part_two: {
-  let guards_sleep = tally_guards_sleep(input);
+  let guards_sleep = tally_guards_sleep(input)
 
   let id = guards_sleep
-    |> fold(
-      [],
-      |guards, hours, id| {
-        guards + [[id, hours |> map(get(1)) |> max]];
-      }
-    )
+    |> fold([]) |guards, hours, id| {
+      guards + [
+        [
+          id,
+          hours
+            |> map(get(1))
+            |> max
+        ]
+      ]
+    }
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
-    |> |[[id]]| id;
+    |> |[[id]]| id
 
   let minute = guards_sleep[id]
     |> sort(|[_, total_a], [_, total_b]| total_a < total_b)
-    |> |[[minute]]| minute
+    |> |[[minute]]| minute;
 
-  id * minute;
+  id * minute
 }
 
 test: {

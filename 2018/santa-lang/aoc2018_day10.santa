@@ -1,48 +1,51 @@
 input: read("aoc://2018/10")
 
-let parse_points = lines >> map(|point| {
-  let [x, y, vx, vy] = ints(point);
-  #{x, y, vx, vy};
-});
+let parse_points = lines
+  >> map |point| {
+    let [x, y, vx, vy] = ints(point);
+
+    #{x, y, vx, vy}
+  }
 
 let bounding_size = |points, seconds| {
-  let xs = points |> map(|p| p["x"] + p["vx"] * seconds);
+  let xs = points |> map(|p| p["x"] + p["vx"] * seconds)
   let ys = points |> map(|p| p["y"] + p["vy"] * seconds);
-  max(xs) - min(xs) + max(ys) - min(ys);
-};
+
+  max(xs) - min(xs) + max(ys) - min(ys)
+}
 
 let draw = |points, seconds| {
   let moved_points = points
     |> map(|p| [p["x"] + p["vx"] * seconds, p["y"] + p["vy"] * seconds])
-    |> set;
+    |> set
 
   let [xs, ys] = zip(..list(moved_points));
 
   min(ys)..=max(ys)
-    |> map(|y| {
+    |> map |y| {
       min(xs)..=max(xs)
         |> map(|x| if moved_points `includes?` [x, y] { "#" } else { " " })
         |> fold("", +)
-    })
-    |> fold("", |acc, row| acc + row + "\n");
-};
+    }
+    |> fold("", |acc, row| acc + row + "\n")
+}
 
 let find_message_time = |points| {
   let size_at = bounding_size(points);
-  0.. |> find(|t| size_at(t) < size_at(t + 1));
-};
+
+  0.. |> find(|t| size_at(t) < size_at(t + 1))
+}
 
 part_one: {
   let points = parse_points(input);
 
   points
     |> find_message_time
-    |> draw(points);
+    |> draw(points)
 }
 
 part_two: {
-  parse_points(input) 
-    |> find_message_time;
+  parse_points(input) |> find_message_time
 }
 
 test: {

@@ -1,55 +1,65 @@
 input: read("aoc://2018/6")
 
-let parse_points = lines >> map(ints);
+let parse_points = lines >> map(ints)
 
-let distance = |[x1, y1], [x2, y2]| abs(x1 - x2) + abs(y1 - y2);
+let distance = |[x1, y1], [x2, y2]| abs(x1 - x2) + abs(y1 - y2)
 
 let calc_boundary = |points| {
   let [xs, ys] = zip(..points);
-  [min(xs), max(xs), min(ys), max(ys)];
-};
+
+  [min(xs), max(xs), min(ys), max(ys)]
+}
 
 let generate_grid = |points| {
   let [lx, hx, ly, hy] = calc_boundary(points);
-  lx..=hx |> flat_map(|x| ly..=hy |> map(|y| [x, y]));
-};
+
+  lx..=hx |> flat_map |x| {
+    ly..=hy |> map(|y| [x, y])
+  }
+}
 
 part_one: {
-  let points = parse_points(input);
-  let [lx, hx, ly, hy] = calc_boundary(points);
+  let points = parse_points(input)
+  let [lx, hx, ly, hy] = calc_boundary(points)
 
-  let [totals, infinite] = generate_grid(points)
-    |> fold(
-      [#{}, {}],
-      |[totals, infinite], [x, y]| {
-        let [first, second] = points
-          |> map(|position| #{position, "distance": distance([x, y], position)})
-          |> sort(|a, b| a["distance"] > b["distance"]);
-
-        if first["distance"] == second["distance"] {
-          return [totals, infinite];
-        }
-
-        return [
-          totals |> update_d(first["position"], 0, _ + 1),
-          if x == lx || y == ly || x == hx || y == hy { infinite + {first["position"]} } else { infinite }
-        ];
+  let [totals, infinite] = generate_grid(points) |> fold([#{}, {}]) |[totals, infinite], [x, y]| {
+    let [first, second] = points
+      |> map |position| {
+        #{position, "distance": distance([x, y], position)}
       }
-    );
+      |> sort(|a, b| a["distance"] > b["distance"])
+
+    if first["distance"] == second["distance"] {
+      return [totals, infinite]
+    }
+
+    return [
+      totals |> update_d(first["position"], 0, _ + 1),
+      if x == lx || y == ly || x == hx || y == hy {
+        infinite + {first["position"]}
+      } else {
+        infinite
+      }
+    ]
+  };
 
   list(totals)
     |> filter(|[position]| infinite `excludes?` position)
     |> map(|[_, total]| total)
-    |> max;
+    |> max
 }
 
 part_two: {
   let points = parse_points(input);
 
   generate_grid(points)
-    |> map(|position| points |> map(distance(position)) |> sum)
+    |> map |position| {
+      points
+        |> map(distance(position))
+        |> sum
+    }
     |> filter(_ < 10_000)
-    |> size;
+    |> size
 }
 
 test: {

@@ -1,77 +1,79 @@
 input: read("aoc://2018/7")
 
-let parse_instructions = lines >> map(|line| [line[5], line[-12]]);
+let parse_instructions = lines >> map(|line| [line[5], line[-12]])
 
-let sort_steps = flat_map(|a| a) >> set >> list >> sort(>);
+let sort_steps = flat_map(|a| a) >> set >> list >> sort(>)
 
 part_one: {
   let calc_step_order = |dependencies, remaining_steps, step_order| {
     if size(remaining_steps) == 0 {
-      return step_order;
+      return step_order
     }
 
     let next_step = remaining_steps
-      |> filter(|step| dependencies |> all? |[_, dependent]| step != dependent)
+      |> filter |step| {
+        dependencies |> all?(|[_, dependent]| step != dependent)
+      }
       |> first;
 
     calc_step_order(
-      dependencies |> filter |[step]| step != next_step,
+      dependencies |> filter(|[step]| step != next_step),
       remaining_steps |> filter(_ != next_step),
       step_order + next_step
-    );
-  };
+    )
+  }
 
   let dependencies = parse_instructions(input);
 
-  calc_step_order(
-    dependencies,
-    sort_steps(dependencies),
-    ""
-  );
+  calc_step_order(dependencies, sort_steps(dependencies), "")
 }
 
-let step_duration = zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0..) |> dict;
+let step_duration = zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0..) |> dict
 
-let time = |step| 60 + step_duration[step];
+let time = |step| 60 + step_duration[step]
 
 part_two: {
-  let dependencies = parse_instructions(input);
+  let dependencies = parse_instructions(input)
 
-  let total_workers = 5;
-  let mut remaining_dependencies = dependencies;
-  let mut remaining_steps = dependencies |> sort_steps;
-  let mut current_worker_steps = #{};
+  let total_workers = 5
+  let mut remaining_dependencies = dependencies
+  let mut remaining_steps = dependencies |> sort_steps
+  let mut current_worker_steps = #{}
   let mut remaining_worker_durations = #{};
 
   0.. |> find |duration| {
     if size(remaining_steps) == 0 && remaining_worker_durations |> all?(_ == 0) {
-      return duration;
+      return duration
     }
 
-    let mut next_steps = remaining_steps
-      |> filter(|step| remaining_dependencies |> all? |[_, dependent]| step != dependent);
+    let mut next_steps = remaining_steps |> filter |step| {
+      remaining_dependencies |> all?(|[_, dependent]| step != dependent)
+    };
 
     1..=total_workers |> each |worker| {
-      remaining_worker_durations = remaining_worker_durations
-        |> update_d(worker, 0, |time| max(time - 1, 0));
+      remaining_worker_durations = remaining_worker_durations |> update_d(worker, 0) |time| {
+        max(time - 1, 0)
+      }
 
       if remaining_worker_durations[worker] > 0 {
-        return nil;
+        return nil
       }
 
-      remaining_dependencies = remaining_dependencies
-        |> filter |[step]| step != current_worker_steps[worker];
+      remaining_dependencies = remaining_dependencies |> filter |[step]| {
+        step != current_worker_steps[worker]
+      }
 
       if size(next_steps) == 0 {
-        return nil;
+        return nil
       }
 
-      let next_step = first(next_steps);
-      next_steps = rest(next_steps);
+      let next_step = first(next_steps)
+      next_steps = rest(next_steps)
 
-      remaining_steps = remaining_steps |> filter(_ != next_step);
+      remaining_steps = remaining_steps |> filter(_ != next_step)
       current_worker_steps = current_worker_steps |> assoc(worker, next_step);
-      remaining_worker_durations = remaining_worker_durations |> assoc(worker, time(next_step));
+
+      remaining_worker_durations = remaining_worker_durations |> assoc(worker, time(next_step))
     }
   }
 }

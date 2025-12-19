@@ -1,32 +1,31 @@
 input: read("aoc://2018/1")
 
-let parse_deltas = ints;
+let parse_deltas = ints
 
 part_one: {
-  parse_deltas(input) |> sum;
+  parse_deltas(input) |> sum
 }
 
 part_two: {
   let scan = |fn, initial, collection| {
     let mut previous = initial;
-    map(
-      |value| { previous = fn(previous, value); },
-      collection
-    );
-  };
+
+    map(|value| previous = fn(previous, value), collection)
+  }
 
   let mut seen = {};
 
   parse_deltas(input)
     |> cycle
     |> scan(+, 0)
-    |> find(|frequency| {
+    |> find |frequency| {
       if seen `includes?` frequency {
-        return true;
+        return true
       }
       seen = seen + {frequency};
-      false;
-    });
+
+      false
+    }
 }
 
 test: {
@@ -45,17 +44,29 @@ test: {
 }
 
 test: {
-  input: "+3\n+3\n+4\n-2\n-4"
+  input: "+3
++3
++4
+-2
+-4"
   part_two: 10
 }
 
 test: {
-  input: "-6\n+3\n+8\n+5\n-6"
+  input: "-6
++3
++8
++5
+-6"
   part_two: 5
 }
 
 test: {
-  input: "+7\n+7\n-2\n-7\n-4"
+  input: "+7
++7
+-2
+-7
+-4"
   part_two: 14
 }
 

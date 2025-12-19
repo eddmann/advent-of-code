@@ -1,27 +1,28 @@
 input: read("aoc://2018/12")
 
 let parse_notes = |input| {
-  let [initial, _, ..patterns] = lines(input);
+  let [initial, _, ..patterns] = lines(input)
 
-  let pots = zip(0.., initial[15..]) |> fold(
-    {},
-    |initial, [position, pot]| if pot == "#" { initial + {position} } else { initial }
-  );
+  let pots = zip(0.., initial[15..]) |> fold({}) |initial, [position, pot]| {
+    if pot == "#" { initial + {position} } else { initial }
+  };
 
-  [pots, patterns |> map(split(" => ")) |> dict];
+  [
+    pots,
+    patterns
+      |> map(split(" => "))
+      |> dict
+  ]
 }
 
 let generation = |patterns, pots| {
-  min(pots)-2..max(pots)+2 |> fold(
-    {},
-    |next, position| {
-      let pattern = -2..=2
-        |> map(|offset| if pots `includes?` (position + offset) { "#" } else { "." })
-        |> fold("", +);
+  min(pots) - 2..max(pots) + 2 |> fold({}) |next, position| {
+    let pattern = -2..=2
+      |> map(|offset| if pots `includes?` (position + offset) { "#" } else { "." })
+      |> fold("", +);
 
-      if patterns[pattern] == "#" { next + {position} } else { next };
-    }
-  );
+    if patterns[pattern] == "#" { next + {position} } else { next }
+  }
 }
 
 part_one: {
@@ -29,31 +30,28 @@ part_one: {
 
   iterate(generation(patterns), initial)
     |> get(20)
-    |> sum;
+    |> sum
 }
 
 part_two: {
-  let [initial, patterns] = parse_notes(input);
+  let [initial, patterns] = parse_notes(input)
 
-  let generator = generation(patterns);
+  let generator = generation(patterns)
 
   let generation_window = zip(
     0..,
     iterate(generator, initial),
     iterate(generator, initial) |> skip(1),
     iterate(generator, initial) |> skip(2)
-  );
+  )
 
   let [duplicate_cycle, duplicate_total, duplicate_diff] = generation_window
-    |> map(|[cycle, previous, current, next]| [
-      cycle,
-      sum(previous),
-      sum(current) - sum(previous),
-      sum(next) - sum(current)
-    ])
+    |> map |[cycle, previous, current, next]| {
+      [cycle, sum(previous), sum(current) - sum(previous), sum(next) - sum(current)]
+    }
     |> find(|[_, _, previous_diff, next_diff]| previous_diff == next_diff);
 
-  (50_000_000_000 - duplicate_cycle) * duplicate_diff + duplicate_total;
+  (50_000_000_000 - duplicate_cycle) * duplicate_diff + duplicate_total
 }
 
 test: {

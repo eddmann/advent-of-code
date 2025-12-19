@@ -1,26 +1,27 @@
 input: read("aoc://2018/8")
 
-let parse_license = ints;
+let parse_license = ints
 
 part_one: {
   let sum_metadata = |license| {
-    let [children, meta, ..rest] = license;
+    let [children, meta, ..rest] = license
 
-    if (children == 0) {
-      return [sum(rest[0..meta]), rest[meta..]];
+    if children == 0 {
+      return [sum(rest[0..meta]), rest[meta..]]
     }
 
     let [total, next_rest] = fold(
       [0, rest],
       |[total, rest]| {
         let [sub_total, next_rest] = sum_metadata(rest);
-        [total + sub_total, next_rest];
+
+        [total + sub_total, next_rest]
       },
       0..children
     );
 
-    [total + sum(next_rest[0..meta]), next_rest[meta..]];
-  }
+    [total + sum(next_rest[0..meta]), next_rest[meta..]]
+  };
 
   parse_license(input)
     |> sum_metadata
@@ -29,20 +30,21 @@ part_one: {
 
 part_two: {
   let root_value = |license| {
-    let [children, meta, ..rest] = license;
+    let [children, meta, ..rest] = license
 
-    if (children == 0) {
-      return [sum(rest[0..meta]), rest[meta..]];
+    if children == 0 {
+      return [sum(rest[0..meta]), rest[meta..]]
     }
 
     let [metadata, next_rest] = fold(
       [[], rest],
       |[metadata, rest]| {
         let [sub_metadata, next_rest] = root_value(rest);
-        [[..metadata, sub_metadata], next_rest];
+
+        [[..metadata, sub_metadata], next_rest]
       },
       0..children
-    );
+    )
 
     let value = fold(
       0,
@@ -50,8 +52,8 @@ part_two: {
       next_rest[0..meta]
     );
 
-    [value, next_rest[meta..]];
-  }
+    [value, next_rest[meta..]]
+  };
 
   parse_license(input)
     |> root_value

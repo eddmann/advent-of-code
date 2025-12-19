@@ -1,45 +1,41 @@
 input: read("aoc://2018/14")
 
 let next_score = |[scores, elf_1, elf_2]| {
-  let next = "" + (scores[elf_1] + scores[elf_2])
-    |> fold(
-      scores,
-      |scores, score| scores |> push(int(score))
-    );
+  let next = "" + (scores[elf_1] + scores[elf_2]) |> fold(scores) |scores, score| {
+    scores |> push(int(score))
+  };
 
-  [
-    next,
-    (elf_1 + next[elf_1] + 1) % size(next),
-    (elf_2 + next[elf_2] + 1) % size(next)
-  ];
+  [next, (elf_1 + next[elf_1] + 1) % size(next), (elf_2 + next[elf_2] + 1) % size(next)]
 }
 
-let initial_scores = [3, 7];
+let initial_scores = [3, 7]
 
 part_one: {
-  let after = int(input);
-  let collect = 10;
+  let after = int(input)
+  let collect = 10
 
-  let [recipes] = iterate(next_score, [initial_scores, 0, 1])
-    |> find(|[recipes]| size(recipes) > after + collect);
+  let [recipes] = iterate(next_score, [initial_scores, 0, 1]) |> find |[recipes]| {
+    size(recipes) > after + collect
+  };
 
-  recipes[after..after+collect] |> fold("", +);
+  recipes[after..after + collect] |> fold("", +)
 }
 
 part_two: {
-  let sequence = input |> split("") |> map(int);
+  let sequence = input
+    |> split("")
+    |> map(int)
 
-  let [recipes] = iterate(next_score, [initial_scores, 0, 1])
-    |> find(|[recipes]| {
-      let single_entry = recipes[-(size(sequence)+1)..-1];
-      let double_entry = recipes[-(size(sequence))..];
+  let [recipes] = iterate(next_score, [initial_scores, 0, 1]) |> find |[recipes]| {
+    let single_entry = recipes[-(size(sequence) + 1)..-1]
+    let double_entry = recipes[-size(sequence)..];
 
-      single_entry == sequence || double_entry == sequence
-    });
+    single_entry == sequence || double_entry == sequence
+  }
 
-  let single_entry_offset = if recipes[-(size(sequence)+1)..-1] == sequence { 1 } else { 0 };
+  let single_entry_offset = if recipes[-(size(sequence) + 1)..-1] == sequence { 1 } else { 0 };
 
-  size(recipes) - size(sequence) - single_entry_offset;
+  size(recipes) - size(sequence) - single_entry_offset
 }
 
 test: {

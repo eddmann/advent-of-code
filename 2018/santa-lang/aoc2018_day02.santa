@@ -1,22 +1,17 @@
 input: read("aoc://2018/2")
 
 part_one: {
-  let counter = fold(
-    #{},
-    |frequencies, value| update_d(value, 0, _ + 1, frequencies)
-  );
+  let counter = fold(#{}, |frequencies, value| update_d(value, 0, _ + 1, frequencies));
 
   input
     |> lines
-    |> fold(
-      [0, 0],
-      |[twos, threes], id| {
-        let frequencies = counter(id) |> values;
-        let two = if frequencies `includes?` 2 { 1 } else { 0 };
-        let three = if frequencies `includes?` 3 { 1 } else { 0 };
-        [twos + two, threes + three];
-      }
-    )
+    |> fold([0, 0]) |[twos, threes], id| {
+      let frequencies = counter(id) |> values
+      let two = if frequencies `includes?` 2 { 1 } else { 0 }
+      let three = if frequencies `includes?` 3 { 1 } else { 0 };
+
+      [twos + two, threes + three]
+    }
     |> |[a, b]| a * b
 }
 
@@ -31,16 +26,28 @@ part_two: {
     |> lines
     |> combinations(2)
     |> find(|pair| checksum(!=, pair) |> size == 1)
-    |> checksum(==);
+    |> checksum(==)
 }
 
 test: {
-  input: "abcdef\nbababc\nabbcde\nabcccd\naabcdd\nabcdee\nababab"
+  input: "abcdef
+bababc
+abbcde
+abcccd
+aabcdd
+abcdee
+ababab"
   part_one: 12
 }
 
 test: {
-  input: "abcde\nfghij\nklmno\npqrst\nfguij\naxcye\nwvxyz"
+  input: "abcde
+fghij
+klmno
+pqrst
+fguij
+axcye
+wvxyz"
   part_two: "fgij"
 }
 

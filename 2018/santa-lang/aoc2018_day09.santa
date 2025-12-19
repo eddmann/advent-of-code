@@ -1,36 +1,39 @@
 input: read("aoc://2018/9")
 
-let parse_game = ints;
+let parse_game = ints
 
 let play_game = |players, max_points| {
   let scores = fold_s(
     [#{}, [0]],
     |[scores, circle], points| {
-      if (points % 23 != 0) {
-        let rotated = rotate(2, circle);
-        return [scores, rotated + [points]];
+      if points % 23 != 0 {
+        let rotated = rotate(2, circle)
+        return [scores, rotated + [points]]
       }
 
       let rotated = rotate(-6, circle);
+
       [
         scores |> update_d(points % players, 0, |score| score + points + first(rotated)),
         rest(rotated)
-      ];
+      ]
     },
     1..=max_points
   );
 
-  max(scores);
-};
+  max(scores)
+}
 
 part_one: {
   let [players, points] = parse_game(input);
-  play_game(players, points);
+
+  play_game(players, points)
 }
 
 part_two: {
   let [players, points] = parse_game(input);
-  play_game(players, points * 100);
+
+  play_game(players, points * 100)
 }
 
 test: {
