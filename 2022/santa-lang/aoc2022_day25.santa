@@ -2,28 +2,36 @@ input: read("aoc://2022/25")
 
 let conversion = #{
   nil: 0,
-  "0": 0, "1": 1, "2": 2, "=": -2, "-": -1,
-   0: "0", 1: "1", 2: "2", -2: "=", -1: "-"
-};
+  "0": 0,
+  "1": 1,
+  "2": 2,
+  "=": -2,
+  "-": -1,
+  0: "0",
+  1: "1",
+  2: "2",
+  -2: "=",
+  -1: "-"
+}
 
 let snafu_sum = |a, b| {
   let recur = |a, b, acc, carry| {
     if a == "" && b == "" && carry == 0 {
-      return acc;
+      return acc
     }
 
-    let place = carry + conversion[a[-1]] + conversion[b[-1]];
-    let next_carry = if place > 2 { 1 } else { if place < -2 { -1 } else { 0 } };
-    let digit = ((place + 2) % 5) - 2;
+    let place = carry + conversion[a[-1]] + conversion[b[-1]]
+    let next_carry = if place > 2 { 1 } else { if place < -2 { -1 } else { 0 } }
+    let digit = (place + 2) % 5 - 2;
 
-    recur(a[0..size(a)-1], b[0..size(b)-1], conversion[digit] + acc, next_carry);
+    recur(a[0..size(a) - 1], b[0..size(b) - 1], conversion[digit] + acc, next_carry)
   };
 
-  recur(a, b, "", 0);
+  recur(a, b, "", 0)
 }
 
 part_one: {
-  lines(input) |> reduce(snafu_sum);
+  lines(input) |> reduce(snafu_sum)
 }
 
 test: {

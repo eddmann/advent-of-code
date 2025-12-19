@@ -3,95 +3,102 @@ input: read("aoc://2022/16")
 let parse_valves = |input| {
   let parse_valve = |line| {
     let [valve, rate, tunnels] = regex_match("Valve (\\w+) .+ rate=(\\d+); .+ valves? (.+)", line);
-    [valve, #{"flow": int(rate), "tunnels": tunnels |> split(", ")}];
+
+    [valve, #{"flow": int(rate), "tunnels": tunnels |> split(", ")}]
   };
 
   input
     |> lines
     |> map(parse_valve)
-    |> dict;
+    |> dict
 }
 
 let tunnel_distances = |valves, valve| {
   let recur = |queue, visited, distances| {
     if size(queue) == 0 {
-      return distances;
+      return distances
     }
 
-    let [distance, valve] = first(queue);
+    let [distance, valve] = first(queue)
 
-    let [next_valves, next_distances] = valves[valve]["tunnels"]
-      |> fold(
-        [[], distances],
-        |[next_valves, next_distances], neighbor| {
-          if visited `includes?` neighbor {
-            return [next_valves, next_distances];
-          };
+    let [next_valves, next_distances] = valves[valve]["tunnels"] |> fold([[], distances]) |[next_valves, next_distances], neighbor| {
+      if visited `includes?` neighbor {
+        return [next_valves, next_distances]
+      };
 
-          [
-            next_valves + [[distance + 1, neighbor]],
-            if valves[neighbor]["flow"] > 0 { next_distances |> assoc(neighbor, distance + 1) } else { next_distances }
-          ];
+      [
+        next_valves + [[distance + 1, neighbor]],
+        if valves[neighbor]["flow"] > 0 {
+          next_distances |> assoc(neighbor, distance + 1)
+        } else {
+          next_distances
         }
-      );
+      ]
+    };
 
-    recur(
-      rest(queue) + next_valves,
-      visited + map(|[_, valve]| valve, next_valves),
-      next_distances
-    );
+    recur(rest(queue) + next_valves, visited + map(|[_, valve]| valve, next_valves), next_distances)
   };
 
-  recur([[0, valve]], {valve}, #{valve: 0});
+  recur([[0, valve]], {valve}, #{valve: 0})
 }
 
-let eligble_valves = filter(|scan, valve| scan["flow"] > 0 || valve == "AA");
+let eligble_valves = filter(|scan, valve| scan["flow"] > 0 || valve == "AA")
 
 let pressure_gauge = |valves| {
-  let distances = eligble_valves(valves) |> map(|_, valve| tunnel_distances(valves, valve));
-  let valve_ids = distances |> keys |> zip(_, 0..) |> dict |> map(|id| 1 `bit_shift_left` id);
+  let distances = eligble_valves(valves) |> map(|_, valve| tunnel_distances(valves, valve))
+  let valve_ids = distances
+    |> keys
+    |> zip(_, 0..)
+    |> dict
+    |> map(|id| 1 `bit_shift_left` id)
 
   let recur = memoize |valve, time, open_valves| {
     distances[valve] |> fold(0) |max_pressure, distance, neighbor| {
       if open_valves `bit_and` valve_ids[neighbor] > 0 {
-        return max_pressure;
+        return max_pressure
       }
 
-      let remaining_time = time - distance - 1;
+      let remaining_time = time - distance - 1
 
       if remaining_time < 1 {
-        return max_pressure;
+        return max_pressure
       }
 
       let released_pressure = valves[neighbor]["flow"] * remaining_time;
 
       max(
         max_pressure,
-        released_pressure + recur(neighbor, remaining_time, open_valves `bit_or` valve_ids[neighbor])
-      );
+        released_pressure + recur(
+          neighbor,
+          remaining_time,
+          open_valves `bit_or` valve_ids[neighbor]
+        )
+      )
     }
   }
 }
 
 part_one: {
   let max_pressure = parse_valves(input) |> pressure_gauge;
-  max_pressure("AA", 30, 0);
+
+  max_pressure("AA", 30, 0)
 }
 
 part_two: {
-  let valves = parse_valves(input);
-  let max_pressure = pressure_gauge(valves);
+  let valves = parse_valves(input)
+  let max_pressure = pressure_gauge(valves)
 
-  let all_valves_open = (1 `bit_shift_left` size(eligble_valves(valves))) - 1;
+  let all_valves_open = 1 `bit_shift_left` size(eligble_valves(valves)) - 1
   let valve_variations = (all_valves_open + 1) / 2;
 
   0..valve_variations
-    |> map(|open_valves| {
-      let me = max_pressure("AA", 26, open_valves);
+    |> map |open_valves| {
+      let me = max_pressure("AA", 26, open_valves)
       let elephant = max_pressure("AA", 26, all_valves_open `bit_xor` open_valves);
-      me + elephant;
-    })
-    |> max;
+
+      me + elephant
+    }
+    |> max
 }
 
 test: {

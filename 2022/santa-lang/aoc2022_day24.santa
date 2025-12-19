@@ -1,65 +1,63 @@
 input: read("aoc://2022/24")
 
 let gcd = |a, b| if b == 0 { a } else { gcd(b, a % b) }
+
 let lcm = |..n| fold(1, |a, b| a / gcd(a, b) * b, n)
 
 let parse_valley = |input| {
-  let valley = lines(input);
-  let by = size(valley);
+  let valley = lines(input)
+  let by = size(valley)
   let bx = size(valley[0]);
 
-  [valley, [by, bx], [0, 1], [by-1, bx-2]];
+  [valley, [by, bx], [0, 1], [by - 1, bx - 2]]
 }
 
 let parse_blizzards = |valley| {
   zip(0.., valley)
-    |> flat_map(|[y, row]| {
+    |> flat_map |[y, row]| {
       zip(0.., row)
         |> filter(|[_, pos]| ["^", "v", "<", ">"] `includes?` pos)
-        |> map(|[x, dir]| [y, x, dir]);
-    })
-    |> set;
+        |> map(|[x, dir]| [y, x, dir])
+    }
+    |> set
 }
 
-let directions = #{">": [0, 1], "v": [1, 0], "<": [0, -1], "^": [-1, 0]};
+let directions = #{">": [0, 1], "v": [1, 0], "<": [0, -1], "^": [-1, 0]}
 
 let next_blizzards = |[by, bx], blizzards| {
   blizzards |> fold({}) |blizzards, blizzard| {
-    let [y, x, direction] = blizzard;
-    let [dy, dx] = directions[direction];
-    let mut [ny, nx] = [y + dy, x + dx];
+    let [y, x, direction] = blizzard
+    let [dy, dx] = directions[direction]
+    let mut [ny, nx] = [y + dy, x + dx]
 
-    if ny == 0 { ny = by - 2; }
-    if ny == by - 1 { ny = 1; }
-    if nx == 0 { nx = bx - 2; }
-    if nx == bx - 1 { nx = 1; }
+    if ny == 0 { ny = by - 2 }
+    if ny == by - 1 { ny = 1 }
+    if nx == 0 { nx = bx - 2 }
+    if nx == bx - 1 { nx = 1 };
 
-    blizzards + {[ny, nx, direction]};
+    blizzards + {[ny, nx, direction]}
   }
 }
 
 let blizzard_cycle = memoize |[by, bx], valley| {
   let initial_blizzards = parse_blizzards(valley);
 
-  iterate(next_blizzards([by, bx]), initial_blizzards)
-    |> take(lcm(by - 2, bx - 2));
+  iterate(next_blizzards([by, bx]), initial_blizzards) |> take(lcm(by - 2, bx - 2))
 }
 
 let travel = |blizzards, [by, bx], start, end, initial_time| {
   let is_no_blizzard = |[time, [y, x]]| {
     [[y, x, "<"], [y, x, ">"], [y, x, "^"], [y, x, "v"]]
-      |> all?(blizzards[time % size(blizzards)] `excludes?` _);
-  };
+      |> all?(blizzards[time % size(blizzards)] `excludes?` _)
+  }
 
-  let in_bounds? = |[y, x]| {
-    start == [y, x] || end == [y, x] || (y > 0 && y < by - 1 && x > 0 && x < bx - 1);
-  };
+  let in_bounds? = |[y, x]| start == [y, x] || end == [y, x] || (y > 0 && y < by - 1 && x > 0 && x < bx - 1)
 
   let recur = |queue, seen| {
-    let [time, position] = first(queue);
+    let [time, position] = first(queue)
 
     if position == end {
-      return time;
+      return time
     }
 
     let next_positions = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 0]]
@@ -69,28 +67,27 @@ let travel = |blizzards, [by, bx], start, end, initial_time| {
       |> filter(|next_position| seen `excludes?` next_position)
       |> filter(is_no_blizzard);
 
-    recur(
-      rest(queue) + next_positions,
-      seen + next_positions
-    );
+    recur(rest(queue) + next_positions, seen + next_positions)
   };
 
-  recur([[initial_time, start]], {});
+  recur([[initial_time, start]], {})
 }
 
 part_one: {
-  let [valley, boundary, start, end] = parse_valley(input);
+  let [valley, boundary, start, end] = parse_valley(input)
   let blizzards = blizzard_cycle(boundary, valley);
 
-  travel(blizzards, boundary, start, end, 0);
+  travel(blizzards, boundary, start, end, 0)
 }
 
 part_two: {
-  let [valley, boundary, start, end] = parse_valley(input);
-  let blizzards = blizzard_cycle(boundary, valley);
+  let [valley, boundary, start, end] = parse_valley(input)
+  let blizzards = blizzard_cycle(boundary, valley)
   let trip = travel(blizzards, boundary);
 
-  trip(start, end, 0) |> trip(end, start) |> trip(start, end);
+  trip(start, end, 0)
+    |> trip(end, start)
+    |> trip(start, end)
 }
 
 test: {

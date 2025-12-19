@@ -8,18 +8,26 @@ let parse_op = |op| match split(" ", op) {
 
 let parse_monkeys = |input| {
   let parse_monkey = |monkey| {
-    let [items] = monkey |> regex_match("items: (.+)") |> map(split(",") >> map(int));
-    let [op] = monkey |> regex_match("= old (.+)") |> map(parse_op);
-    let [divisor] = monkey |> regex_match("by (.+)") |> map(int);
-    let [yes, no] = monkey |> regex_match("(\\d+)\\n.+throw to monkey (\\d+)$") |> map(int);
+    let [items] = monkey
+      |> regex_match("items: (.+)")
+      |> map(split(",") >> map(int))
+    let [op] = monkey
+      |> regex_match("= old (.+)")
+      |> map(parse_op)
+    let [divisor] = monkey
+      |> regex_match("by (.+)")
+      |> map(int)
+    let [yes, no] = monkey
+      |> regex_match("(\\d+)\\n.+throw to monkey (\\d+)$")
+      |> map(int)
     let throw_to = |worry_level| if worry_level % divisor == 0 { yes } else { no };
 
-    #{items, op, divisor, throw_to, "activity": 0};
+    #{items, op, divisor, throw_to, "activity": 0}
   };
 
   input
     |> split("\n\n")
-    |> map(parse_monkey);
+    |> map(parse_monkey)
 }
 
 let round = |apply_relief, monkeys| {
@@ -27,38 +35,36 @@ let round = |apply_relief, monkeys| {
     let monkey = monkeys[position];
 
     monkey["items"]
-      |> fold(monkeys, |monkeys, item| {
-        let worry_level = item |> monkey["op"] |> apply_relief;
+      |> fold(monkeys) |monkeys, item| {
+        let worry_level = item
+          |> monkey["op"]
+          |> apply_relief;
 
-        monkeys |> update(
-          monkey["throw_to"](worry_level),
-          update("items", _ + [worry_level])
-        );
-      })
-      |> update(
-        position,
-        update("activity", _ + size(monkey["items"])) >> assoc("items", [])
-      );
+        monkeys |> update(monkey["throw_to"](worry_level), update("items", _ + [worry_level]))
+      }
+      |> update(position, update("activity", _ + size(monkey["items"])) >> assoc("items", []))
   }
 }
 
-let monkey_business = map(get("activity")) >> sort(<) >> |[a, b]| a * b;
+let monkey_business = map(get("activity")) >> sort(<) >> |[a, b]| a * b
 
 part_one: {
   parse_monkeys(input)
     |> iterate(round(_ / 3))
     |> get(20)
-    |> monkey_business;
+    |> monkey_business
 }
 
 part_two: {
-  let monkeys = parse_monkeys(input);
-  let manageable_level = monkeys |> map(get("divisor")) |> reduce(*);
+  let monkeys = parse_monkeys(input)
+  let manageable_level = monkeys
+    |> map(get("divisor"))
+    |> reduce(*);
 
   monkeys
     |> iterate(round(_ % manageable_level))
     |> get(10_000)
-    |> monkey_business;
+    |> monkey_business
 }
 
 test: {

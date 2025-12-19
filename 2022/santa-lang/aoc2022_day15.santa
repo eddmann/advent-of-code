@@ -1,23 +1,20 @@
 input: read("aoc://2022/15")
 
-let parse_row = lines >> first >> int;
-let parse_reports = lines >> rest >> map(ints);
+let parse_row = lines >> first >> int
+
+let parse_reports = lines >> rest >> map(ints)
 
 let sensor_ranges = |reports, y| {
   reports |> fold([]) |ranges, [sx, sy, bx, by]| {
-    let distance = abs(sx - bx) + abs(sy - by);
+    let distance = abs(sx - bx) + abs(sy - by)
     let offset = distance - abs(sy - y);
 
-    if offset >= 0 {
-      ranges + [[sx - offset, sx + offset]];
-    } else {
-      ranges;
-    }
+    if offset >= 0 { ranges + [[sx - offset, sx + offset]] } else { ranges }
   }
 }
 
 let uncovered_x = |ranges, max_bound| {
-  let sorted = ranges |> sort(|[s1], [s2]| s1 > s2);
+  let sorted = ranges |> sort(|[s1], [s2]| s1 > s2)
 
   let recur = |ranges, max_end| match ranges {
     [] if max_end < max_bound { max_end + 1 }
@@ -33,34 +30,30 @@ let uncovered_x = |ranges, max_bound| {
   }
 }
 
-let tuning_frequency = |[x, y]| x * 4_000_000 + y;
+let tuning_frequency = |[x, y]| x * 4_000_000 + y
 
 part_one: {
-  let reports = parse_reports(input);
-  let y = parse_row(input);
+  let reports = parse_reports(input)
+  let y = parse_row(input)
 
   let xs = sensor_ranges(reports, y)
     |> map(|[start, end]| start..=end)
-    |> union;
+    |> union
 
   let beacon_xs = reports
     |> filter(|[_, _, _, by]| by == y)
     |> map(|[_, _, bx]| bx);
 
-  size(xs - beacon_xs);
+  size(xs - beacon_xs)
 }
 
 part_two: {
-  let reports = parse_reports(input);
+  let reports = parse_reports(input)
   let max_bound = parse_row(input) * 2;
 
   0..=max_bound
-    |> find_map(|y| {
-      if let x = uncovered_x(sensor_ranges(reports, y), max_bound) {
-        [x, y]
-      }
-    })
-    |> tuning_frequency;
+    |> find_map(|y| if let x = uncovered_x(sensor_ranges(reports, y), max_bound) { [x, y] })
+    |> tuning_frequency
 }
 
 test: {

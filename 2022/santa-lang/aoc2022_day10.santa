@@ -1,29 +1,30 @@
 input: read("aoc://2022/10")
 
-let signal = lines >>
-  flat_map(|op| {
+let signal = lines
+  >> flat_map |op| {
     let [_, v] = split(" ", op);
-    if v { [0, int(v)] } else { [0] };
-  })
-  >> scan(1, +);
+
+    if v { [0, int(v)] } else { [0] }
+  }
+  >> scan(1, +)
 
 part_one: {
   let cycles = signal(input);
 
   range(20, 220, 40)
-    |> map(|cycle| cycle * cycles[cycle-1])
-    |> sum;
+    |> map(|cycle| cycle * cycles[cycle - 1])
+    |> sum
 }
 
 part_two: {
   zip(0.., signal(input)) |> fold("") |crt, [position, signal]| {
-    let line_position = position % 40;
+    let line_position = position % 40
     let new_line = if line_position == 0 { "\n" } else { "" };
 
     if map(signal + _, -1..=1) `includes?` line_position {
-      crt + new_line + "#";
+      crt + new_line + "#"
     } else {
-      crt + new_line + " ";
+      crt + new_line + " "
     }
   }
 }

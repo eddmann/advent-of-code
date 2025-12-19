@@ -2,72 +2,78 @@ input: read("aoc://2022/23")
 
 let parse_elves = |input| {
   zip(0.., lines(input))
-    |> flat_map(|[y, row]| {
+    |> flat_map |[y, row]| {
       zip(0.., row)
         |> filter(|[_, el]| el == "#")
-        |> map(|[x]| [y, x]);
-    })
-    |> set;
+        |> map(|[x]| [y, x])
+    }
+    |> set
 }
 
 let neighbours = |[y, x]| {
-  {[y-1, x-1], [y-1, x], [y-1, x+1],
-   [y,   x-1],           [y,   x+1],
-   [y+1, x-1], [y+1, x], [y+1, x+1]}
+  {
+    [y - 1, x - 1],
+    [y - 1, x],
+    [y - 1, x + 1],
+    [y, x - 1],
+    [y, x + 1],
+    [y + 1, x - 1],
+    [y + 1, x],
+    [y + 1, x + 1]
+  }
 }
 
 let possible_move = |elves, round, elf| {
   if all?(elves `excludes?` _, neighbours(elf)) {
-    return nil;
+    return nil
   }
 
-  let [y, x] = elf;
+  let [y, x] = elf
 
   let clear_direction = 0..4
     |> map(|idx| "NSWE"[(round + idx) % 4])
-    |> find(|direction| {
+    |> find |direction| {
       let adjacent_neighbours = match direction {
-        "N" { {[y-1, x-1], [y-1, x], [y-1, x+1]} }
-        "S" { {[y+1, x-1], [y+1, x], [y+1, x+1]} }
-        "E" { {[y-1, x+1], [y, x+1], [y+1, x+1]} }
-        "W" { {[y-1, x-1], [y, x-1], [y+1, x-1]} }
+        "N" { {[y - 1, x - 1], [y - 1, x], [y - 1, x + 1]} }
+        "S" { {[y + 1, x - 1], [y + 1, x], [y + 1, x + 1]} }
+        "E" { {[y - 1, x + 1], [y, x + 1], [y + 1, x + 1]} }
+        "W" { {[y - 1, x - 1], [y, x - 1], [y + 1, x - 1]} }
       };
 
-      all?(elves `excludes?` _, adjacent_neighbours);
-    });
+      all?(elves `excludes?` _, adjacent_neighbours)
+    };
 
   match clear_direction {
-    "N" { [y-1, x] }
-    "S" { [y+1, x] }
-    "E" { [y, x+1] }
-    "W" { [y, x-1] }
-  };
+    "N" { [y - 1, x] }
+    "S" { [y + 1, x] }
+    "E" { [y, x + 1] }
+    "W" { [y, x - 1] }
+  }
 }
 
 let move = memoize |[elves, round]| {
   let possible_moves = elves
     |> list
     |> map(|elf| [elf, possible_move(elves, round, elf)])
-    |> dict;
+    |> dict
 
-  let positions = possible_moves |> fold(#{}, |freq, pos| update_d(pos, 0, _ + 1, freq));
-  let moved_elves = possible_moves |> filter(|pos| positions[pos] == 1);
+  let positions = possible_moves |> fold(#{}, |freq, pos| update_d(pos, 0, _ + 1, freq))
+  let moved_elves = possible_moves |> filter(|pos| positions[pos] == 1)
 
-  let from = keys(moved_elves);
+  let from = keys(moved_elves)
   let to = values(moved_elves);
 
-  [elves - from + to, round + 1];
+  [elves - from + to, round + 1]
 }
 
 part_one: {
   let moved_elves = iterate(move, [parse_elves(input), 0])
     |> get(10)
-    |> |[elves]| list(elves);
+    |> |[elves]| list(elves)
 
-  let [[ly, hy], [lx, hx]] = zip(..moved_elves)
-    |> map(|coord| [min(coord), max(coord)]);
+  let [[ly, hy], [lx, hx]] = zip(..moved_elves) |> map(|coord| [min(coord), max(coord)]);
 
-  (hx - lx + 1) * (hy - ly + 1) - size(moved_elves);
+  (hx - lx + 1) * (hy - ly + 1) - size(moved_elves)
 }
 
 part_two: {
@@ -75,7 +81,7 @@ part_two: {
 
   zip(iterate(move, initial_state), iterate(move, initial_state) |> skip(1))
     |> find(|[[previous_elves], [current_elves]]| previous_elves == current_elves)
-    |> |[_, [_, round]]| round;
+    |> |[_, [_, round]]| round
 }
 
 test: {

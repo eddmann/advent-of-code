@@ -1,45 +1,41 @@
 input: read("aoc://2022/18")
 
-let parse_cubes = lines >> map(ints);
+let parse_cubes = lines >> map(ints)
 
 let neighbours = |point| {
-  [[0, 0, 1], [0, 0, -1],
-   [0, 1, 0], [0, -1, 0],
-   [1, 0, 0], [-1, 0, 0]] |> map(point `vec_add` _);
+  [[0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]] |> map(point `vec_add` _)
 }
 
 part_one: {
-  let cubes = parse_cubes(input);
+  let cubes = parse_cubes(input)
   let exposed_sides = neighbours >> filter(cubes `includes?` _) >> size >> 6 - _;
 
   cubes
     |> map(exposed_sides)
-    |> sum;
+    |> sum
 }
 
 part_two: {
-  let cubes = parse_cubes(input);
-  let [xs, ys, zs] = zip(..cubes) |> map(|axis| min(axis)-1..=max(axis)+1);
+  let cubes = parse_cubes(input)
+  let [xs, ys, zs] = zip(..cubes) |> map(|axis| min(axis) - 1..=max(axis) + 1)
 
   let surface_area = |queue, seen, total_sides| {
-    if (size(queue) == 0) {
-      return total_sides;
+    if size(queue) == 0 {
+      return total_sides
     }
 
-    let point = first(queue);
+    let point = first(queue)
 
-    let boundary = neighbours(point) |> filter(|[x, y, z]| xs `includes?` x && ys `includes?` y && zs `includes?` z);
-    let next_points = boundary |> filter(|point| cubes `excludes?` point && seen `excludes?` point);
+    let boundary = neighbours(point) |> filter |[x, y, z]| {
+      xs `includes?` x && ys `includes?` y && zs `includes?` z
+    }
+    let next_points = boundary |> filter(|point| cubes `excludes?` point && seen `excludes?` point)
     let boundary_sides = boundary |> count(cubes `includes?` _);
 
-    surface_area(
-      rest(queue) + next_points,
-      seen + {point} + boundary,
-      total_sides + boundary_sides
-    );
-  }
+    surface_area(rest(queue) + next_points, seen + {point} + boundary, total_sides + boundary_sides)
+  };
 
-  surface_area([[xs[0], ys[0], zs[0]]], {}, 0);
+  surface_area([[xs[0], ys[0], zs[0]]], {}, 0)
 }
 
 test: {

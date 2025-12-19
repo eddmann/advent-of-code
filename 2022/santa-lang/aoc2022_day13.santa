@@ -1,6 +1,6 @@
 input: read("aoc://2022/13")
 
-let parse_packets = lines >> filter(_ != "") >> map(evaluate);
+let parse_packets = lines >> filter(_ != "") >> map(evaluate)
 
 let cmp = |a, b| if a == b { nil } else { a > b }
 
@@ -9,7 +9,10 @@ let compare = |l, r| match [type(l), type(r)] {
   ["Integer", "List"] { compare([l], r) }
   ["Integer", "Integer"] { l `cmp` r }
   ["List", "List"] {
-    let check = zip(l, r) |> map(|[a, b]| compare(a, b)) |> find(_ != nil);
+    let check = zip(l, r)
+      |> map(|[a, b]| compare(a, b))
+      |> find(_ != nil);
+
     if check != nil { check } else { size(l) `cmp` size(r) }
   }
 }
@@ -20,11 +23,11 @@ part_one: {
   zip(1.., packet_pairs)
     |> filter(|[idx, [l, r]]| !compare(l, r))
     |> map(|[idx]| idx)
-    |> sum;
+    |> sum
 }
 
 part_two: {
-  let divider_packets = [[[2]], [[6]]];
+  let divider_packets = [[[2]], [[6]]]
   let all_packets = parse_packets(input) + divider_packets;
 
   all_packets
@@ -32,7 +35,7 @@ part_two: {
     |> zip(1.., _)
     |> filter(|[idx, packet]| divider_packets `includes?` packet)
     |> map(|[idx]| idx)
-    |> reduce(*);
+    |> reduce(*)
 }
 
 test: {

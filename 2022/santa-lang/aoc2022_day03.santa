@@ -1,20 +1,21 @@
 input: read("aoc://2022/3")
 
-let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..) |> dict;
+let priorities = zip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1..) |> dict
 
-let parse_groups = lines >> map(split(""));
+let parse_groups = lines >> map(split(""))
 
-let common_item = intersection >> list >> first;
+let common_item = intersection >> list >> first
 
 part_one: {
   let compartments = |rucksack| {
     let length = size(rucksack) / 2;
-    [rucksack[0..length], rucksack[length..]];
+
+    [rucksack[0..length], rucksack[length..]]
   };
 
   parse_groups(input)
     |> map(compartments >> common_item >> get(_, priorities))
-    |> sum;
+    |> sum
 }
 
 part_two: {
@@ -22,7 +23,7 @@ part_two: {
     |> map(set)
     |> chunk(3)
     |> map(common_item >> get(_, priorities))
-    |> sum;
+    |> sum
 }
 
 test: {

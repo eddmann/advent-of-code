@@ -1,21 +1,23 @@
 input: read("aoc://2022/20")
 
 let parse_numbers = |decryption_key| {
-  ints >> map(_ * decryption_key) >> zip(0.., _);
+  ints >> map(_ * decryption_key) >> zip(0.., _)
 }
 
 let find_index_offset = |idx, col| {
   zip(0.., col)
     |> find(|[_, [org_idx]]| org_idx == idx)
-    |> |[idx]| -idx;
+    |> |[idx]| -idx
 }
 
 let mix = |numbers| {
   0..size(numbers) |> fold(numbers) |mixed, index| {
-    let [number, ..tail] = mixed |> rotate(find_index_offset(index, mixed));
+    let [number, ..tail] = mixed |> rotate(find_index_offset(index, mixed))
     let shift = number[1] % size(tail);
 
-    tail |> rotate(-shift) |> push(number);
+    tail
+      |> rotate(-shift)
+      |> push(number)
   }
 }
 
@@ -24,14 +26,14 @@ let grove_coordinates = |mixed| {
 
   [1000, 2000, 3000]
     |> map(|nth| mixed[(zero_idx + nth) % size(mixed)][1])
-    |> sum;
+    |> sum
 }
 
 part_one: {
   input
     |> parse_numbers(1)
     |> mix
-    |> grove_coordinates;
+    |> grove_coordinates
 }
 
 part_two: {
@@ -39,7 +41,7 @@ part_two: {
     |> parse_numbers(811589153)
     |> iterate(mix)
     |> get(10)
-    |> grove_coordinates;
+    |> grove_coordinates
 }
 
 test: {

@@ -6,32 +6,32 @@ let signum = |x| match x {
   _ { 1 }
 }
 
-let parse_motions = lines >> flat_map |motion| {
-  let [direction, step] = split(" ", motion);
-  repeat(direction) |> take(int(step));
-}
+let parse_motions = lines
+  >> flat_map |motion| {
+    let [direction, step] = split(" ", motion);
 
-let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]};
+    repeat(direction) |> take(int(step))
+  }
 
-let knot_head = scan([0, 0]) |point, direction| {
-  point `vec_add` directions[direction];
-};
+let directions = #{"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]}
+
+let knot_head = scan([0, 0], |point, direction| point `vec_add` directions[direction])
 
 let knot_tail = scan([0, 0]) |[ty, tx], [hy, hx]| {
   if abs(ty - hy) < 2 && abs(tx - hx) < 2 {
-    [ty, tx];
+    [ty, tx]
   } else {
     [ty + signum(hy - ty), tx + signum(hx - tx)]
   }
 }
 
-let visits = set >> size;
+let visits = set >> size
 
 part_one: {
   parse_motions(input)
     |> knot_head
     |> knot_tail
-    |> visits;
+    |> visits
 }
 
 part_two: {
@@ -39,7 +39,7 @@ part_two: {
     |> knot_head
     |> iterate(knot_tail)
     |> get(9)
-    |> visits;
+    |> visits
 }
 
 test: {

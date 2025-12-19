@@ -1,17 +1,15 @@
 input: read("aoc://2022/21")
 
-let parse_jobs = lines >> map(split(": ")) >> dict;
+let parse_jobs = lines >> map(split(": ")) >> dict
 
 let build_expression = |jobs| {
-  let recur = |monkey| {
-    match split(" ", jobs[monkey]) {
-      ["humn"] { ["humn"] }
-      [const] { [int(const)] }
-      [lhs, op, rhs] { [recur(lhs), op, recur(rhs)] }
-    }
+  let recur = |monkey| match split(" ", jobs[monkey]) {
+    ["humn"] { ["humn"] }
+    [const] { [int(const)] }
+    [lhs, op, rhs] { [recur(lhs), op, recur(rhs)] }
   };
 
-  recur("root");
+  recur("root")
 }
 
 let evaluate = |expression| match expression {
@@ -42,14 +40,14 @@ let yell = |lhs, rhs| match lhs {
 part_one: {
   parse_jobs(input)
     |> build_expression
-    |> evaluate;
+    |> evaluate
 }
 
 part_two: {
   parse_jobs(input)
     |> assoc("humn", "humn")
     |> build_expression
-    |> |[lhs, _, rhs]| yell(lhs, rhs);
+    |> |[lhs, _, rhs]| yell(lhs, rhs)
 }
 
 test: {

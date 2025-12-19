@@ -1,15 +1,17 @@
 input: read("aoc://2022/22")
 
 let parse_maze = |input| {
-  let section = input |> split("\n\n") |> first;
+  let section = input
+    |> split("\n\n")
+    |> first;
 
   zip(0.., lines(section))
-    |> flat_map(|[y, row]| {
+    |> flat_map |[y, row]| {
       zip(0.., row)
         |> filter(|[_, el]| el != " ")
-        |> map(|[x, el]| [[y, x], el]);
-    })
-    |> dict;
+        |> map(|[x, el]| [[y, x], el])
+    }
+    |> dict
 }
 
 let parse_directions = |input| {
@@ -17,12 +19,22 @@ let parse_directions = |input| {
     |> split("\n\n")
     |> second
     |> regex_match_all("\\d+|L|R")
-    |> map(|el| if el != "L" && el != "R" { int(el) } else { el });
+    |> map(|el| if el != "L" && el != "R" { int(el) } else { el })
 }
 
 let step_2d = |maze| {
-  let ys = memoize |x| maze |> keys |> filter(|[_, sx]| sx == x) |> map(|[y]| y);
-  let xs = memoize |y| maze |> keys |> filter(|[sy]| sy == y) |> map(|[_, x]| x);
+  let ys = memoize |x| {
+    maze
+      |> keys
+      |> filter(|[_, sx]| sx == x)
+      |> map(|[y]| y)
+  }
+  let xs = memoize |y| {
+    maze
+      |> keys
+      |> filter(|[sy]| sy == y)
+      |> map(|[_, x]| x)
+  };
 
   |facing, [y, x]| {
     let mut next_position = match facing {
@@ -30,7 +42,7 @@ let step_2d = |maze| {
       "S" { [y + 1, x] }
       "E" { [y, x + 1] }
       "W" { [y, x - 1] }
-    };
+    }
 
     if maze[next_position] == nil {
       next_position = match facing {
@@ -38,63 +50,53 @@ let step_2d = |maze| {
         "S" { [min(ys(x)), x] }
         "E" { [y, min(xs(y))] }
         "W" { [y, max(xs(y))] }
-      };
+      }
     };
 
-    [facing, next_position];
-  };
-}
-
-let test_step_3d = |facing, [y, x]| {
-  match [facing, [y, x]] {
-    ["N", [0, 8..12]]   { ["S", [3 - (x - 8), 4]] }   // a
-    ["N", [4, 0..4]]    { ["S", [0, 11 - x]] }        // b
-    ["N", [4, 4..8]]    { ["E", [x - 4, 8]] }         // c
-    ["N", [4, 12..16]]  { ["W", [7 - (x - 12), 11]] } // d
-    ["N", _]            { ["N", [y - 1, x]] }
-
-    ["S", [7, 0..4]]    { ["N", [11, 11 - x]] }       // e
-    ["S", [7, 4..8]]    { ["E", [11 - (x - 4), 8]] }  // f
-    ["S", [11, 8..12]]  { ["N", [7, 3 - (x - 8)]] }   // g
-    ["S", [11, 12..16]] { ["E", [7 - (x - 12), 0]] }  // h
-    ["S", _]            { ["S", [y + 1, x]] }
-
-    ["E", [0..4, 11]]   { ["W", [11 - y, 15]] }       // i
-    ["E", [4..8, 11]]   { ["S", [8, 15 - (y - 4)]] }  // j
-    ["E", [8..12, 15]]  { ["W", [3 - (y - 8), 11]] }  // k
-    ["E", _]            { ["E", [y, x + 1]] }
-
-    ["W", [0..4, 8]]    { ["S", [4, y + 4]] }         // l
-    ["W", [4..8, 0]]    { ["N", [11, 15 - (y - 4)]] } // m
-    ["W", [8..12, 8]]   { ["N", [7, 7 - (y - 8)]] }   // n
-    ["W", _]            { ["W", [y, x - 1]] }
+    [facing, next_position]
   }
 }
 
-let step_3d = |facing, [y, x]| {
-  match [facing, [y, x]] {
-    ["N", [0, 50..100]]   { ["E", [150 + (x - 50), 0]] }   // a
-    ["N", [0, 100..150]]  { ["N", [199, x - 100]] }        // b
-    ["N", [100, 0..50]]   { ["E", [50 + x, 50]] }          // c
-    ["N", _]              { ["N", [y - 1, x]] }
+let test_step_3d = |facing, [y, x]| match [facing, [y, x]] {
+  ["N", [0, 8..12]] { ["S", [3 - (x - 8), 4]] } // a
+  ["N", [4, 0..4]] { ["S", [0, 11 - x]] } // b
+  ["N", [4, 4..8]] { ["E", [x - 4, 8]] } // c
+  ["N", [4, 12..16]] { ["W", [7 - (x - 12), 11]] } // d
+  ["N", _] { ["N", [y - 1, x]] }
+  ["S", [7, 0..4]] { ["N", [11, 11 - x]] } // e
+  ["S", [7, 4..8]] { ["E", [11 - (x - 4), 8]] } // f
+  ["S", [11, 8..12]] { ["N", [7, 3 - (x - 8)]] } // g
+  ["S", [11, 12..16]] { ["E", [7 - (x - 12), 0]] } // h
+  ["S", _] { ["S", [y + 1, x]] }
+  ["E", [0..4, 11]] { ["W", [11 - y, 15]] } // i
+  ["E", [4..8, 11]] { ["S", [8, 15 - (y - 4)]] } // j
+  ["E", [8..12, 15]] { ["W", [3 - (y - 8), 11]] } // k
+  ["E", _] { ["E", [y, x + 1]] }
+  ["W", [0..4, 8]] { ["S", [4, y + 4]] } // l
+  ["W", [4..8, 0]] { ["N", [11, 15 - (y - 4)]] } // m
+  ["W", [8..12, 8]] { ["N", [7, 7 - (y - 8)]] } // n
+  ["W", _] { ["W", [y, x - 1]] }
+}
 
-    ["S", [49, 100..150]] { ["W", [50 + (x - 100), 99]] }  // d
-    ["S", [149, 50..100]] { ["W", [150 + (x - 50), 49]] }  // e
-    ["S", [199, 0..50]]   { ["S", [0, x + 100]] }          // f
-    ["S", _]              { ["S", [y + 1, x]]}
-
-    ["E", [0..50, 149]]   { ["W", [149 - y, 99]] }         // g
-    ["E", [50..100, 99]]  { ["N", [49, 100 + (y - 50)]] }  // h
-    ["E", [100..150, 99]] { ["W", [49 - (y - 100), 149]] } // i
-    ["E", [150..200, 49]] { ["N", [149, 50 + (y - 150)]]}  // j
-    ["E", _]              { ["E", [y, x + 1]] }
-
-    ["W", [0..50, 50]]    { ["E", [149 - y, 0]] }          // k
-    ["W", [50..100, 50]]  { ["S", [100, y - 50]] }         // l
-    ["W", [100..150, 0]]  { ["E", [49 - (y - 100), 50]] }  // m
-    ["W", [150..200, 0]]  { ["S", [0, 50 + (y - 150)]] }   // n
-    ["W", _]              { ["W", [y, x - 1]]}
-  }
+let step_3d = |facing, [y, x]| match [facing, [y, x]] {
+  ["N", [0, 50..100]] { ["E", [150 + (x - 50), 0]] } // a
+  ["N", [0, 100..150]] { ["N", [199, x - 100]] } // b
+  ["N", [100, 0..50]] { ["E", [50 + x, 50]] } // c
+  ["N", _] { ["N", [y - 1, x]] }
+  ["S", [49, 100..150]] { ["W", [50 + (x - 100), 99]] } // d
+  ["S", [149, 50..100]] { ["W", [150 + (x - 50), 49]] } // e
+  ["S", [199, 0..50]] { ["S", [0, x + 100]] } // f
+  ["S", _] { ["S", [y + 1, x]] }
+  ["E", [0..50, 149]] { ["W", [149 - y, 99]] } // g
+  ["E", [50..100, 99]] { ["N", [49, 100 + (y - 50)]] } // h
+  ["E", [100..150, 99]] { ["W", [49 - (y - 100), 149]] } // i
+  ["E", [150..200, 49]] { ["N", [149, 50 + (y - 150)]] } // j
+  ["E", _] { ["E", [y, x + 1]] }
+  ["W", [0..50, 50]] { ["E", [149 - y, 0]] } // k
+  ["W", [50..100, 50]] { ["S", [100, y - 50]] } // l
+  ["W", [100..150, 0]] { ["E", [49 - (y - 100), 50]] } // m
+  ["W", [150..200, 0]] { ["S", [0, 50 + (y - 150)]] } // n
+  ["W", _] { ["W", [y, x - 1]] }
 }
 
 let turn_left = |facing| match facing {
@@ -102,31 +104,35 @@ let turn_left = |facing| match facing {
   "S" { "E" }
   "E" { "N" }
   "W" { "S" }
-};
+}
 
 let turn_right = |facing| match facing {
   "N" { "E" }
   "S" { "W" }
   "E" { "S" }
   "W" { "N" }
-};
+}
 
 let follow_path = |stepper, maze, directions| {
   let walk = |steps, [facing, position]| {
-    if (steps == 0) {
-      return [facing, position];
+    if steps == 0 {
+      return [facing, position]
     }
 
-    let [next_facing, next_position] = stepper(facing, position);
+    let [next_facing, next_position] = stepper(facing, position)
 
     if maze[next_position] != "." {
-      return [facing, position];
-    }
+      return [facing, position]
+    };
 
-    walk(steps - 1, [next_facing, next_position]);
-  };
+    walk(steps - 1, [next_facing, next_position])
+  }
 
-  let start_x = maze |> keys |> filter(|[y]| y == 0) |> map(|[_, x]| x) |> min;
+  let start_x = maze
+    |> keys
+    |> filter(|[y]| y == 0)
+    |> map(|[_, x]| x)
+    |> min
   let start = ["E", [0, start_x]];
 
   directions |> fold(start) |[facing, position], action| {
@@ -135,7 +141,7 @@ let follow_path = |stepper, maze, directions| {
       "R" { [turn_right(facing), position] }
       steps { walk(steps, [facing, position]) }
     }
-  };
+  }
 }
 
 let password = |[facing, [y, x]]| {
@@ -146,25 +152,26 @@ let password = |[facing, [y, x]]| {
     "W" { 2 }
   };
 
-  1000 * (y + 1) + 4 * (x + 1) + facing_score;
+  1000 * (y + 1) + 4 * (x + 1) + facing_score
 }
 
 part_one: {
   let maze = parse_maze(input);
 
-  follow_path(step_2d(maze), maze, parse_directions(input))
-    |> password;
+  follow_path(step_2d(maze), maze, parse_directions(input)) |> password
 }
 
 part_two: {
-  let maze = parse_maze(input);
+  let maze = parse_maze(input)
 
-  let xs = maze |> keys |> filter(|[y]| y == 0) |> map(|[_, x]| x);
-  let face_width = max(xs) - min(xs) + 1;
+  let xs = maze
+    |> keys
+    |> filter(|[y]| y == 0)
+    |> map(|[_, x]| x)
+  let face_width = max(xs) - min(xs) + 1
   let stepper = if face_width == 4 { test_step_3d } else { step_3d };
 
-  follow_path(stepper, maze, parse_directions(input))
-    |> password;
+  follow_path(stepper, maze, parse_directions(input)) |> password
 }
 
 test: {

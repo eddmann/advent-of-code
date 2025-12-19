@@ -1,38 +1,33 @@
 input: read("aoc://2022/2")
 
-let lookup = #{
-  "A": 0, "B": 1, "C": 2,
-  "X": 0, "Y": 1, "Z": 2,
-}
+let lookup = #{"A": 0, "B": 1, "C": 2, "X": 0, "Y": 1, "Z": 2}
 
-let parse_strategy = lines >> map(split(" "));
+let parse_strategy = lines >> map(split(" "))
 
 part_one: {
   parse_strategy(input)
-    |> map(|[elf, me]| {
-      let shape = lookup[me] + 1;
+    |> map |[elf, me]| {
+      let shape = lookup[me] + 1
       let outcome = (lookup[me] - lookup[elf] + 4) % 3 * 3;
 
-      shape + outcome;
-    })
-    |> sum;
+      shape + outcome
+    }
+    |> sum
 }
 
 part_two: {
   parse_strategy(input)
-    |> map(|[elf, ending]| {
-      let move = (lookup[elf] + lookup[ending] + 2) % 3 + 1;
+    |> map |[elf, ending]| {
+      let move = (lookup[elf] + lookup[ending] + 2) % 3 + 1
       let outcome = lookup[ending] * 3;
 
-      move + outcome;
-    })
-    |> sum;
+      move + outcome
+    }
+    |> sum
 }
 
 test: {
-  input: "A Y
-B X
-C Z"
+  input: "A Y\nB X\nC Z"
   part_one: 15
   part_two: 12
 }

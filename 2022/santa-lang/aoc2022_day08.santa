@@ -2,59 +2,69 @@ input: read("aoc://2022/8")
 
 let parse_grid = |input| {
   zip(0.., lines(input))
-    |> flat_map(|[y, row]| {
-      zip(0.., row)
-        |> map(|[x, tree_height]| [[y, x], int(tree_height)]);
-    })
-    |> dict;
+    |> flat_map |[y, row]| {
+      zip(0.., row) |> map(|[x, tree_height]| [[y, x], int(tree_height)])
+    }
+    |> dict
 }
 
 let grid_directions = |grid| {
-  let [ys, xs] = zip(..keys(grid));
-  let [ly, hy] = [min(ys), max(ys)];
+  let [ys, xs] = zip(..keys(grid))
+  let [ly, hy] = [min(ys), max(ys)]
   let [lx, hx] = [min(xs), max(xs)];
 
   |[y, x]| {
     let not_self = _ != [y, x];
 
     // up, down, left, right
+
     [
-      max(y-1, ly)..=lx |> map(|dy| [dy, x]) |> filter(not_self),
-      min(y+1, hy)..=hy |> map(|dy| [dy, x]) |> filter(not_self),
-      max(x-1, lx)..=lx |> map(|dx| [y, dx]) |> filter(not_self),
-      min(x+1, hx)..=hx |> map(|dx| [y, dx]) |> filter(not_self)
-    ];
-  };
+      max(y - 1, ly)..=lx
+        |> map(|dy| [dy, x])
+        |> filter(not_self),
+      min(y + 1, hy)..=hy
+        |> map(|dy| [dy, x])
+        |> filter(not_self),
+      max(x - 1, lx)..=lx
+        |> map(|dx| [y, dx])
+        |> filter(not_self),
+      min(x + 1, hx)..=hx
+        |> map(|dx| [y, dx])
+        |> filter(not_self)
+    ]
+  }
 }
 
 part_one: {
-  let grid = parse_grid(input);
+  let grid = parse_grid(input)
   let directions = grid_directions(grid);
 
-  grid
-    |> count(|tree_height, position| {
-      directions(position)
-        |> any?(all?(|viewpoint| grid[viewpoint] < tree_height))
-    });
+  grid |> count |tree_height, position| {
+    directions(position) |> any?(all?(|viewpoint| grid[viewpoint] < tree_height))
+  }
 }
 
 part_two: {
-  let grid = parse_grid(input);
-  let directions = grid_directions(grid);
+  let grid = parse_grid(input)
+  let directions = grid_directions(grid)
 
   let scenic_score = |tree_height, direction| {
     direction |> fold(0) |score, viewpoint| {
-      if grid[viewpoint] < tree_height { score + 1 } else { break(score + 1) }
+      if grid[viewpoint] < tree_height {
+        score + 1
+      } else {
+        break score + 1
+      }
     }
   };
 
   grid
-    |> map(|tree_height, position| {
+    |> map |tree_height, position| {
       directions(position) |> fold(1) |score, direction| {
         score * scenic_score(tree_height, direction)
       }
-    })
-    |> max;
+    }
+    |> max
 }
 
 test: {
