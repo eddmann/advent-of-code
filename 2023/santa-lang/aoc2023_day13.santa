@@ -15,7 +15,7 @@ let differences = |pattern, y| {
 }
 
 let mirror = |permitted_differences, pattern| {
-  1..=size(pattern)
+  1..size(pattern)
     |> filter(|y| differences(pattern, y) == permitted_differences)
     |> first
     |> |y| if y { y } else { 0 }
