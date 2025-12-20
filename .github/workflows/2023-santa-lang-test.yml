@@ -1,0 +1,15 @@
+name: 2023 Santa-Lang Test
+
+on:
+  push:
+    paths:
+      - .github/**
+      - 2023/santa-lang/**
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make test
+        working-directory: 2023/santa-lang
