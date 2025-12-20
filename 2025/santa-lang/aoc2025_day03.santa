@@ -1,35 +1,37 @@
 input: read("aoc://2025/3")
 
-let parse_banks = lines >> map(split("") >> map(int));
+let parse_banks = lines >> map(split("") >> map(int))
 
 let max_k_joltage = |bank, k| {
   let n = size(bank);
-  
+
   // Greedy: for each position, pick largest digit that leaves enough remaining
-  0..k 
+
+  0..k
     |> fold([[], 0]) |[digits, start], pos| {
-      let end = n - k + pos;
+      let end = n - k + pos
       // Find index of max digit in bank[start..=end]
       let best_idx = start..=end |> fold(start) |best, i| {
         if bank[i] > bank[best] { i } else { best }
       };
+
       [digits + [bank[best_idx]], best_idx + 1]
     }
     |> first
-    |> fold(0) |acc, d| { acc * 10 + d }
-};
+    |> fold(0, |acc, d| acc * 10 + d)
+}
 
 part_one: {
-  input 
-    |> parse_banks 
-    |> map(max_k_joltage(_, 2)) 
+  input
+    |> parse_banks
+    |> map(max_k_joltage(_, 2))
     |> sum
 }
 
 part_two: {
-  input 
-    |> parse_banks 
-    |> map(max_k_joltage(_, 12)) 
+  input
+    |> parse_banks
+    |> map(max_k_joltage(_, 12))
     |> sum
 }
 

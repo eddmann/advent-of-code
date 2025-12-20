@@ -1,37 +1,50 @@
 input: read("aoc://2025/2")
 
 let is_doubled? = |n| {
-  let s = "" + n;
+  let s = "" + n
   let len = size(s);
-  len % 2 == 0 && s[0..len/2] == s[len/2..len]
-};
+
+  len % 2 == 0 && s[0..len / 2] == s[len / 2..len]
+}
 
 let is_repeated? = |n| {
-  let s = "" + n;
+  let s = "" + n
   let len = size(s);
-  1..(len/2 + 1)
+
+  1..len / 2 + 1
     |> filter(|d| len % d == 0)
-    |> any?(|d| {
+    |> any? |d| {
       let pattern = s[0..d];
-      0..(len/d) |> all?(|i| s[i*d..(i+1)*d] == pattern)
-    })
-};
 
-let parse_ranges = split(",") >> map(|r| {
-  r |> split("-") |> map(int);
-});
+      0..len / d |> all?(|i| s[i * d..(i + 1) * d] == pattern)
+    }
+}
 
-let solve = |pred?| flat_map(|[a, b]| a..=b |> filter(pred?) |> list) >> sum;
+let parse_ranges = split(",")
+  >> map |r| {
+    r
+      |> split("-")
+      |> map(int)
+  }
+
+let solve = |pred?| {
+  flat_map |[a, b]| {
+    a..=b
+      |> filter(pred?)
+      |> list
+  }
+    >> sum
+}
 
 part_one: {
-  input 
-    |> parse_ranges 
+  input
+    |> parse_ranges
     |> solve(is_doubled?)
 }
 
 part_two: {
-  input 
-    |> parse_ranges 
+  input
+    |> parse_ranges
     |> solve(is_repeated?)
 }
 

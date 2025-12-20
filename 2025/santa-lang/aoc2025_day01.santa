@@ -1,27 +1,30 @@
 input: read("aoc://2025/1")
 
 let parse_rotation = |line| {
-  let dir = line[0];
+  let dir = line[0]
   let dist = int(line[1..]);
+
   if dir == "L" { -dist } else { dist }
-};
+}
 
-let parse_rotations = lines >> map(parse_rotation);
+let parse_rotations = lines >> map(parse_rotation)
 
-let rotate = |pos, delta| ((pos + delta) % 100 + 100) % 100;
+let rotate = |pos, delta| ((pos + delta) % 100 + 100) % 100
 
 let count_zeros = |pos, delta| match [pos, delta] {
   [_, d] if d >= 0 { (pos + d) / 100 }
   [0, d] { -d / 100 }
   [p, d] if -d >= p { (-d - p) / 100 + 1 }
   _ { 0 }
-};
+}
 
 let solve = |count_fn| {
   fold([50, 0]) |[pos, count], rotation| {
     let new_pos = rotate(pos, rotation);
+
     [new_pos, count + count_fn(pos, rotation, new_pos)]
-  } >> second;
+  }
+    >> second
 }
 
 part_one: {

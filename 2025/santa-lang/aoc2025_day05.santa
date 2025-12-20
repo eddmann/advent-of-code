@@ -1,17 +1,22 @@
 input: read("aoc://2025/5")
 
-let parse_range = split("-") >> map(int);
+let parse_range = split("-") >> map(int)
 
 let parse_input = |input| {
-  let [ranges_section, ids_section] = split("\n\n", input);
-  let ranges = ranges_section |> lines |> map(parse_range);
-  let ids = ids_section |> lines |> map(int);
+  let [ranges_section, ids_section] = split("\n\n", input)
+  let ranges = ranges_section
+    |> lines
+    |> map(parse_range)
+  let ids = ids_section
+    |> lines
+    |> map(int);
+
   [ranges, ids]
-};
+}
 
 let is_fresh? = |ranges, id| {
   ranges |> any?(|[lo, hi]| lo <= id && id <= hi)
-};
+}
 
 let merge_ranges = |ranges| {
   ranges
@@ -19,28 +24,28 @@ let merge_ranges = |ranges| {
     |> fold([]) |merged, [lo, hi]| {
       match merged {
         [] { [[lo, hi]] }
-        [..init, [prev_lo, prev_hi]] if lo <= prev_hi + 1 {
-          init + [[prev_lo, max(prev_hi, hi)]]
-        }
+        [..init, [prev_lo, prev_hi]] if lo <= prev_hi + 1 { init + [[prev_lo, max(prev_hi, hi)]] }
         _ { merged + [[lo, hi]] }
       }
     }
-};
+}
 
 let count_fresh_ids = |ranges| {
-  ranges 
-    |> merge_ranges 
-    |> map(|[lo, hi]| hi - lo + 1) 
+  ranges
+    |> merge_ranges
+    |> map(|[lo, hi]| hi - lo + 1)
     |> sum
-};
+}
 
 part_one: {
   let [ranges, ids] = parse_input(input);
+
   ids |> count(is_fresh?(ranges))
 }
 
 part_two: {
   let [ranges] = parse_input(input);
+
   ranges |> count_fresh_ids
 }
 
