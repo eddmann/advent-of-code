@@ -95,7 +95,7 @@ part_one: {
 
   iterate(drop_rock, [jets, rocks, {}])
     |> get(2022)
-    |> |[_, _, chamber]| chamber
+    |> |[_, _, chamber]| { chamber }
     |> chamber_height;
 }
 
@@ -118,7 +118,7 @@ part_two: {
 
   let partial_cycle_height = iterate(drop_rock, [jets, rocks, {}])
     |> get(previous_drops + drops_after_cycles)
-    |> |[_, _, chamber]| chamber
+    |> |[_, _, chamber]| { chamber }
     |> chamber_height;
 
   complete_cycles_height + partial_cycle_height - previous_height;
