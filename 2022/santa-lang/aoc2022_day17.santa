@@ -2,126 +2,135 @@ input: read("aoc://2022/17")
 
 let parse_rocks = |rocks| {
   let parse_rock = |rock| {
-    zip(0.., rock |> lines |> reverse)
-      |> flat_map(|[y, row]| {
-        zip(0.., row)
-          |> filter(|[_, el]| el == "#")
-          |> map(|[x]| [y, x])
-      });
+    zip(
+      0..,
+      rock
+        |> lines
+        |> reverse
+    ) |> flat_map |[y, row]| {
+      zip(0.., row)
+        |> filter(|[_, el]| el == "#")
+        |> map(|[x]| [y, x])
+    }
   };
 
   rocks
     |> map(parse_rock)
-    |> cycle;
+    |> cycle
 }
 
-let parse_jet_pattern = split("") >> map(|d| if d == "<" { [0, -1] } else { [0, 1] }) >> cycle;
+let parse_jet_pattern = split("") >> map(|d| if d == "<" { [0, -1] } else { [0, 1] }) >> cycle
 
-let move = |rock, direction| rock |> map(_ `vec_add` direction);
+let move = |rock, direction| {
+  rock |> map(_ `vec_add` direction)
+}
 
-let chamber_height = map(|[y]| y) >> max;
+let chamber_height = map(|[y]| y) >> max
 
-let empty_space? = |chamber, rock| rock |> all?(chamber `excludes?` _);
+let empty_space? = |chamber, rock| {
+  rock |> all?(chamber `excludes?` _)
+}
 
 let push_rock = |chamber, direction, rock| {
-  let pushed_rock = rock `move` direction;
+  let pushed_rock = rock `move` direction
 
-  let xs = pushed_rock |> map(|[_, x]| x);
+  let xs = pushed_rock |> map(|[_, x]| x)
   let is_within_boundary = min(xs) > -1 && max(xs) < 7;
 
-  if is_within_boundary && chamber `empty_space?` pushed_rock {
-    pushed_rock;
-  } else {
-    rock;
-  }
+  if is_within_boundary && chamber `empty_space?` pushed_rock { pushed_rock } else { rock }
 }
 
 let attempt_rock_fall = |chamber, rock| {
-  let fallen_rock = rock `move` [-1, 0];
+  let fallen_rock = rock `move` [-1, 0]
 
   let is_above_floor = min(fallen_rock |> map(|[y]| y)) > 0;
 
-  if is_above_floor && chamber `empty_space?` fallen_rock {
-    fallen_rock;
-  }
+  if is_above_floor && chamber `empty_space?` fallen_rock { fallen_rock }
 }
 
 let falling_rock = |jets, chamber, rock| {
-  let pushed_rock = rock |> push_rock(chamber, first(jets));
+  let pushed_rock = rock |> push_rock(chamber, first(jets))
   let fallen_rock = pushed_rock |> attempt_rock_fall(chamber);
 
   if fallen_rock {
-    falling_rock(rest(jets), chamber, fallen_rock);
+    falling_rock(rest(jets), chamber, fallen_rock)
   } else {
-    [rest(jets), chamber + pushed_rock];
+    [rest(jets), chamber + pushed_rock]
   }
 }
 
 let drop_rock = |[jets, rocks, chamber]| {
-  let current_height = chamber_height(chamber);
-  let start_height = if current_height { current_height + 4 } else { 4 };
-  let next_rock = first(rocks) `move` [start_height, 2];
+  let current_height = chamber_height(chamber)
+  let start_height = if current_height { current_height + 4 } else { 4 }
+  let next_rock = first(rocks) `move` [start_height, 2]
 
   let [next_jets, next_chamber] = falling_rock(jets, chamber, next_rock);
 
-  [next_jets, rest(rocks), next_chamber];
+  [next_jets, rest(rocks), next_chamber]
 }
 
-let rock_shapes = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"];
+let rock_shapes = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"]
 
 let cycle_detector = || {
-  let mut seen = #{};
+  let mut seen = #{}
   let mut drops = 0;
 
   |[jets, rocks, chamber]| {
-    drops = drops + 1;
+    drops = drops + 1
 
-    let height = chamber_height(chamber);
-    let chamber_top = chamber |> filter(|[y]| y > height - 20) |> map(|[y, x]| [height - y, x]);
-    let key = [first(jets), first(rocks), chamber_top];
+    let height = chamber_height(chamber)
+    let chamber_top = chamber
+      |> filter(|[y]| y > height - 20)
+      |> map(|[y, x]| [height - y, x])
+    let key = [first(jets), first(rocks), chamber_top]
 
     if seen[key] {
-      return [[drops, height], seen[key]];
+      return [[drops, height], seen[key]]
     }
 
     seen = seen |> assoc(key, [drops, height]);
-    nil;
-  };
+
+    nil
+  }
 }
 
 part_one: {
-  let rocks = parse_rocks(rock_shapes);
+  let rocks = parse_rocks(rock_shapes)
   let jets = parse_jet_pattern(input);
 
   iterate(drop_rock, [jets, rocks, {}])
     |> get(2022)
-    |> |[_, _, chamber]| { chamber }
-    |> chamber_height;
+    |> |[_, _, chamber]| {
+      chamber
+    }
+    |> chamber_height
 }
 
 part_two: {
-  let rocks = parse_rocks(rock_shapes);
-  let jets = parse_jet_pattern(input);
+  let rocks = parse_rocks(rock_shapes)
+  let jets = parse_jet_pattern(input)
 
   let cycle_state = iterate(drop_rock, [jets, rocks, {}])
     |> filter_map(cycle_detector())
-    |> first;
+    |> first
 
-  let [[drops, height], [previous_drops, previous_height]] = cycle_state;
+  let [[drops, height], [previous_drops, previous_height]] = cycle_state
 
-  let height_offset = height - previous_height;
-  let drop_offset = drops - previous_drops;
-  let remaining_drops = 1_000_000_000_000 - previous_drops;
-  let cycles = remaining_drops / drop_offset;
-  let drops_after_cycles = remaining_drops % drop_offset;
-  let complete_cycles_height = previous_height + height_offset * cycles;
+  let height_offset = height - previous_height
+  let drop_offset = drops - previous_drops
+  let remaining_drops = 1_000_000_000_000 - previous_drops
+  let cycles = remaining_drops / drop_offset
+  let drops_after_cycles = remaining_drops % drop_offset
+  let complete_cycles_height = previous_height + height_offset * cycles
 
   let partial_cycle_height = iterate(drop_rock, [jets, rocks, {}])
     |> get(previous_drops + drops_after_cycles)
-    |> |[_, _, chamber]| { chamber }
+    |> |[_, _, chamber]| {
+      chamber
+    }
     |> chamber_height;
 
-  complete_cycles_height + partial_cycle_height - previous_height;
+  complete_cycles_height + partial_cycle_height - previous_height
 }
 
 test: {
