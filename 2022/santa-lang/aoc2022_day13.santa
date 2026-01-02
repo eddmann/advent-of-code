@@ -1,6 +1,26 @@
 input: read("aoc://2022/13")
 
-let parse_packets = lines >> filter(_ != "") >> map(evaluate)
+let parse_packet = |str| {
+  let tokens = regex_match_all("\\[|\\]|\\d+", str);
+
+  let parse = |idx| match tokens[idx] {
+    "[" {
+      let parse_items = |i, items| match tokens[i] {
+        "]" { [items, i + 1] }
+        _ {
+          let [val, next] = parse(i);
+          parse_items(next, push(val, items))
+        }
+      };
+      parse_items(idx + 1, [])
+    }
+    n { [int(n), idx + 1] }
+  };
+
+  parse(0)[0]
+};
+
+let parse_packets = lines >> filter(_ != "") >> map(parse_packet)
 
 let cmp = |a, b| if a == b { nil } else { a > b }
 
